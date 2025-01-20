@@ -1,0 +1,27 @@
+# Angular specific
+.angular/
+.angular-cache/
+.angular-cli.json
+coverage/
+dist/
+tmp/
+out-tsc/
+npm-debug.log
+yarn-error.log
+.sass-cache/
+connect.lock
+node_modules/
+jspm_packages/
+typings/
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-project
+*.sublime-workspace
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
