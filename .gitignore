@@ -25,3 +25,4 @@ typings/
 .DS_Store
 Thumbs.db
 .vscode/
+application.env
