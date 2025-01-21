@@ -20,22 +20,22 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserEntity {
-  @Id
-  @EqualsAndHashCode.Include
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+	@Id
+	@EqualsAndHashCode.Include
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
 
-  private String name;
-  private String email;
-  private String password;
-  private String phone;
-  private String profilePictureUrl;
+	private String name;
+	private String email;
+	private String password;
+	private String phone;
+	private String profilePictureUrl;
 
-  @CreatedDate
-  @Column(nullable = false, updatable = false)
-  private LocalDateTime createdAt;
+	@CreatedDate
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime createdAt;
 
-  @LastModifiedDate
-  @Column(nullable = false)
-  private LocalDateTime updatedAt;
+	@LastModifiedDate
+	@Column(nullable = false)
+	private LocalDateTime updatedAt;
 }

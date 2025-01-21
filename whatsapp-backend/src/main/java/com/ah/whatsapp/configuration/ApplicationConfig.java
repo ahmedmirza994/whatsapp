@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = "com.ah.whatsapp")
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = "com.ah.whatsapp.repository")
-public class ApplicationConfig {}
+public class ApplicationConfig {
+}
