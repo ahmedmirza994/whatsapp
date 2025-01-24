@@ -33,6 +33,13 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
+
+	// Security
+	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+	implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
+	// Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.mockito:mockito-core")

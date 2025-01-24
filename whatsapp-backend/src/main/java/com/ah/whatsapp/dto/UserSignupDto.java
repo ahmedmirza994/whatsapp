@@ -13,6 +13,6 @@ public record UserSignupDto(
 	@NotNull(message = "Password is required")
 	@Size(min = 8, max = 100, message = "Password must be between 6 and 100 characters")
 	String password,
-	@Pattern(regexp = "^\\+[0-9]{7,15}$", message = "Phone number is invalid") String phone,
-	String profilePictureUrl) {
+	@Pattern(regexp = "^\\+[0-9]{7,15}$", message = "Phone number is invalid") String phone
+) {
 }

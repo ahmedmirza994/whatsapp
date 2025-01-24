@@ -1,8 +1,10 @@
 package com.ah.whatsapp.mapper;
 
+import com.ah.whatsapp.dto.UserDto;
 import com.ah.whatsapp.dto.UserSignupDto;
 import com.ah.whatsapp.entity.UserEntity;
 import com.ah.whatsapp.model.User;
+import java.time.LocalDateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,20 @@ public class UserMapper {
 	public User toModel(UserSignupDto dto) {
 		User model = new User();
 		BeanUtils.copyProperties(dto, model);
+		model.setCreatedAt(LocalDateTime.now());
+		model.setUpdatedAt(LocalDateTime.now());
 		return model;
 	}
+
+	public UserDto toDto(User model, String jwtToken) {
+		return new UserDto(
+			model.getId(),
+			model.getName(),
+			model.getEmail(),
+			model.getPhone(),
+			model.getProfilePictureUrl(),
+			jwtToken
+		);
+	}
+
 }

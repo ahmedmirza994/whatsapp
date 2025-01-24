@@ -1,18 +1,18 @@
 package com.ah.whatsapp.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
-
 import com.ah.whatsapp.entity.UserEntity;
 import com.ah.whatsapp.mapper.UserMapper;
 import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class UserRepositoryTest {
 
@@ -40,11 +40,11 @@ public class UserRepositoryTest {
 		userEntity.setProfilePictureUrl("http://example.com/profile.jpg");
 
 		user = new User();
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
-        user.setPassword("password123");
-        user.setPhone("+1234567890");
-        user.setProfilePictureUrl("http://example.com/profile.jpg");
+		user.setName("John Doe");
+		user.setEmail("john.doe@example.com");
+		user.setPassword("password123");
+		user.setPhone("+1234567890");
+		user.setProfilePictureUrl("http://example.com/profile.jpg");
 
 		when(userMapper.toEntity(any(User.class))).thenReturn(userEntity);
 		when(userMapper.toModel(any(UserEntity.class))).thenReturn(user);
