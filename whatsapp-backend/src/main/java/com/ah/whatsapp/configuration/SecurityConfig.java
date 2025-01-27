@@ -1,5 +1,7 @@
 package com.ah.whatsapp.configuration;
 
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,10 +13,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+	@Value("${front-end.url}")
+	private String frontEndUrl;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -28,7 +35,9 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-		http.csrf(AbstractHttpConfigurer::disable)
+		http
+			.cors((cors) -> cors.configurationSource(corsConfigurationSource()))
+			.csrf(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.requestMatchers("/users/signup", "/users/login").permitAll()
 				.anyRequest().authenticated())
 			.authenticationManager(authenticationManager)
@@ -36,4 +45,14 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		return request -> {
+			var cors = new CorsConfiguration();
+			cors.setAllowedOrigins(List.of(frontEndUrl));
+			cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+			cors.setAllowedHeaders(List.of("*"));
+			return cors;
+		};
+	}
 }

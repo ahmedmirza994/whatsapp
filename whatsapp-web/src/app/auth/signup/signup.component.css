@@ -8,24 +8,6 @@
 	padding: 0 2rem; /* Add padding to both sides */
 }
 
-.quote-container {
-	flex: 1;
-	padding: 2rem;
-	color: #333333;
-}
-
-.quote {
-	font-size: 1.5rem;
-	font-weight: 500;
-	margin-bottom: 1rem;
-}
-
-.author {
-	font-size: 1.2rem;
-	font-weight: 400;
-	color: #555555;
-}
-
 .signup-card {
 	background: rgba(255, 255, 255, 0.1);
 	backdrop-filter: blur(10px);
@@ -66,6 +48,23 @@
 	font-size: 1rem;
 }
 
+.password-container {
+	position: relative;
+}
+
+.password-container input {
+	padding-right: 2.5rem; /* Add space for the eye icon */
+}
+
+.toggle-password {
+	position: absolute;
+	right: 0.75rem;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	color: #333333;
+}
+
 .form-group small {
 	color: #e74c3c; /* Error message color */
 }
@@ -81,6 +80,9 @@ button {
 	transition: background 0.3s;
 	font-size: 1rem;
 	font-weight: 500;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 button:disabled {
@@ -90,4 +92,39 @@ button:disabled {
 
 button:hover:not(:disabled) {
 	background: #2980b9;
+}
+
+.spinner {
+	border: 2px solid #f3f3f3;
+	border-top: 2px solid #3498db;
+	border-radius: 50%;
+	width: 16px;
+	height: 16px;
+	animation: spin 1s linear infinite;
+	margin-right: 8px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.error-message {
+	margin-top: 1rem;
+	color: #e74c3c; /* Error message color */
+	text-align: left;
+}
+
+.error-message ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+.error-message li {
+	margin-bottom: 0.5rem;
 }

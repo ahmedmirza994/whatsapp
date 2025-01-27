@@ -1,12 +1,6 @@
 <!-- filepath: /whatsapp-web/src/app/components/signup/signup.component.html -->
 <div class="signup-container">
-	<div class="quote-container">
-		<p class="quote">
-			"Success is not the key to happiness. Happiness is the key to
-			success. If you love what you are doing, you will be successful."
-		</p>
-		<p class="author">- Albert Schweitzer</p>
-	</div>
+	<app-quote />
 	<div class="signup-card">
 		<h2>Sign Up</h2>
 		<form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
@@ -51,11 +45,19 @@
 
 			<div class="form-group">
 				<label for="password">Password</label>
-				<input
-					id="password"
-					formControlName="password"
-					type="password"
-				/>
+				<div class="password-container">
+					<input
+						id="password"
+						formControlName="password"
+						[type]="showPassword ? 'text' : 'password'"
+					/>
+					<span
+						class="toggle-password"
+						(click)="togglePasswordVisibility()"
+					>
+						{{ showPassword ? "🙈" : "👁️" }}
+					</span>
+				</div>
 				<div
 					*ngIf="
 						signupForm.get('password')?.invalid &&
@@ -87,18 +89,25 @@
 						signupForm.get('phone')?.touched
 					"
 				>
-					<small *ngIf="signupForm.get('phone')?.errors?.['required']"
-						>Phone number is required.</small
-					>
 					<small *ngIf="signupForm.get('phone')?.errors?.['pattern']"
 						>Phone number must be valid.</small
 					>
 				</div>
 			</div>
 
-			<button type="submit" [disabled]="signupForm.invalid">
-				Sign Up
+			<button type="submit" [disabled]="signupForm.invalid || isLoading">
+				<span *ngIf="isLoading" class="spinner"></span>
+				<span *ngIf="!isLoading">Sign Up</span>
 			</button>
+			@if (errorMessages.length > 0) {
+			<div class="error-message">
+				<ul>
+					@for (error of errorMessages; track $index) {
+					<li>{{ error }}</li>
+					}
+				</ul>
+			</div>
+			}
 		</form>
 	</div>
 </div>

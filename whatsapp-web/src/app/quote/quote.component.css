@@ -1,0 +1,16 @@
+.quote-container {
+	padding: 2rem;
+	color: #333333;
+}
+
+.quote {
+	font-size: 1.5rem;
+	font-weight: 500;
+	margin-bottom: 1rem;
+}
+
+.author {
+	font-size: 1.2rem;
+	font-weight: 400;
+	color: #555555;
+}

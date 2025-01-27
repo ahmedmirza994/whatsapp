@@ -5,6 +5,7 @@ import { Observable, map, catchError, throwError } from 'rxjs';
 import { User } from '../shared/user.model';
 import { SignupRequest } from './signup/signup-request.model';
 import { ApiResponse } from '../shared/api-response.model';
+import { HttpClientService } from '../shared/http-client.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -12,24 +13,14 @@ import { ApiResponse } from '../shared/api-response.model';
 export class AuthService {
 	private apiUrl = `${environment.apiUrl}/users`;
 
-	constructor(private http: HttpClient) {}
+	constructor(private httpClientService: HttpClientService) {}
 
 	signup(signupRequest: SignupRequest): Observable<User> {
-		return this.http
-			.post<ApiResponse<User>>(`${this.apiUrl}/signup`, signupRequest)
+		return this.httpClientService
+			.post<User>(`${this.apiUrl}/signup`, signupRequest)
 			.pipe(
 				map((response) => {
-					if (response.status === 200 && response.data) {
-						return response.data;
-					} else {
-						throw new Error(response.error || 'Signup failed');
-					}
-				}),
-				catchError((error) => {
-					console.error('Signup error', error);
-					return throwError(
-						() => new Error(error.message || 'Signup failed')
-					);
+					return response.data!;
 				})
 			);
 	}
