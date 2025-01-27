@@ -1,0 +1,93 @@
+.signup-container {
+	display: flex;
+	justify-content: space-between; /* Adjust to space between */
+	align-items: center;
+	height: 100vh;
+	background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+	overflow: hidden; /* Prevent scrolling */
+	padding: 0 2rem; /* Add padding to both sides */
+}
+
+.quote-container {
+	flex: 1;
+	padding: 2rem;
+	color: #333333;
+}
+
+.quote {
+	font-size: 1.5rem;
+	font-weight: 500;
+	margin-bottom: 1rem;
+}
+
+.author {
+	font-size: 1.2rem;
+	font-weight: 400;
+	color: #555555;
+}
+
+.signup-card {
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	padding: 2rem;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 400px;
+	color: #333333; /* Text color */
+}
+
+.signup-card h2 {
+	margin-bottom: 1rem;
+	text-align: center;
+	color: #333333; /* Header color */
+	font-weight: 500;
+}
+
+.form-group {
+	margin-bottom: 1rem;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.5rem;
+	color: #333333; /* Label color */
+	font-weight: 500;
+}
+
+.form-group input {
+	width: 100%;
+	padding: 0.75rem;
+	border: 1px solid #cccccc;
+	border-radius: 4px;
+	background: rgba(255, 255, 255, 0.7);
+	color: #333333; /* Input text color */
+	font-size: 1rem;
+}
+
+.form-group small {
+	color: #e74c3c; /* Error message color */
+}
+
+button {
+	width: 100%;
+	padding: 0.75rem;
+	background: #3498db;
+	color: #ffffff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background 0.3s;
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+button:disabled {
+	background: #95a5a6;
+	cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+	background: #2980b9;
+}
