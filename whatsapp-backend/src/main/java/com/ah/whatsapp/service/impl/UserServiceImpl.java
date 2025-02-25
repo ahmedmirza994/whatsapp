@@ -1,14 +1,9 @@
 package com.ah.whatsapp.service.impl;
 
-import com.ah.whatsapp.dto.LoginDto;
-import com.ah.whatsapp.dto.UserDto;
-import com.ah.whatsapp.exception.InvalidCredentialsException;
-import com.ah.whatsapp.exception.UserAlreadyExistsException;
-import com.ah.whatsapp.mapper.UserMapper;
-import com.ah.whatsapp.model.User;
-import com.ah.whatsapp.repository.UserRepository;
-import com.ah.whatsapp.service.UserService;
-import com.ah.whatsapp.util.JwtUtil;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -16,6 +11,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import com.ah.whatsapp.dto.LoginDto;
+import com.ah.whatsapp.dto.UserDto;
+import com.ah.whatsapp.exception.InvalidCredentialsException;
+import com.ah.whatsapp.exception.UserAlreadyExistsException;
+import com.ah.whatsapp.exception.UserNotFoundException;
+import com.ah.whatsapp.mapper.UserMapper;
+import com.ah.whatsapp.model.User;
+import com.ah.whatsapp.repository.UserRepository;
+import com.ah.whatsapp.service.UserService;
+import com.ah.whatsapp.util.JwtUtil;
 
 @Transactional
 @Service
@@ -66,4 +73,24 @@ public class UserServiceImpl implements UserService {
 
 		return userMapper.toDto(user, jwtUtil.generateToken(loginDto.email()));
 	}
+
+	@Override
+	public UserDto getUserById(UUID id) {
+		return userRepository.findById(id)
+			.map(userMapper::toDto)
+			.orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+	}
+
+	@Override
+    public List<UserDto> searchUsers(String query) {
+        if (ObjectUtils.isEmpty(query) ) {
+            return List.of();
+        }
+
+        List<User> users = userRepository.searchUsers(query.trim());
+
+        return users.stream()
+			.map(user -> userMapper.toDto(user))
+			.collect(Collectors.toList());
+    }
 }

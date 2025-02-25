@@ -1,8 +1,8 @@
 package com.ah.whatsapp.exception;
 
-import com.ah.whatsapp.dto.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.ah.whatsapp.dto.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -40,6 +42,18 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ApiResponse<Void>> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUnauthorizedException(UnauthorizedException ex) {
 		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}

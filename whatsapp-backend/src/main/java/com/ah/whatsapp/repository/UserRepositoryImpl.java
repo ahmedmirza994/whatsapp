@@ -1,11 +1,16 @@
 package com.ah.whatsapp.repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+
 import com.ah.whatsapp.entity.UserEntity;
 import com.ah.whatsapp.mapper.UserMapper;
 import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
-import java.util.Optional;
-import org.springframework.stereotype.Component;
 
 @Component
 public class UserRepositoryImpl implements UserRepository {
@@ -36,6 +41,18 @@ public class UserRepositoryImpl implements UserRepository {
 			return Optional.empty();
 		}
 		return Optional.ofNullable(userMapper.toModel(userEntity));
+	}
+
+	@Override
+    public Optional<User> findById(UUID id) {
+        return userEntityRepository.findById(id)
+			.map(userMapper::toModel);
+    }
+
+	@Override
+	public List<User> searchUsers(String query) {
+		List<UserEntity> userEntities = userEntityRepository.searchUsers(query);
+		return userEntities.stream().map(userMapper::toModel).collect(Collectors.toList());
 	}
 
 }
