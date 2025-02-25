@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 			throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists.");
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		User registeredUser = userRepository.save(user);
+		User registeredUser = save(user);
 		String jwtToken = jwtUtil.generateToken(registeredUser.getEmail());
 		return userMapper.toDto(registeredUser, jwtToken);
 	}

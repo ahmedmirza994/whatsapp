@@ -9,18 +9,19 @@ import {
 import { Router } from '@angular/router';
 import { User } from '../../shared/user.model';
 import { AuthService } from '../auth.service';
-import { SignupRequest } from './signup-request.model';
+import { LoginRequest } from './login-request.model';
 import { QuoteComponent } from '../../quote/quote.component';
 import { NavigationService } from '../../shared/navigation.service';
 
 @Component({
-	selector: 'app-signup',
+	selector: 'app-login',
+	standalone: true,
 	imports: [CommonModule, ReactiveFormsModule, QuoteComponent],
-	templateUrl: './signup.component.html',
-	styleUrls: ['./signup.component.css'],
+	templateUrl: './login.component.html',
+	styleUrls: ['./login.component.css'],
 })
-export class SignupComponent implements OnInit {
-	signupForm!: FormGroup;
+export class LoginComponent implements OnInit {
+	loginForm!: FormGroup;
 	errorMessages: string[] = [];
 	showPassword: boolean = false;
 	isLoading: boolean = false;
@@ -32,36 +33,20 @@ export class SignupComponent implements OnInit {
 	) {}
 
 	ngOnInit() {
-		this.signupForm = this.fb.group({
-			name: [
-				'',
-				[
-					Validators.required,
-					Validators.minLength(3),
-					Validators.maxLength(100),
-				],
-			],
+		this.loginForm = this.fb.group({
 			email: ['', [Validators.required, Validators.email]],
-			password: [
-				'',
-				[
-					Validators.required,
-					Validators.minLength(8),
-					Validators.maxLength(100),
-				],
-			],
-			phone: ['', [Validators.pattern(/^\+[0-9]{7,15}$/)]],
+			password: ['', [Validators.required]],
 		});
 	}
 
 	onSubmit(): void {
 		this.errorMessages = [];
 		this.isLoading = true;
-		if (this.signupForm.valid) {
-			const signupRequest: SignupRequest = this.signupForm.value;
-			this.authService.signup(signupRequest).subscribe({
+		if (this.loginForm.valid) {
+			const loginRequest: LoginRequest = this.loginForm.value;
+			this.authService.login(loginRequest).subscribe({
 				next: (user: User) => {
-					console.log('Signup successful', user);
+					console.log('Login successful', user);
 					this.navigationService.toHome();
 					this.isLoading = false;
 				},
@@ -70,7 +55,7 @@ export class SignupComponent implements OnInit {
 						.split(',')
 						.map((e) => e.trim());
 					this.isLoading = false;
-					console.error('Signup failed', err);
+					console.error('Login failed', err);
 				},
 			});
 		} else {
@@ -82,7 +67,7 @@ export class SignupComponent implements OnInit {
 		this.showPassword = !this.showPassword;
 	}
 
-	navigateToLogin(): void {
-		this.navigationService.toLogin();
+	navigateToSignup(): void {
+		this.navigationService.toSignup();
 	}
 }
