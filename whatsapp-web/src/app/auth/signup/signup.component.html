@@ -68,11 +68,15 @@
 						>Password is required.</small
 					>
 					<small
-						*ngIf="signupForm.get('password')?.errors?.['minlength']"
+						*ngIf="
+							signupForm.get('password')?.errors?.['minlength']
+						"
 						>Password must be at least 8 characters long.</small
 					>
 					<small
-						*ngIf="signupForm.get('password')?.errors?.['maxlength']"
+						*ngIf="
+							signupForm.get('password')?.errors?.['maxlength']
+						"
 						>Password cannot be more than 100 characters
 						long.</small
 					>
@@ -99,13 +103,13 @@
 				<span *ngIf="!isLoading">Sign Up</span>
 			</button>
 			@if (errorMessages.length > 0) {
-			<div class="error-message">
-				<ul>
-					@for (error of errorMessages; track $index) {
-					<li>{{ error }}</li>
-					}
-				</ul>
-			</div>
+				<div class="error-message">
+					<ul>
+						@for (error of errorMessages; track $index) {
+							<li>{{ error }}</li>
+						}
+					</ul>
+				</div>
 			}
 			<div class="login-link">
 				Already have an account?

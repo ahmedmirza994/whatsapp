@@ -55,13 +55,13 @@
 			</button>
 
 			@if (errorMessages.length > 0) {
-			<div class="error-message">
-				<ul>
-					@for (error of errorMessages; track $index) {
-					<li>{{ error }}</li>
-					}
-				</ul>
-			</div>
+				<div class="error-message">
+					<ul>
+						@for (error of errorMessages; track $index) {
+							<li>{{ error }}</li>
+						}
+					</ul>
+				</div>
 			}
 
 			<div class="signup-link">

@@ -28,7 +28,7 @@ export class SignupComponent implements OnInit {
 	constructor(
 		private fb: FormBuilder,
 		private authService: AuthService,
-		private navigationService: NavigationService
+		private navigationService: NavigationService,
 	) {}
 
 	ngOnInit() {

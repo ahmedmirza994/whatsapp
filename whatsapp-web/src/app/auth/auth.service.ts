@@ -17,7 +17,7 @@ export class AuthService {
 
 	constructor(
 		private httpClientService: HttpClientService,
-		private navigationService: NavigationService
+		private navigationService: NavigationService,
 	) {
 		this.loadUserFromStorage();
 	}
@@ -52,7 +52,7 @@ export class AuthService {
 				}),
 				tap({
 					next: (user) => this.setCurrentUser(user),
-				})
+				}),
 			);
 	}
 
@@ -65,7 +65,7 @@ export class AuthService {
 				}),
 				tap({
 					next: (user) => this.setCurrentUser(user),
-				})
+				}),
 			);
 	}
 

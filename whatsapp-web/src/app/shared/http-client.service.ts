@@ -30,7 +30,7 @@ export class HttpClientService {
 
 	get<T>(
 		url: string,
-		options?: { headers?: HttpHeaders }
+		options?: { headers?: HttpHeaders },
 	): Observable<ApiResponse<T>> {
 		return this.http.get<ApiResponse<T>>(url, options).pipe(
 			map((response) => {
@@ -40,14 +40,14 @@ export class HttpClientService {
 					throw new Error(response.error || 'Request failed');
 				}
 			}),
-			catchError(this.handleError)
+			catchError(this.handleError),
 		);
 	}
 
 	post<T>(
 		url: string,
 		body: any,
-		options?: { headers?: HttpHeaders }
+		options?: { headers?: HttpHeaders },
 	): Observable<ApiResponse<T>> {
 		const processedBody = this.preprocessRequestBody(body);
 		return this.http.post<ApiResponse<T>>(url, processedBody, options).pipe(
@@ -58,7 +58,7 @@ export class HttpClientService {
 					throw new Error(response.error || 'Request failed');
 				}
 			}),
-			catchError(this.handleError)
+			catchError(this.handleError),
 		);
 	}
 
@@ -69,7 +69,7 @@ export class HttpClientService {
 					acc[key] = body[key] === '' ? null : body[key];
 					return acc;
 				},
-				{}
+				{},
 			);
 		}
 		return body;
