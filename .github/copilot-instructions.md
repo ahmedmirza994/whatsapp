@@ -6,16 +6,26 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
 
 ## MVP Feature Set
 
--**User Authentication** ✅ - Login and signup functionality - JWT security for all backend endpoints - Password encryption and secure session management
+-   **User Authentication** ✅
 
--**Messaging System** 🔄 - One-to-one conversations - Text message exchange - Message status indicators (sent, delivered, read) - Message timestamps
+    -   Login and signup functionality
+    -   JWT security for all backend endpoints
+    -   Password encryption and secure session management
 
--   **User Discovery** 🔄 - Search users by name, email, or phone number - Add contacts to conversation list - User profile information display
+-   **Messaging System** 🔄
+
+    -   One-to-one conversations
+    -   Text message exchange
+    -   Message timestamps
+
+-   **User Discovery** 🔄
+
+    -   Search users by name, email, or phone number
+    -   Add contacts to conversation list
+    -   User profile information display
 
 -   **Real-time Communication** 🔄
     -   WebSocket implementation for instant message delivery
-    -   Online/offline status indicators
-    -   Typing indicators
 
 ## Technical Stack
 
@@ -38,11 +48,15 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
 
 -   **Backend**
 
+    -   Use UUID for any type of ids
+    -   Use lowercase sql statements
     -   Use Spring best practices with dependency injection
     -   Follow REST API conventions
     -   Implement proper exception handling and validation
     -   Create comprehensive unit and integration tests
     -   Use DTO patterns for request/response objects
+    -   All database entites goes to entity package and then similar model classes goes to model package
+    -   Model will not directly expose to FE, create DTO for this.
 
 -   **Frontend**
     -   Component-based architecture

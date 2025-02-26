@@ -1,4 +1,7 @@
 databaseChangeLog:
-    -   include:
-            relativeToChangelogFile: true
-            file: yaml/V001__create_users_table.yaml
+    - include:
+          relativeToChangelogFile: true
+          file: yaml/V001__create_users_table.yaml
+    - include:
+          relativeToChangelogFile: true
+          file: yaml/V002__create_messages_table.yaml
