@@ -1,5 +1,6 @@
-package com.ah.whatsapp.repository;
+package com.ah.whatsapp.repository.impl;
 
+import com.ah.whatsapp.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

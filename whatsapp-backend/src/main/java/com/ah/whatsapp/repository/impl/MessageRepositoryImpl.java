@@ -1,5 +1,6 @@
-package com.ah.whatsapp.repository;
+package com.ah.whatsapp.repository.impl;
 
+import com.ah.whatsapp.repository.MessageRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

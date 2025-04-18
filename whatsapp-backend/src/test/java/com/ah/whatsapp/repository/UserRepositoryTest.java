@@ -4,6 +4,7 @@ import com.ah.whatsapp.entity.UserEntity;
 import com.ah.whatsapp.mapper.UserMapper;
 import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
+import com.ah.whatsapp.repository.impl.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

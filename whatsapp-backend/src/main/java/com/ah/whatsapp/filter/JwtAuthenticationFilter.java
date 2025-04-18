@@ -5,11 +5,13 @@ import java.util.Collections;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ah.whatsapp.exception.UnauthorizedException;
+import com.ah.whatsapp.model.JwtUser;
 import com.ah.whatsapp.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -21,9 +23,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
+	private UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
+		this.userDetailsService = userDetailsService;
     }
 
 	@Override
@@ -41,16 +45,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     username = jwtUtil.extractEmail(jwt);
                 }
             } catch (Exception e) {
+				SecurityContextHolder.clearContext();
                 throw new UnauthorizedException("Invalid token");
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    username, null, Collections.emptyList());
+			JwtUser jwtUser = (JwtUser) this.userDetailsService.loadUserByUsername(username);
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			if(jwtUser != null) {
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+						jwtUser, null, Collections.emptyList());
+
+				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			}
         }
 
         filterChain.doFilter(request, response);

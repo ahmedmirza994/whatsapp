@@ -40,7 +40,7 @@ public class UserController {
 		User user = userMapper.toModel(userSignupDto);
 		UserDto userDto = userService.registerUser(user);
 		ApiResponse<UserDto> response = ApiResponse.success(userDto);
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@PostMapping("/login")

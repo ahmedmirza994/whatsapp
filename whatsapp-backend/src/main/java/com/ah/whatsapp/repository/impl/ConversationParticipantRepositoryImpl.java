@@ -1,4 +1,4 @@
-package com.ah.whatsapp.repository;
+package com.ah.whatsapp.repository.impl;
 
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.entity.ConversationParticipantEntity;
@@ -7,6 +7,7 @@ import com.ah.whatsapp.exception.ConversationNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
 import com.ah.whatsapp.mapper.ConversationParticipantMapper;
 import com.ah.whatsapp.model.ConversationParticipant;
+import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 import com.ah.whatsapp.repository.entity.ConversationParticipantEntityRepository;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
