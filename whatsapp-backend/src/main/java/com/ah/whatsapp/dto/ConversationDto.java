@@ -16,5 +16,6 @@ public class ConversationDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private List<ParticipantDto> participants;
+	private List<MessageDto> messages;
 	private MessageDto lastMessage;
 }

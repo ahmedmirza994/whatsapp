@@ -1,6 +1,8 @@
 package com.ah.whatsapp.repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -62,4 +64,28 @@ public class MessageRepositoryImpl implements MessageRepository {
 		messageEntityRepository.deleteById(id);
 	}
 
+	@Override
+	public Optional<Message> findLatestByConversationId(UUID conversationId) {
+		return messageEntityRepository.findByConversationIdOrderBySentAtDesc(conversationId)
+			.map(messageMapper::toModel);
+	}
+
+	@Override
+    public Map<UUID, Message> findLatestMessagesForConversations(List<UUID> conversationIds) {
+        if (conversationIds == null || conversationIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<MessageEntity> latestMessageEntities = messageEntityRepository.findLatestMessagesForConversationIds(conversationIds);
+
+        // Group messages by conversation ID
+        return latestMessageEntities.stream()
+            .map(messageMapper::toModel)
+            .collect(
+				Collectors.toMap(
+					Message::getConversationId,
+					message -> message,
+                    (existing, replacement) -> existing
+				)
+            );
+    }
 }

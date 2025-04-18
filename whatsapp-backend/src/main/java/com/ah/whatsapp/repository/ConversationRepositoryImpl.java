@@ -1,6 +1,7 @@
 package com.ah.whatsapp.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.mapper.ConversationMapper;
 import com.ah.whatsapp.model.Conversation;
-import com.ah.whatsapp.model.ConversationParticipant;
 import com.ah.whatsapp.model.Message;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 
@@ -39,8 +39,7 @@ public class ConversationRepositoryImpl implements ConversationRepository {
 		return conversationEntityRepository.findById(id)
             .map(entity -> {
                 Conversation conversation = conversationMapper.toModel(entity);
-                // Load participants and last message when finding by ID as well
-                loadParticipantsAndLastMessage(conversation);
+	            loadLastMessage(conversation);
                 return conversation;
             });
 	}
@@ -49,24 +48,24 @@ public class ConversationRepositoryImpl implements ConversationRepository {
 	public List<Conversation> findByUserId(UUID userId) {
 		List<ConversationEntity> conversationEntities = conversationEntityRepository.findConversationsByUserId(userId);
 
+		List<UUID> conversationIds = conversationEntities.stream()
+                .map(ConversationEntity::getId)
+                .collect(Collectors.toList());
+
+		Map<UUID, Message> lastMessagesMap = messageRepository.findLatestMessagesForConversations(conversationIds);
+
         return conversationEntities.stream()
             .map(entity -> {
                 Conversation conversation = conversationMapper.toModel(entity);
-                // Load participants and last message for each conversation
-                loadParticipantsAndLastMessage(conversation);
+	            conversation.setLastMessage(lastMessagesMap.get(entity.getId()));
                 return conversation;
             })
             .collect(Collectors.toList());
 	}
 
-	private void loadParticipantsAndLastMessage(Conversation conversation) {
-        // Load participants
-        List<ConversationParticipant> participants = conversationParticipantRepository.findByConversationId(conversation.getId());
-        conversation.setParticipants(participants);
-
-        // Load only the last message
+	private void loadLastMessage(Conversation conversation) {
         Optional<Message> lastMessageOpt = messageRepository.findLatestByConversationId(conversation.getId());
-        lastMessageOpt.ifPresent(conversation::setLastMessage); // Use method reference
+        lastMessageOpt.ifPresent(conversation::setLastMessage);
     }
 
 	@Override

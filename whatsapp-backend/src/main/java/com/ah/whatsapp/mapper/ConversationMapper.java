@@ -1,5 +1,6 @@
 package com.ah.whatsapp.mapper;
 
+import com.ah.whatsapp.dto.MessageDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,15 +55,12 @@ public class ConversationMapper {
 		}
 
 		if (model.getMessages() != null && !model.getMessages().isEmpty()) {
-            // Find the most recent message
-            Message lastMessage = model.getMessages().stream()
-                .max((m1, m2) -> m1.getSentAt().compareTo(m2.getSentAt()))
-                .orElse(null);
-
-            if (lastMessage != null) {
-                dto.setLastMessage(messageMapper.toDto(lastMessage));
-            }
+            List<MessageDto> messageDtos = model.getMessages().stream()
+				.map(messageMapper::toDto)
+				.collect(Collectors.toList());
+			dto.setMessages(messageDtos);
         }
+		dto.setLastMessage(model.getLastMessage() != null ? messageMapper.toDto(model.getLastMessage()) : null);
 
 		return dto;
 	}
