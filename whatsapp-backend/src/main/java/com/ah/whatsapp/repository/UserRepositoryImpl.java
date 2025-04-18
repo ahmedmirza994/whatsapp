@@ -55,4 +55,9 @@ public class UserRepositoryImpl implements UserRepository {
 		return userEntities.stream().map(userMapper::toModel).collect(Collectors.toList());
 	}
 
+	@Override
+	public boolean existsById(UUID id) {
+		return userEntityRepository.existsById(id);
+	}
+
 }

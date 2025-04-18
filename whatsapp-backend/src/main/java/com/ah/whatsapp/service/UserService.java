@@ -17,4 +17,6 @@ public interface UserService {
 	UserDto getUserById(UUID id);
 
 	List<UserDto> searchUsers(String query);
+
+	Boolean existsById(UUID id);
 }

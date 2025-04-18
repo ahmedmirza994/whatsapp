@@ -93,4 +93,11 @@ public class UserServiceImpl implements UserService {
 			.map(user -> userMapper.toDto(user))
 			.collect(Collectors.toList());
     }
+
+    @Override
+    public Boolean existsById(UUID id) {
+        return userRepository.existsById(id);
+    }
+
+
 }

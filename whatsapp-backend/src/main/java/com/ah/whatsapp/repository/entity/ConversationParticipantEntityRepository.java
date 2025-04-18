@@ -1,11 +1,13 @@
 package com.ah.whatsapp.repository.entity;
 
-import com.ah.whatsapp.entity.ConversationParticipantEntity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.ah.whatsapp.entity.ConversationParticipantEntity;
 
 @Repository
 public interface ConversationParticipantEntityRepository
