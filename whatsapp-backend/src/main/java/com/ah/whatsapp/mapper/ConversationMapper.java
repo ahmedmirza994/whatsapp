@@ -54,7 +54,7 @@ public class ConversationMapper {
             dto.setParticipants(participantDtos);
 		}
 
-		if (model.getMessages() != null && !model.getMessages().isEmpty()) {
+		if (model.getMessages() != null) {
             List<MessageDto> messageDtos = model.getMessages().stream()
 				.map(messageMapper::toDto)
 				.collect(Collectors.toList());

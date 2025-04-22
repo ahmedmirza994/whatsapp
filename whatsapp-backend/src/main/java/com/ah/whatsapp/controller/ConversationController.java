@@ -1,5 +1,6 @@
 package com.ah.whatsapp.controller;
 
+import com.ah.whatsapp.dto.ApiResponse;
 import com.ah.whatsapp.model.JwtUser;
 import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
@@ -34,31 +35,31 @@ public class ConversationController {
      * @return A list of ConversationDto objects.
      */
     @GetMapping
-    public ResponseEntity<List<ConversationDto>> getUserConversations(
+    public ResponseEntity<ApiResponse<List<ConversationDto>>> getUserConversations(
             @AuthenticationPrincipal JwtUser jwtUser) {
         if (jwtUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<ConversationDto> conversations = conversationService.findUserConversations(jwtUser.getUserId());
-        return ResponseEntity.ok(conversations);
+        return new ResponseEntity<>(ApiResponse.success(conversations), HttpStatus.OK);
     }
 
     /**
      * POST /api/conversations : Create a new conversation with another user.
      *
-     * @param request       The request containing the participant ID.
+     * @param request  The request containing the participant ID.
      * @param jwtUser The authenticated user principal (creator).
      * @return The created ConversationDto.
      */
     @PostMapping
-    public ResponseEntity<ConversationDto> createConversation(
+    public ResponseEntity<ApiResponse<ConversationDto>> createConversation(
             @Valid @RequestBody CreateConversationRequest request,
             @AuthenticationPrincipal JwtUser jwtUser) {
          if (jwtUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         ConversationDto conversation = conversationService.createConversation(request, jwtUser.getUserId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(conversation);
+        return new ResponseEntity<>(ApiResponse.success(conversation), HttpStatus.CREATED);
     }
 
 }
