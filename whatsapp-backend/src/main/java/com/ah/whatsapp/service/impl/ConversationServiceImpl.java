@@ -62,7 +62,8 @@ public class ConversationServiceImpl implements ConversationService {
 
         ConversationParticipant participant = new ConversationParticipant();
         participant.setConversationId(conversationId);
-        participant.setUser(user);
+        participant.setParticipantId(userId);
+		participant.setParticipantName(user.getName());
         participant.setJoinedAt(LocalDateTime.now());
 
 		conversationParticipantRepository.save(participant);

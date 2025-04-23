@@ -1,9 +1,10 @@
 package com.ah.whatsapp.repository;
 
-import com.ah.whatsapp.model.ConversationParticipant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import com.ah.whatsapp.model.ConversationParticipant;
 
 public interface ConversationParticipantRepository {
 	/**
@@ -62,4 +63,12 @@ public interface ConversationParticipantRepository {
 	 * @param id the participant ID
 	 */
 	void delete(UUID id);
+
+	/**
+     * Finds all participants for a list of conversation IDs.
+     *
+     * @param conversationIds The list of conversation IDs.
+     * @return A Map where the key is the conversation ID and the value is a list of participants in that conversation.
+     */
+    Map<UUID, List<ConversationParticipant>> findParticipantsForConversations(List<UUID> conversationIds);
 }

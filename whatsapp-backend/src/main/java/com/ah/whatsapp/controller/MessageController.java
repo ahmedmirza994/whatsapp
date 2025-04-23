@@ -1,0 +1,45 @@
+package com.ah.whatsapp.controller;
+
+import java.util.List;
+import java.util.UUID;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ah.whatsapp.dto.ApiResponse;
+import com.ah.whatsapp.dto.MessageDto;
+import com.ah.whatsapp.model.JwtUser;
+import com.ah.whatsapp.service.MessageService;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/messages") // Base path for message-related endpoints
+@RequiredArgsConstructor
+public class MessageController {
+
+	private final MessageService messageService;
+
+    /**
+     * GET /messages/conversation/{conversationId} : Get messages for a specific conversation.
+     *
+     * @param conversationId The ID of the conversation.
+     * @param jwtUser        The authenticated user principal (for authorization checks if needed).
+     * @return A list of MessageDto objects for the conversation, wrapped in ApiResponse.
+     */
+    @GetMapping("/conversation/{conversationId}")
+    public ResponseEntity<ApiResponse<List<MessageDto>>> getConversationMessages(
+            @PathVariable UUID conversationId,
+            @AuthenticationPrincipal JwtUser jwtUser) {
+         if (jwtUser == null) {
+            // Handled by security config, but good practice for clarity
+            return new ResponseEntity<>(ApiResponse.failure("Unauthorized", HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
+        }
+        List<MessageDto> messages = messageService.findConversationMessages(conversationId, jwtUser.getUserId());
+        return new ResponseEntity<>(ApiResponse.success(messages), HttpStatus.OK);
+    }
+}

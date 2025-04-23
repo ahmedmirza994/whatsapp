@@ -1,17 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-	FormBuilder,
-	FormGroup,
-	ReactiveFormsModule,
-	Validators,
-} from '@angular/forms';
-import { Router } from '@angular/router';
-import { User } from '../../shared/user.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { QuoteComponent } from '../../quote/quote.component';
+import { User } from '../../shared/models/user.model';
+import { NavigationService } from '../../shared/services/navigation.service';
 import { AuthService } from '../auth.service';
 import { LoginRequest } from './login-request.model';
-import { QuoteComponent } from '../../quote/quote.component';
-import { NavigationService } from '../../shared/navigation.service';
 
 @Component({
 	selector: 'app-login',
@@ -29,7 +23,7 @@ export class LoginComponent implements OnInit {
 	constructor(
 		private fb: FormBuilder,
 		private authService: AuthService,
-		private navigationService: NavigationService,
+		private navigationService: NavigationService
 	) {}
 
 	ngOnInit() {
@@ -47,13 +41,10 @@ export class LoginComponent implements OnInit {
 			this.authService.login(loginRequest).subscribe({
 				next: (user: User) => {
 					console.log('Login successful', user);
-					this.navigationService.toHome();
 					this.isLoading = false;
 				},
 				error: (err: Error) => {
-					this.errorMessages = err.message
-						.split(',')
-						.map((e) => e.trim());
+					this.errorMessages = err.message.split(',').map(e => e.trim());
 					this.isLoading = false;
 					console.error('Login failed', err);
 				},

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import com.ah.whatsapp.mapper.MessageMapper;
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.Message;
 import com.ah.whatsapp.model.User;
+import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.UserRepository;
@@ -28,6 +30,7 @@ public class MessageServiceImpl implements MessageService {
 	private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
     private final UserRepository userRepository;
+	private final ConversationParticipantRepository conversationParticipantRepository;
     private final MessageMapper messageMapper;
 
 	@Override
@@ -53,11 +56,16 @@ public class MessageServiceImpl implements MessageService {
 
         return messageMapper.toDto(savedMessage);
 	}
+
 	@Override
-	public List<MessageDto> findConversationMessages(UUID conversationId) {
+	public List<MessageDto> findConversationMessages(UUID conversationId, UUID userId) {
 		if (!conversationRepository.existsById(conversationId)) {
             throw new ConversationNotFoundException("Conversation not found");
         }
+
+		if (!conversationParticipantRepository.existsByConversationIdAndUserId(conversationId, userId)) {
+			throw new AccessDeniedException("User is not a participant in this conversation");
+		}
 
 		return messageRepository.findByConversationId(conversationId).stream()
             .map(messageMapper::toDto)

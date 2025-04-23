@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { environment } from '../../environments/enviroment';
-import { HttpClientService } from '../shared/http-client.service';
-import { NavigationService } from '../shared/navigation.service';
-import { User } from '../shared/user.model';
+import { User } from '../shared/models/user.model';
+import { HttpClientService } from '../shared/services/http-client.service';
+import { NavigationService } from '../shared/services/navigation.service';
 import { LoginRequest } from './login/login-request.model';
 import { SignupRequest } from './signup/signup-request.model';
 
@@ -17,7 +17,7 @@ export class AuthService {
 
 	constructor(
 		private httpClientService: HttpClientService,
-		private navigationService: NavigationService,
+		private navigationService: NavigationService
 	) {
 		this.loadUserFromStorage();
 	}
@@ -44,29 +44,31 @@ export class AuthService {
 	}
 
 	signup(signupRequest: SignupRequest): Observable<User> {
-		return this.httpClientService
-			.post<User>(`${this.apiUrl}/signup`, signupRequest)
-			.pipe(
-				map((response) => {
-					return response.data!;
-				}),
-				tap({
-					next: (user) => this.setCurrentUser(user),
-				}),
-			);
+		return this.httpClientService.post<User>(`${this.apiUrl}/signup`, signupRequest).pipe(
+			map(response => {
+				return response.data!;
+			}),
+			tap({
+				next: user => {
+					this.setCurrentUser(user);
+					this.navigationService.toChat();
+				},
+			})
+		);
 	}
 
 	login(loginRequest: LoginRequest): Observable<User> {
-		return this.httpClientService
-			.post<User>(`${this.apiUrl}/login`, loginRequest)
-			.pipe(
-				map((response) => {
-					return response.data!;
-				}),
-				tap({
-					next: (user) => this.setCurrentUser(user),
-				}),
-			);
+		return this.httpClientService.post<User>(`${this.apiUrl}/login`, loginRequest).pipe(
+			map(response => {
+				return response.data!;
+			}),
+			tap({
+				next: user => {
+					this.setCurrentUser(user);
+					this.navigationService.toChat();
+				},
+			})
+		);
 	}
 
 	setCurrentUser(user: User): void {

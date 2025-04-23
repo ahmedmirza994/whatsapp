@@ -57,6 +57,7 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
     -   Use DTO patterns for request/response objects
     -   All database entites goes to entity package and then similar model classes goes to model package
     -   Model will not directly expose to FE, create DTO for this.
+    -   Wrap Dtos inside ApiResponse and then return to FE
 
 -   **Frontend**
     -   Component-based architecture

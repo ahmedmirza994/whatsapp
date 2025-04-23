@@ -1,15 +1,12 @@
 package com.ah.whatsapp.repository.impl;
 
-import com.ah.whatsapp.repository.MessageRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.entity.MessageEntity;
 import com.ah.whatsapp.entity.UserEntity;
@@ -17,10 +14,10 @@ import com.ah.whatsapp.exception.ConversationNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
 import com.ah.whatsapp.mapper.MessageMapper;
 import com.ah.whatsapp.model.Message;
+import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 import com.ah.whatsapp.repository.entity.MessageEntityRepository;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -76,10 +73,17 @@ public class MessageRepositoryImpl implements MessageRepository {
         if (conversationIds == null || conversationIds.isEmpty()) {
             return Collections.emptyMap();
         }
-        List<MessageEntity> latestMessageEntities = messageEntityRepository.findLatestMessagesForConversationIds(conversationIds);
+
+		List<UUID> latestMessageIds = messageEntityRepository.findLatestMessageIdsForConversationIds(conversationIds);
+
+        if (latestMessageIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<MessageEntity> latestMessagesWithSender = messageEntityRepository.findMessagesByIdsWithSender(latestMessageIds);
 
         // Group messages by conversation ID
-        return latestMessageEntities.stream()
+        return latestMessagesWithSender.stream()
             .map(messageMapper::toModel)
             .collect(
 				Collectors.toMap(

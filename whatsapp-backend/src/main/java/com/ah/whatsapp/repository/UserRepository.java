@@ -18,4 +18,6 @@ public interface UserRepository {
 	List<User> searchUsers(String query);
 
 	boolean existsById(UUID id);
+
+	long count();
 }

@@ -61,4 +61,8 @@ public class UserRepositoryImpl implements UserRepository {
 		return userEntityRepository.existsById(id);
 	}
 
+	@Override
+	public long count() {
+		return userEntityRepository.count();
+	}
 }

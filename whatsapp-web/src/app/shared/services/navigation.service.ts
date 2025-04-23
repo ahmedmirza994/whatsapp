@@ -21,12 +21,9 @@ export class NavigationService {
 		this.router.navigate(['/signup']);
 	}
 
-	/**
-	 * Navigate to the home/dashboard page
-	 * @param clearHistory When true, replaces current history entry (back button won't return to previous page)
-	 */
-	toHome(clearHistory: boolean = true): void {
-		this.router.navigate(['/'], {
+	toChat(clearHistory: boolean = true): void {
+		this.router.navigate(['/chat'], {
+			// Navigate to '/chat'
 			replaceUrl: clearHistory,
 		});
 	}

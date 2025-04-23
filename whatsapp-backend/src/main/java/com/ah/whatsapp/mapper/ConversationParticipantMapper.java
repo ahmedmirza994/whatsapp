@@ -36,7 +36,8 @@ public class ConversationParticipantMapper {
         ConversationParticipant model = new ConversationParticipant();
         model.setId(entity.getId());
         model.setConversationId(entity.getConversation().getId());
-        model.setUser(userMapper.toModel(entity.getUser()));
+        model.setParticipantId(entity.getUser().getId());
+		model.setParticipantName(entity.getUser().getName());
         model.setJoinedAt(entity.getJoinedAt());
         return model;
     }
@@ -45,12 +46,11 @@ public class ConversationParticipantMapper {
      * Convert model to DTO
      */
     public ParticipantDto toDto(ConversationParticipant model) {
-        User user = model.getUser();
         return new ParticipantDto(
             model.getId(),
-            user.getId(),
-            user.getName(),
-            user.getProfilePictureUrl(),
+            model.getParticipantId(),
+	        model.getParticipantName(),
+            null,
             model.getJoinedAt()
         );
     }

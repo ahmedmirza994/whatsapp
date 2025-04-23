@@ -1,17 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-	FormBuilder,
-	FormGroup,
-	ReactiveFormsModule,
-	Validators,
-} from '@angular/forms';
-import { Router } from '@angular/router';
-import { User } from '../../shared/user.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { QuoteComponent } from '../../quote/quote.component';
+import { User } from '../../shared/models/user.model';
+import { NavigationService } from '../../shared/services/navigation.service';
 import { AuthService } from '../auth.service';
 import { SignupRequest } from './signup-request.model';
-import { QuoteComponent } from '../../quote/quote.component';
-import { NavigationService } from '../../shared/navigation.service';
 
 @Component({
 	selector: 'app-signup',
@@ -28,27 +22,16 @@ export class SignupComponent implements OnInit {
 	constructor(
 		private fb: FormBuilder,
 		private authService: AuthService,
-		private navigationService: NavigationService,
+		private navigationService: NavigationService
 	) {}
 
 	ngOnInit() {
 		this.signupForm = this.fb.group({
-			name: [
-				'',
-				[
-					Validators.required,
-					Validators.minLength(3),
-					Validators.maxLength(100),
-				],
-			],
+			name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
 			email: ['', [Validators.required, Validators.email]],
 			password: [
 				'',
-				[
-					Validators.required,
-					Validators.minLength(8),
-					Validators.maxLength(100),
-				],
+				[Validators.required, Validators.minLength(8), Validators.maxLength(100)],
 			],
 			phone: ['', [Validators.pattern(/^\+[0-9]{7,15}$/)]],
 		});
@@ -62,13 +45,10 @@ export class SignupComponent implements OnInit {
 			this.authService.signup(signupRequest).subscribe({
 				next: (user: User) => {
 					console.log('Signup successful', user);
-					this.navigationService.toHome();
 					this.isLoading = false;
 				},
 				error: (err: Error) => {
-					this.errorMessages = err.message
-						.split(',')
-						.map((e) => e.trim());
+					this.errorMessages = err.message.split(',').map(e => e.trim());
 					this.isLoading = false;
 					console.error('Signup failed', err);
 				},

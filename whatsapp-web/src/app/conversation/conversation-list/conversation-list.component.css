@@ -1,0 +1,109 @@
+.conversation-list-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow-y: auto;
+	background-color: #fff;
+}
+
+.header {
+	padding: 10px 16px;
+	background-color: #f0f2f5; /* WhatsApp header color */
+	border-bottom: 1px solid #d1d7db;
+}
+
+.header h3 {
+	margin: 0;
+	font-size: 1.2rem;
+	font-weight: 500;
+	color: #111b21; /* WhatsApp dark text */
+}
+
+.loading,
+.error,
+.empty {
+	padding: 20px;
+	text-align: center;
+	color: #667781; /* WhatsApp secondary text */
+}
+
+.error {
+	color: #e74c3c;
+}
+
+.list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	flex-grow: 1;
+}
+
+.list li {
+	display: flex;
+	align-items: center;
+	padding: 12px 16px;
+	cursor: pointer;
+	border-bottom: 1px solid #f0f2f5; /* Light separator */
+	transition: background-color 0.2s ease;
+}
+
+.list li:hover {
+	background-color: #f5f6f6; /* Hover effect */
+}
+
+.list li.selected {
+	background-color: #e9edef; /* Selected background */
+}
+
+.avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #d1d7db; /* Placeholder color */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 12px;
+	flex-shrink: 0;
+}
+
+.avatar .initials {
+	color: #fff;
+	font-weight: 500;
+	font-size: 1.1rem;
+}
+
+.content {
+	flex-grow: 1;
+	overflow: hidden; /* Prevent text overflow */
+}
+
+.name-time {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 4px;
+}
+
+.name {
+	font-weight: 500;
+	color: #111b21;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.time {
+	font-size: 0.75rem;
+	color: #667781;
+	margin-left: 8px;
+	flex-shrink: 0;
+}
+
+.last-message {
+	font-size: 0.9rem;
+	color: #667781;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

@@ -68,9 +68,9 @@ public class ConversationMapper {
 	private ParticipantDto mapToParticipantDto(ConversationParticipant participant) {
         return new ParticipantDto(
             participant.getId(),
-            participant.getUser().getId(),
-            participant.getUser().getName(),
-            participant.getUser().getProfilePictureUrl(),
+            participant.getParticipantId(),
+			participant.getParticipantName(),
+			null,
             participant.getJoinedAt()
         );
     }

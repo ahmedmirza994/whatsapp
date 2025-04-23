@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +55,12 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UnauthorizedException.class)
 	public ResponseEntity<ApiResponse<Void>> handleUnauthorizedException(UnauthorizedException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
 		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}

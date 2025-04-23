@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class ConversationParticipant {
   private UUID id;
   private UUID conversationId;
-  private User user;
+  private UUID participantId;
+  private String participantName;
   private LocalDateTime joinedAt;
 }

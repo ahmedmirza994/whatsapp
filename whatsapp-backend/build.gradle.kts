@@ -39,6 +39,8 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
+	implementation("net.datafaker:datafaker:2.4.3")
+
 	// Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
