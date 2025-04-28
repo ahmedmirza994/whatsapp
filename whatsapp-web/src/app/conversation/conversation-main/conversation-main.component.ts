@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { Conversation } from '../../shared/models/conversation.model';
 import { ConversationAreaComponent } from '../conversation-area/conversation-area.component';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
@@ -12,6 +12,16 @@ import { ConversationListComponent } from '../conversation-list/conversation-lis
 export class ConversationMainComponent {
 	// Use Angular Signal to track the selected conversation
 	selectedConversation = signal<Conversation | null>(null);
+
+	constructor() {
+		// Log whenever the signal value changes
+		effect(() => {
+			console.log(
+				'ChatMainComponent: selectedConversation signal is now:',
+				this.selectedConversation()
+			);
+		});
+	}
 
 	onConversationSelected(conversation: Conversation): void {
 		console.log('Conversation selected in main:', conversation);

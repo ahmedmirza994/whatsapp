@@ -6,7 +6,7 @@ import {
 	effect,
 	ElementRef,
 	inject,
-	Input,
+	input,
 	OnDestroy,
 	signal,
 	ViewChild,
@@ -25,7 +25,7 @@ import { User } from '../../shared/models/user.model';
 	styleUrl: './conversation-area.component.css',
 })
 export class ConversationAreaComponent implements OnDestroy, AfterViewChecked {
-	@Input({ required: true }) conversation: Conversation | null = null;
+	conversation = input<Conversation | null>(null);
 	@ViewChild('messageContainer') private messageContainer!: ElementRef;
 
 	private messageService = inject(MessageService);
@@ -44,7 +44,7 @@ export class ConversationAreaComponent implements OnDestroy, AfterViewChecked {
 
 		// Effect to load messages when the conversation input changes
 		effect(() => {
-			const currentConversation = this.conversation; // Access signal value
+			const currentConversation = this.conversation(); // Access signal value
 			if (currentConversation) {
 				this.loadMessages(currentConversation.id);
 			} else {
@@ -92,7 +92,7 @@ export class ConversationAreaComponent implements OnDestroy, AfterViewChecked {
 			'Sending message (HTTP POST - Placeholder):',
 			content,
 			'to conversation:',
-			this.conversation.id
+			this.conversation()!!.id
 		);
 		// ** Placeholder for sending message via HTTP POST **
 		// This part will be replaced/enhanced by WebSocket logic later.
@@ -103,7 +103,7 @@ export class ConversationAreaComponent implements OnDestroy, AfterViewChecked {
 		const tempId = Date.now().toString(); // Temporary ID
 		const optimisticMessage: Message = {
 			id: tempId,
-			conversationId: this.conversation.id,
+			conversationId: this.conversation()!!.id,
 			senderId: this.currentUser()?.id || 'unknown',
 			senderName: this.currentUser()?.name || 'Me',
 			content: content,
@@ -118,7 +118,7 @@ export class ConversationAreaComponent implements OnDestroy, AfterViewChecked {
 	getChatPartnerName(): string {
 		if (!this.conversation) return '';
 		const currentUserId = this.currentUser()?.id;
-		const otherParticipant = this.conversation.participants.find(
+		const otherParticipant = this.conversation()!!.participants.find(
 			p => p.userId !== currentUserId
 		);
 		return otherParticipant ? otherParticipant.name : 'Chat';
