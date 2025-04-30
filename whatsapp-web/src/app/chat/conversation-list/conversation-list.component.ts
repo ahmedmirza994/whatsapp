@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
 import { Participant } from '../../shared/models/participant.model';
+import { NavigationService } from './../../shared/services/navigation.service';
 
 @Component({
 	selector: 'app-conversation-list',
@@ -13,17 +14,17 @@ import { Participant } from '../../shared/models/participant.model';
 })
 export class ConversationListComponent {
 	@Input({ required: true }) conversations: Conversation[] = [];
-	// Accept the selected ID from the parent (which gets it from the route)
-	@Input() selectedConversationId: string | null | undefined = null;
-	@Output() conversationSelected = new EventEmitter<string>();
+	selectedConversationId: string | null | undefined = null;
+
+	private navigationService = inject(NavigationService);
 
 	private authService = inject(AuthService);
 	private currentUserId = this.authService.loggedInUser?.id; // Use signal getter
 
 	selectConversation(id: string): void {
-		// Only emit if it's not already selected to avoid unnecessary navigation
 		if (id !== this.selectedConversationId) {
-			this.conversationSelected.emit(id);
+			this.selectedConversationId = id; // Update the selected ID
+			this.navigationService.toChat(id);
 		}
 	}
 

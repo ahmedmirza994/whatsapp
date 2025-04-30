@@ -6,7 +6,6 @@ import { filter, map, startWith } from 'rxjs/operators'; // Import operators
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
 import { User } from '../../shared/models/user.model';
-import { NavigationService } from '../../shared/services/navigation.service';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
 import { ConversationService } from '../conversation.service'; // Correct path
 
@@ -24,7 +23,6 @@ import { ConversationService } from '../conversation.service'; // Correct path
 export class ChatMainComponent implements OnInit {
 	private conversationService = inject(ConversationService);
 	private authService = inject(AuthService);
-	private navigationService = inject(NavigationService);
 	private router = inject(Router);
 	private route = inject(ActivatedRoute); // Inject ActivatedRoute
 
@@ -59,10 +57,6 @@ export class ChatMainComponent implements OnInit {
 				}
 			},
 		});
-	}
-
-	onConversationSelected(conversationId: string): void {
-		this.navigationService.toChat(conversationId, false);
 	}
 
 	logout(): void {
