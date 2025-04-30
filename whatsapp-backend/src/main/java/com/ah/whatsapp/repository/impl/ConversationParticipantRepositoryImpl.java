@@ -61,7 +61,7 @@ public class ConversationParticipantRepositoryImpl implements ConversationPartic
 
 	@Override
 	public List<ConversationParticipant> findByConversationId(UUID conversationId) {
-		return participantEntityRepository.findByConversationId(conversationId).stream()
+		return participantEntityRepository.findByConversationIdWithUser(conversationId).stream()
 			.map(participantMapper::toModel)
 			.collect(Collectors.toList());
 	}

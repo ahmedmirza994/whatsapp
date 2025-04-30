@@ -21,9 +21,14 @@ export class NavigationService {
 		this.router.navigate(['/signup']);
 	}
 
-	toChat(clearHistory: boolean = true): void {
-		this.router.navigate(['/chat'], {
-			// Navigate to '/chat'
+	/**
+	 * Navigate to the chat view, optionally to a specific conversation.
+	 * @param conversationId The ID of the conversation to navigate to. If null/undefined, navigates to the base chat view.
+	 * @param clearHistory If true, replaces the current entry in the browser history. Defaults to false.
+	 */
+	toChat(conversationId?: string | null, clearHistory: boolean = false): void {
+		const commands = conversationId ? ['/chat', conversationId] : ['/chat'];
+		this.router.navigate(commands, {
 			replaceUrl: clearHistory,
 		});
 	}

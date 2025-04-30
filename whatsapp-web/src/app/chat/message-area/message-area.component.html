@@ -1,0 +1,26 @@
+@if (isLoading()) {
+	<p class="loading">Loading messages...</p>
+} @else if (error()) {
+	<p class="error">{{ error() }}</p>
+} @else {
+	<!-- This div handles the scrolling -->
+	<div #messageList class="message-list-scroll-container">
+		<!-- This inner div uses flex column-reverse -->
+		<div class="message-list-content">
+			@for (msg of messages(); track msg.id) {
+				<div
+					class="message-bubble-container"
+					[class.sent]="msg.senderId === currentUserId"
+					[class.received]="msg.senderId !== currentUserId"
+				>
+					<div class="message-bubble">
+						<p class="message-content">{{ msg.content }}</p>
+						<span class="message-timestamp">{{ formatTimestamp(msg.sentAt) }}</span>
+					</div>
+				</div>
+			} @empty {
+				<p class="no-messages">No messages in this conversation yet.</p>
+			}
+		</div>
+	</div>
+}

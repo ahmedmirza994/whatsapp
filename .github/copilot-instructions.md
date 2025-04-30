@@ -63,7 +63,6 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
     -   Component-based architecture
     -   Lazy loading modules
     -   Reactive forms with validation
-    -   Consistent color scheme ( #3498db for buttons, #f5f7fa / #c3cfe2 for gradients, #333333 for text)
     -   Mobile-first responsive design
 
 ## Security Requirements
@@ -80,3 +79,59 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
 -   Database schema is defined
 -   Project structure is established
 -   API endpoints are documented
+
+🎨 Chat Application Theme Instructions
+
+1. General Background
+   • Background Color: #f5f7fa
+   • Text Color: #333333
+
+Use the same soft, clean background as the login/signup screens for consistency.
+
+⸻
+
+2. Chat Bubbles
+
+Sent Messages (User’s Own Messages)
+• Background Color: #3498db
+• Text Color: #ffffff
+• Style: Rounded corners (e.g., 16px radius)
+
+Sent messages should stand out clearly with a strong blue background and white text.
+
+Received Messages (Other User’s Messages)
+• Background Color: #e0e6ed
+• Text Color: #333333
+• Style: Rounded corners (e.g., 16px radius)
+
+Received messages should be soft and neutral, maintaining readability and visual balance.
+
+⸻
+
+3. Chat Input Area
+   • Input Field Background: #ffffff
+   • Input Field Border Color: #c3cfe2 or #d1d5db
+   • Input Text Color: #333333
+   • Send Button Background: #3498db
+   • Send Button Icon/Text Color: #ffffff
+
+The input area should feel minimal and inviting, with the send button in your primary blue for clear action focus.
+
+⸻
+
+4. Timestamps and Meta Information
+   • Text Color: #7f8c8d
+   • Font Size: Small (e.g., 12px)
+   • Placement: Below or beside messages, subtly styled.
+
+Timestamps like “12:45 PM” or meta-info like “Seen” should appear in a muted gray to avoid distracting from the conversation.
+
+⸻
+
+5. Optional Styling Tips
+   • Use slightly different bubble padding for sent vs. received messages (e.g., sent messages aligned to the right, received to the left).
+   • Add a slight shadow (box-shadow: 0px 2px 4px rgba(0,0,0,0.05)) to bubbles for a more modern “floating” feel.
+   • Ensure responsive behavior — bubbles should shrink or expand based on message length.
+   • For better accessibility, maintain sufficient contrast between text and bubble background colors.
+
+Please ensure use whole project as a context on every request.

@@ -1,10 +1,10 @@
 package com.ah.whatsapp.service.impl;
 
-import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +16,7 @@ import com.ah.whatsapp.mapper.ConversationMapper;
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.ConversationParticipant;
 import com.ah.whatsapp.model.User;
+import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.ConversationService;
@@ -79,4 +80,26 @@ public class ConversationServiceImpl implements ConversationService {
             .map(conversationMapper::toDto)
             .toList();
 	}
+
+	@Override
+    public ConversationDto findConversationByIdAndUser(UUID conversationId, UUID userId)
+            throws ConversationNotFoundException, AccessDeniedException {
+
+        // Check if user exists (optional, but good practice)
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException("User requesting conversation not found");
+        }
+
+        // Check if the user is a participant
+        if (!conversationParticipantRepository.existsByConversationIdAndUserId(conversationId, userId)) {
+            // Throw AccessDeniedException if user is not part of the conversation
+            throw new AccessDeniedException("User is not a participant in this conversation");
+        }
+
+        // Fetch the conversation; findById already loads participants and last message
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + conversationId));
+
+        return conversationMapper.toDto(conversation);
+    }
 }

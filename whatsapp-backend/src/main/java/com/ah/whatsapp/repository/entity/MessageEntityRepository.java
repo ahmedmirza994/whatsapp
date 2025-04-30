@@ -17,6 +17,7 @@ public interface MessageEntityRepository extends JpaRepository<MessageEntity, UU
 
 	List<MessageEntity> findBySenderId(UUID senderId);
 
+	@Query("select m from MessageEntity m join fetch m.sender where m.conversation.id = :conversationId order by m.sentAt desc limit 1")
 	Optional<MessageEntity> findByConversationIdOrderBySentAtDesc(UUID conversationId);
 
 	/**

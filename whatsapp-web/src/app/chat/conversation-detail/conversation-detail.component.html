@@ -1,0 +1,21 @@
+@if (conversationId(); as convId) {
+	<!-- Conversation Header -->
+	<div class="conversation-header">
+		<div class="participant-details">
+			<div class="avatar-placeholder">
+				<span>{{ participantInitial() }}</span>
+			</div>
+			<span class="participant-name">{{ participantName() }}</span>
+		</div>
+		<!-- Add more header controls here if needed (e.g., call, video, search icons) -->
+	</div>
+
+	<!-- Message Area takes up available space -->
+	<app-message-area class="message-display-area" [conversationId]="convId" />
+	<!-- Message Input stays at the bottom -->
+	<app-message-input class="message-input-area" (messageSent)="handleSendMessage($event)" />
+} @else {
+	<!-- This content shows if there's no conversationId (e.g., navigating away) -->
+	<!-- It might be better handled by the parent component's "Select a conversation" message -->
+	<!-- <p>Loading conversation...</p> -->
+}

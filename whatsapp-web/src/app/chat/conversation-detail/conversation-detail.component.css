@@ -1,0 +1,65 @@
+:host {
+	display: flex;
+	flex-direction: column;
+	height: 100%; /* Fill the chat-area */
+	overflow: hidden; /* Prevent host from scrolling */
+	background-color: #f5f7fa; /* Match overall background */
+}
+
+.conversation-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 15px;
+	background-color: #f0f2f5; /* Slightly different background like sidebar header */
+	border-bottom: 1px solid #e0e6ed;
+	flex-shrink: 0; /* Prevent header from shrinking */
+	height: 60px; /* Match sidebar header height */
+	box-sizing: border-box;
+}
+
+.participant-details {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	overflow: hidden; /* Prevent long names from breaking layout */
+}
+
+.avatar-placeholder {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #3498db; /* Use theme color */
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.1em;
+	flex-shrink: 0;
+}
+
+.participant-name {
+	font-weight: 500;
+	font-size: 1.1em; /* Slightly larger name */
+	color: #333333;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Add styles for header controls/icons here later */
+
+.message-display-area {
+	flex-grow: 1; /* Takes up available space below header */
+	overflow-y: hidden; /* Let MessageArea handle its own scroll */
+	display: flex;
+	flex-direction: column;
+	min-height: 0; /* Crucial for flex scrolling */
+}
+
+.message-input-area {
+	flex-shrink: 0; /* Prevent shrinking */
+	border-top: 1px solid #e0e6ed;
+	background-color: #f0f2f5; /* Match header background */
+}

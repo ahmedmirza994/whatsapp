@@ -1,0 +1,133 @@
+:host {
+	display: flex;
+	height: 100vh; /* Full viewport height */
+	background-color: #f5f7fa; /* General Background */
+	color: #333333; /* General Text Color */
+}
+
+.chat-container {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	overflow: hidden; /* Prevent scrolling on the container itself */
+}
+
+.sidebar {
+	width: 30%;
+	min-width: 250px; /* Minimum width for sidebar */
+	max-width: 400px; /* Maximum width */
+	border-right: 1px solid #e0e6ed;
+	display: flex;
+	flex-direction: column;
+	background-color: #ffffff; /* Slightly different background for sidebar */
+}
+
+.user-info {
+	padding: 10px 15px; /* Adjusted padding */
+	border-bottom: 1px solid #e0e6ed;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #f0f2f5; /* Slightly lighter header background */
+	flex-shrink: 0;
+	gap: 10px; /* Add gap between user details and button */
+	height: 60px; /* Fixed height for header */
+	box-sizing: border-box;
+}
+
+.user-details {
+	display: flex;
+	align-items: center;
+	gap: 12px; /* Space between avatar and name */
+	overflow: hidden; /* Prevent overflow */
+	flex-grow: 1; /* Allow details to take available space */
+}
+
+.avatar-placeholder {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #3498db; /* Use theme color */
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.1em;
+	flex-shrink: 0; /* Prevent avatar from shrinking */
+}
+
+.user-name {
+	font-weight: 500; /* Slightly less bold */
+	font-size: 1em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: #333333;
+}
+
+.logout-button {
+	background: none; /* Remove background */
+	border: none;
+	color: #7f8c8d; /* Muted color */
+	cursor: pointer;
+	padding: 8px; /* Add padding for easier clicking */
+	border-radius: 50%; /* Make it circular */
+	display: flex; /* Center icon */
+	align-items: center;
+	justify-content: center;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+	flex-shrink: 0;
+}
+
+.logout-button:hover {
+	background-color: #e0e6ed; /* Subtle background on hover */
+	color: #e74c3c; /* Error color on hover */
+}
+
+.logout-button svg {
+	display: block; /* Remove extra space below SVG */
+}
+
+app-conversation-list {
+	flex-grow: 1; /* Takes remaining space in sidebar */
+	overflow-y: auto; /* Allows scrolling for conversation list */
+	min-height: 0; /* Prevent flexbox overflow issues */
+}
+
+.chat-area {
+	flex-grow: 1; /* Takes remaining horizontal space */
+	display: flex; /* Use flexbox */
+	flex-direction: column; /* Stack children vertically */
+	height: 100%; /* Ensure it takes full height */
+	overflow: hidden; /* Prevent scrolling on the chat area itself */
+}
+
+/* Style for the router-outlet content */
+:host ::ng-deep router-outlet + * {
+	/* Target elements rendered by router-outlet more reliably */
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 0; /* Important for nested flex scrolling */
+}
+
+.no-conversation-selected {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	color: #7f8c8d;
+	font-size: 1.2em;
+	text-align: center;
+	padding: 20px;
+}
+
+.error-message {
+	color: #e74c3c;
+	padding: 10px;
+	text-align: center;
+	flex-shrink: 0;
+}

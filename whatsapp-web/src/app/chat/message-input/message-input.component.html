@@ -1,0 +1,19 @@
+<div class="input-container">
+	<input
+		type="text"
+		class="message-input"
+		placeholder="Type a message..."
+		[(ngModel)]="messageContent"
+		(keydown.enter)="sendMessage()"
+		aria-label="Message input"
+	/>
+	<button
+		class="send-button"
+		(click)="sendMessage()"
+		[disabled]="!messageContent.trim()"
+		aria-label="Send message"
+	>
+		Send
+		<!-- Consider using an SVG icon -->
+	</button>
+</div>

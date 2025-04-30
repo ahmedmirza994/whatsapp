@@ -1,0 +1,26 @@
+<ul class="conversation-list">
+	@for (conv of conversations; track conv.id) {
+		<li
+			class="conversation-item"
+			[class.selected]="conv.id === selectedConversationId"
+			(click)="selectConversation(conv.id)"
+		>
+			<div class="conversation-info">
+				<!-- Ensure participants exist before accessing -->
+				<span class="participant-name">{{
+					getOtherParticipantName(conv.participants)
+				}}</span>
+				@if (conv.lastMessage?.content) {
+					<p class="last-message">{{ conv.lastMessage?.content }}</p>
+				} @else {
+					<p class="last-message no-message">No messages yet</p>
+				}
+			</div>
+			@if (conv.lastMessage?.sentAt) {
+				<span class="timestamp">{{ formatTimestamp(conv.lastMessage?.sentAt) }}</span>
+			}
+		</li>
+	} @empty {
+		<li class="no-conversations">No conversations found.</li>
+	}
+</ul>
