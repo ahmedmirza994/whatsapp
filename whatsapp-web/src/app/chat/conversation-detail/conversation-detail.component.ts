@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
-import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service'; // Import AuthService
-import { MessageService } from '../../message/message.service';
-import { Conversation } from '../../shared/models/conversation.model'; // Import Conversation model
 import { Participant } from '../../shared/models/participant.model'; // Import Participant model
+import { SendMessageRequest } from '../../shared/models/send-message-request.model';
+import { WebSocketService } from '../../shared/services/websocket.service';
 import { ConversationService } from '../conversation.service'; // Import ConversationService
 import { MessageAreaComponent } from '../message-area/message-area.component';
 import { MessageInputComponent } from '../message-input/message-input.component';
@@ -20,31 +20,44 @@ import { MessageInputComponent } from '../message-input/message-input.component'
 })
 export class ConversationDetailComponent implements OnInit, OnDestroy {
 	private route = inject(ActivatedRoute);
-	private messageService = inject(MessageService);
 	private conversationService = inject(ConversationService); // Inject ConversationService
 	private authService = inject(AuthService); // Inject AuthService
+	private webSocketService = inject(WebSocketService);
 
 	conversationId = signal<string | null>(null);
-	conversation = signal<Conversation | null>(null); // Signal to hold conversation details
 	participantName = signal<string>('Chat'); // Default name
 	participantInitial = signal<string>('?'); // Default initial
 	isLoadingHeader = signal<boolean>(false);
 
 	private currentUserId = this.authService.loggedInUser?.id;
+	private currentSubscriptionDestination: string | null = null;
 	private destroy$ = new Subject<void>();
 
 	ngOnInit(): void {
 		this.route.paramMap
 			.pipe(
 				map(params => params.get('id')),
+				distinctUntilChanged(),
 				tap(id => {
+					// Unsubscribe from the previous topic before processing the new ID
+					if (this.currentSubscriptionDestination) {
+						this.webSocketService.unsubscribeFromTopic(
+							this.currentSubscriptionDestination
+						);
+						this.currentSubscriptionDestination = null;
+					}
+
 					// Reset state when ID changes
 					this.conversationId.set(id);
-					this.conversation.set(null);
 					this.participantName.set('Loading...');
 					this.participantInitial.set('?');
 					this.isLoadingHeader.set(true);
-					// MessageAreaComponent will react separately via its @Input
+
+					// Subscribe to the new topic if an ID exists
+					if (id) {
+						this.currentSubscriptionDestination = `/topic/conversations/${id}`;
+						this.webSocketService.subscribeToTopic(this.currentSubscriptionDestination);
+					}
 				}),
 				// Only proceed if ID is not null
 				switchMap(id => {
@@ -59,7 +72,6 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 			)
 			.subscribe({
 				next: convo => {
-					this.conversation.set(convo);
 					this.updateParticipantDetails(convo?.participants);
 					this.isLoadingHeader.set(false);
 				},
@@ -72,6 +84,10 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
+		// Unsubscribe from the current topic when component is destroyed
+		if (this.currentSubscriptionDestination) {
+			this.webSocketService.unsubscribeFromTopic(this.currentSubscriptionDestination);
+		}
 		this.destroy$.next();
 		this.destroy$.complete();
 	}
@@ -103,11 +119,20 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 
 	handleSendMessage(content: string): void {
 		const convId = this.conversationId();
-		if (!convId || !content) return;
+		if (!convId || !content || !this.currentUserId) {
+			console.error('Cannot send message: Missing conversation ID, content, or user ID.');
+			return;
+		}
 
 		console.log(`Sending message "${content}" to conversation ${convId}`);
 
-		// TODO: Implement actual message sending logic
-		// this.messageService.sendMessage(convId, content).subscribe(...)
+		// Create the payload matching the backend DTO
+		const payload: SendMessageRequest = {
+			conversationId: convId,
+			content: content,
+		};
+
+		// Send message via WebSocketService
+		this.webSocketService.sendMessage('/app/chat.sendMessage', payload);
 	}
 }

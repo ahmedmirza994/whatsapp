@@ -3,11 +3,10 @@ package com.ah.whatsapp.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
@@ -21,7 +20,6 @@ import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.MessageService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -32,6 +30,7 @@ public class MessageServiceImpl implements MessageService {
     private final UserRepository userRepository;
 	private final ConversationParticipantRepository conversationParticipantRepository;
     private final MessageMapper messageMapper;
+	private final SimpMessagingTemplate messagingTemplate;
 
 	@Override
 	@Transactional
@@ -41,6 +40,10 @@ public class MessageServiceImpl implements MessageService {
 
         Conversation conversation = conversationRepository.findById(request.conversationId())
             .orElseThrow(() -> new ConversationNotFoundException("Conversation not found"));
+
+		if (!conversationParticipantRepository.existsByConversationIdAndUserId(request.conversationId(), senderId)) {
+            throw new AccessDeniedException("User is not a participant in this conversation");
+        }
 
         Message message = new Message();
         message.setConversationId(conversation.getId());
@@ -54,7 +57,12 @@ public class MessageServiceImpl implements MessageService {
         conversation.setUpdatedAt(LocalDateTime.now());
         conversationRepository.save(conversation);
 
-        return messageMapper.toDto(savedMessage);
+		MessageDto messageDto = messageMapper.toDto(savedMessage);
+
+		String destination = "/topic/conversations/" + conversation.getId();
+		messagingTemplate.convertAndSend(destination, messageDto);
+
+        return messageDto;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.ah.whatsapp.configuration;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-
 import com.ah.whatsapp.filter.JwtAuthenticationFilter;
 
 @Configuration
@@ -49,6 +47,7 @@ public class SecurityConfig {
 			.cors((cors) -> cors.configurationSource(corsConfigurationSource()))
 			.csrf(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.requestMatchers("/users/signup", "/users/login").permitAll()
+				 .requestMatchers("/ws/**").permitAll()
 				.anyRequest().authenticated())
 			.authenticationManager(authenticationManager)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -63,6 +62,7 @@ public class SecurityConfig {
 			cors.setAllowedOrigins(List.of(frontEndUrl));
 			cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
 			cors.setAllowedHeaders(List.of("*"));
+			cors.setAllowCredentials(true);
 			return cors;
 		};
 	}
