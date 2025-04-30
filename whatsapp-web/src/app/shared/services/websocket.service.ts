@@ -4,7 +4,8 @@ import { Subject, filter, first, takeUntil } from 'rxjs';
 import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/enviroment'; // Adjust path if needed
 import { AuthService } from '../../auth/auth.service'; // Adjust path if needed
-import { Message } from '../../shared/models/message.model'; // Adjust path if needed
+import { WS_ENDPOINT_PATH } from '../constants/websocket.constants';
+import { WebSocketEvent } from '../models/websocket-event.model';
 
 // Define connection states
 export enum ConnectionState {
@@ -22,14 +23,14 @@ export class WebSocketService implements OnDestroy {
 
 	private stompClient?: Client;
 	private connectionState = signal<ConnectionState>(ConnectionState.DISCONNECTED);
-	private messageSubject = new Subject<Message>();
+	private eventSubject = new Subject<WebSocketEvent>();
 	private subscriptions: Map<string, StompSubscription> = new Map(); // Store subscriptions by destination
 	private pendingSubscriptions: Map<string, boolean> = new Map();
 	private destroy$ = new Subject<void>();
 
 	// Public observables/signals
 	public connectionState$ = this.connectionState.asReadonly();
-	public messages$ = this.messageSubject.asObservable();
+	public events$ = this.eventSubject.asObservable();
 
 	public isConnected = computed(() => this.connectionState() === ConnectionState.CONNECTED);
 
@@ -90,7 +91,7 @@ export class WebSocketService implements OnDestroy {
 		this.connectionState.set(ConnectionState.ATTEMPTING);
 
 		// Construct the SockJS URL (remove /api prefix if present in environment.apiUrl)
-		const wsUrl = environment.apiUrl + '/ws'; // e.g., http://localhost:8080/api/ws
+		const wsUrl = environment.apiUrl + WS_ENDPOINT_PATH; // e.g., http://localhost:8080/api/ws
 
 		this.stompClient = new Client({
 			// Use SockJS factory
@@ -210,9 +211,9 @@ export class WebSocketService implements OnDestroy {
 		try {
 			const subscription = this.stompClient.subscribe(destination, (message: IMessage) => {
 				try {
-					const parsedMessage: Message = JSON.parse(message.body);
-					console.log(`WebSocket: Received message from ${destination}:`, parsedMessage);
-					this.messageSubject.next(parsedMessage);
+					const parsedEvent: WebSocketEvent = JSON.parse(message.body);
+					console.log(`WebSocket: Received message from ${destination}:`, parsedEvent);
+					this.eventSubject.next(parsedEvent);
 				} catch (e) {
 					console.error(
 						`WebSocket: Failed to parse message body from ${destination}:`,

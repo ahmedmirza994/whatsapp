@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.ah.whatsapp.constant.WebSocketConstants;
 import com.ah.whatsapp.dto.ApiResponse;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
@@ -57,7 +58,7 @@ public class MessageController {
      * @param request The message payload containing conversationId and content.
      * @param accessor The STOMP header accessor containing the user principal set by the interceptor.
      */
-    @MessageMapping("/chat.sendMessage")
+    @MessageMapping(WebSocketConstants.CHAT_SEND_MESSAGE)
     public void handleSendMessage(@Payload @Valid SendMessageRequest request,
                                   StompHeaderAccessor accessor) { // Inject StompHeaderAccessor
 

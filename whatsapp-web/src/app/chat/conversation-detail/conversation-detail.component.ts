@@ -4,6 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service'; // Import AuthService
+import {
+	CHAT_SEND_MESSAGE_DESTINATION,
+	getConversationTopicDestination,
+} from '../../shared/constants/websocket.constants';
 import { Participant } from '../../shared/models/participant.model'; // Import Participant model
 import { SendMessageRequest } from '../../shared/models/send-message-request.model';
 import { WebSocketService } from '../../shared/services/websocket.service';
@@ -55,7 +59,7 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 
 					// Subscribe to the new topic if an ID exists
 					if (id) {
-						this.currentSubscriptionDestination = `/topic/conversations/${id}`;
+						this.currentSubscriptionDestination = getConversationTopicDestination(id);
 						this.webSocketService.subscribeToTopic(this.currentSubscriptionDestination);
 					}
 				}),
@@ -133,6 +137,6 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 		};
 
 		// Send message via WebSocketService
-		this.webSocketService.sendMessage('/app/chat.sendMessage', payload);
+		this.webSocketService.sendMessage(CHAT_SEND_MESSAGE_DESTINATION, payload);
 	}
 }

@@ -18,6 +18,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { MessageService } from '../../message/message.service'; // Correct path
 import { Message } from '../../shared/models/message.model';
+import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
 import { WebSocketService } from '../../shared/services/websocket.service';
 
 @Component({
@@ -59,12 +60,17 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 
 	ngOnInit(): void {
 		// Subscribe to incoming WebSocket messages
-		this.wsSubscription = this.webSocketService.messages$
+		this.wsSubscription = this.webSocketService.events$
 			.pipe(
-				filter(message => message.conversationId === this.conversationId), // Only process messages for the current conversation
+				filter(
+					(event: WebSocketEvent): event is WebSocketEvent<Message> =>
+						event.type === EventType.NEW_MESSAGE &&
+						event.payload?.conversationId === this.conversationId
+				),
 				takeUntil(this.destroy$)
 			)
-			.subscribe(newMessage => {
+			.subscribe(event => {
+				const newMessage = event.payload;
 				console.log('MessageArea: Received relevant message via WS:', newMessage);
 				// Add the new message to the signal, ensuring no duplicates
 				this.messages.update(currentMessages => {

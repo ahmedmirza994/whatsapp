@@ -7,8 +7,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.ah.whatsapp.constant.WebSocketConstants;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
+import com.ah.whatsapp.dto.WebSocketEvent;
+import com.ah.whatsapp.enums.EventType;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
 import com.ah.whatsapp.mapper.MessageMapper;
@@ -21,7 +24,9 @@ import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
@@ -59,8 +64,11 @@ public class MessageServiceImpl implements MessageService {
 
 		MessageDto messageDto = messageMapper.toDto(savedMessage);
 
-		String destination = "/topic/conversations/" + conversation.getId();
-		messagingTemplate.convertAndSend(destination, messageDto);
+		WebSocketEvent<MessageDto> event = new WebSocketEvent<>(EventType.NEW_MESSAGE, messageDto);
+
+        String destination = String.format(WebSocketConstants.CONVERSATION_TOPIC_TEMPLATE, messageDto.conversationId());
+        log.info("Broadcasting event to destination: {}", destination);
+        messagingTemplate.convertAndSend(destination, event); //
 
         return messageDto;
 	}
