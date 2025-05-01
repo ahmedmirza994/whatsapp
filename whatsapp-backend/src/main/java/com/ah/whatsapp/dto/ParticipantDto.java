@@ -6,6 +6,7 @@ import java.util.UUID;
 public record ParticipantDto(
 	UUID id,
 	UUID userId,
+	String email,
 	String name,
 	String profilePictureUrl,
 	LocalDateTime joinedAt

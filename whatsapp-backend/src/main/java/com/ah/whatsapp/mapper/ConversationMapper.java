@@ -69,6 +69,7 @@ public class ConversationMapper {
         return new ParticipantDto(
             participant.getId(),
             participant.getParticipantId(),
+			participant.getParticipantEmail(),
 			participant.getParticipantName(),
 			null,
             participant.getJoinedAt()

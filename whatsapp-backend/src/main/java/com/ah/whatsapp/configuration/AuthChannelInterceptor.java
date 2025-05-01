@@ -1,7 +1,6 @@
 package com.ah.whatsapp.configuration;
 
 import java.util.List;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -11,10 +10,8 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-
 import com.ah.whatsapp.model.JwtUser;
 import com.ah.whatsapp.util.JwtUtil;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +57,11 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
                             // Set the user for the STOMP session/message
                             // This is crucial for @AuthenticationPrincipal to work later
+
+							log.info("Setting WebSocket Principal for user: '{}', Principal Name: '{}'", username, authentication.getName());
                             accessor.setUser(authentication);
+
+
 
                             log.info("Authenticated WebSocket user: {}", username);
                         }

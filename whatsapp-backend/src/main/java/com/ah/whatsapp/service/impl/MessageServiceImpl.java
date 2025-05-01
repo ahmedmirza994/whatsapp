@@ -8,12 +8,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ah.whatsapp.constant.WebSocketConstants;
+import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
 import com.ah.whatsapp.dto.WebSocketEvent;
 import com.ah.whatsapp.enums.EventType;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
+import com.ah.whatsapp.mapper.ConversationMapper;
 import com.ah.whatsapp.mapper.MessageMapper;
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.Message;
@@ -26,6 +28,8 @@ import com.ah.whatsapp.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_QUEUE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,6 +40,7 @@ public class MessageServiceImpl implements MessageService {
 	private final ConversationParticipantRepository conversationParticipantRepository;
     private final MessageMapper messageMapper;
 	private final SimpMessagingTemplate messagingTemplate;
+	private final ConversationMapper conversationMapper;
 
 	@Override
 	@Transactional
@@ -68,7 +73,23 @@ public class MessageServiceImpl implements MessageService {
 
         String destination = String.format(WebSocketConstants.CONVERSATION_TOPIC_TEMPLATE, messageDto.conversationId());
         log.info("Broadcasting event to destination: {}", destination);
-        messagingTemplate.convertAndSend(destination, event); //
+        messagingTemplate.convertAndSend(destination, event);
+
+		Conversation updatedConversation = conversationRepository.findById(conversation.getId()).orElse(conversation); // Re-fetch or use existing
+        ConversationDto conversationDto = conversationMapper.toDto(updatedConversation);
+
+		WebSocketEvent<ConversationDto> conversationUpdateEvent = new WebSocketEvent<>(EventType.CONVERSATION_UPDATE, conversationDto);
+        String userQueueDestination = CONVERSATION_QUEUE; // Destination relative to user prefix
+
+        conversationDto.getParticipants().forEach(participant -> {
+            String participantEmail = participant.email(); // Assuming email is the username used in Principal
+            if (participantEmail != null) {
+                 log.info("Sending CONVERSATION_UPDATE event to user: {} at destination: {}{}", participantEmail, "/user/" + participantEmail, userQueueDestination);
+                 messagingTemplate.convertAndSendToUser(participantEmail, userQueueDestination, conversationUpdateEvent);
+            } else {
+                 log.warn("Cannot send CONVERSATION_UPDATE to participant {} as email (username) is null.", participant.id());
+            }
+        });
 
         return messageDto;
 	}

@@ -37,6 +37,7 @@ public class ConversationParticipantMapper {
         model.setId(entity.getId());
         model.setConversationId(entity.getConversation().getId());
         model.setParticipantId(entity.getUser().getId());
+		model.setParticipantEmail(entity.getUser().getEmail());
 		model.setParticipantName(entity.getUser().getName());
         model.setJoinedAt(entity.getJoinedAt());
         return model;
@@ -49,6 +50,7 @@ public class ConversationParticipantMapper {
         return new ParticipantDto(
             model.getId(),
             model.getParticipantId(),
+	        model.getParticipantEmail(),
 	        model.getParticipantName(),
             null,
             model.getJoinedAt()

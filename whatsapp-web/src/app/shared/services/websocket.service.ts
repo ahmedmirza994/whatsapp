@@ -4,7 +4,7 @@ import { Subject, filter, first, takeUntil } from 'rxjs';
 import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/enviroment'; // Adjust path if needed
 import { AuthService } from '../../auth/auth.service'; // Adjust path if needed
-import { WS_ENDPOINT_PATH } from '../constants/websocket.constants';
+import { USER_CONVERSATION_QUEUE, WS_ENDPOINT_PATH } from '../constants/websocket.constants';
 import { WebSocketEvent } from '../models/websocket-event.model';
 
 // Define connection states
@@ -31,6 +31,7 @@ export class WebSocketService implements OnDestroy {
 	// Public observables/signals
 	public connectionState$ = this.connectionState.asReadonly();
 	public events$ = this.eventSubject.asObservable();
+	private userQueueSubscription: StompSubscription | null = null;
 
 	public isConnected = computed(() => this.connectionState() === ConnectionState.CONNECTED);
 
@@ -61,6 +62,7 @@ export class WebSocketService implements OnDestroy {
 			if (this.isConnected()) {
 				console.log('WebSocket: Connection established, processing pending subscriptions.');
 				this.processPendingSubscriptions();
+				this.subscribeToUserQueue();
 			}
 		});
 	}
@@ -139,7 +141,59 @@ export class WebSocketService implements OnDestroy {
 		this.stompClient.activate();
 	}
 
+	/**
+	 * Subscribes to the user-specific queue for targeted updates.
+	 */
+	private subscribeToUserQueue(): void {
+		if (!this.stompClient || !this.isConnected()) {
+			console.error('WebSocket: Cannot subscribe to user queue. Client not connected.');
+			return;
+		}
+		if (this.userQueueSubscription) {
+			console.log('WebSocket: Already subscribed to user queue.');
+			return;
+		}
+
+		// Destination matches the one used in convertAndSendToUser (without the /user prefix)
+		const userQueueDestination = USER_CONVERSATION_QUEUE;
+		console.log(`WebSocket: Subscribing to user queue: ${userQueueDestination}`);
+
+		try {
+			this.userQueueSubscription = this.stompClient.subscribe(
+				userQueueDestination,
+				(message: IMessage) => {
+					try {
+						const parsedEvent: WebSocketEvent = JSON.parse(message.body);
+						console.log(`WebSocket: Received event from user queue:`, parsedEvent);
+						this.eventSubject.next(parsedEvent); // Emit the event
+					} catch (e) {
+						console.error(
+							`WebSocket: Failed to parse event body from user queue:`,
+							message.body,
+							e
+						);
+					}
+				}
+			);
+		} catch (error) {
+			console.error(`WebSocket: Error during STOMP subscribe to user queue:`, error);
+			this.userQueueSubscription = null; // Reset subscription on error
+		}
+	}
+
 	public disconnect(): void {
+		// Unsubscribe from user queue first if active
+		if (this.userQueueSubscription) {
+			try {
+				this.userQueueSubscription.unsubscribe();
+				console.log('WebSocket: Unsubscribed from user queue.');
+			} catch (e) {
+				console.error('WebSocket: Error unsubscribing from user queue', e);
+			} finally {
+				this.userQueueSubscription = null;
+			}
+		}
+
 		if (this.stompClient?.active) {
 			console.log('WebSocket: Deactivating client...');
 			this.stompClient.deactivate(); // Graceful disconnect

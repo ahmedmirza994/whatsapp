@@ -31,6 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// Configure the prefix for messages bound for methods annotated with @MessageMapping
         // e.g., client sends to /app/chat.sendMessage, it gets routed to a @MessageMapping("chat.sendMessage") method
         config.setApplicationDestinationPrefixes("/app");
+		config.setUserDestinationPrefix("/user");
     }
 
 	@Override

@@ -21,6 +21,12 @@ import { Message } from '../../shared/models/message.model';
 import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
 import { WebSocketService } from '../../shared/services/websocket.service';
 
+// Interface for the grouped structure
+interface MessageDateGroup {
+	dateLabel: string;
+	messages: Message[];
+}
+
 @Component({
 	selector: 'app-message-area',
 	standalone: true,
@@ -37,7 +43,8 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 	private authService = inject(AuthService);
 	private webSocketService = inject(WebSocketService);
 
-	messages = signal<Message[]>([]);
+	// Change signal to hold grouped messages
+	groupedMessages = signal<MessageDateGroup[]>([]);
 	isLoading = signal<boolean>(false);
 	error = signal<string | null>(null);
 	currentUserId = this.authService.loggedInUser?.id; // Use signal getter
@@ -50,9 +57,11 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 	constructor() {
 		// Effect to scroll when messages change *after* the initial load
 		effect(() => {
-			const currentMessages = this.messages(); // Trigger dependency
+			const groups = this.groupedMessages(); // Trigger dependency
 			// Only scroll if the initial load for *this* conversation is done
-			if (this.initialLoadComplete && currentMessages.length > 0) {
+			if (this.initialLoadComplete && groups.length > 0) {
+				// Check if the last message in the last group is new? More complex scroll logic might be needed
+				// For now, scroll whenever groups change after initial load
 				this.shouldScrollToBottom = true;
 			}
 		});
@@ -73,17 +82,7 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 				const newMessage = event.payload;
 				console.log('MessageArea: Received relevant message via WS:', newMessage);
 				// Add the new message to the signal, ensuring no duplicates
-				this.messages.update(currentMessages => {
-					if (!currentMessages.some(m => m.id === newMessage.id)) {
-						// Add and re-sort (optional, depends if WS guarantees order)
-						const updated = [...currentMessages, newMessage];
-						updated.sort(
-							(a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
-						);
-						return updated;
-					}
-					return currentMessages; // No change if duplicate
-				});
+				this.addMessageToGroups(newMessage);
 				// Ensure scroll happens for new incoming messages
 				this.shouldScrollToBottom = true;
 			});
@@ -96,7 +95,7 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 			this.loadMessages(this.conversationId);
 		} else if (changes['conversationId'] && !this.conversationId) {
 			// Handle case where conversationId becomes null (e.g., navigating away)
-			this.messages.set([]);
+			this.groupedMessages.set([]); // Clear groups
 			this.error.set(null);
 			this.isLoading.set(false);
 		}
@@ -117,20 +116,15 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 	loadMessages(convId: string): void {
 		this.isLoading.set(true);
 		this.error.set(null);
-		this.messages.set([]); // Clear previous messages
+		this.groupedMessages.set([]); // Clear previous groups
 
 		this.messageService
 			.getConversationMessages(convId)
 			.pipe(takeUntil(this.destroy$)) // Unsubscribe on destroy
 			.subscribe({
 				next: msgs => {
-					// this.messages.set(msgs);
-					//Ensure messages are sorted chronologically before setting signal
-					this.messages.set(
-						msgs.sort(
-							(a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
-						)
-					);
+					// Group messages and set the signal
+					this.groupedMessages.set(this.groupMessagesByDate(msgs));
 					this.isLoading.set(false);
 					this.initialLoadComplete = true;
 					// Ensure scroll happens after the very first load completes
@@ -145,6 +139,85 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 					this.initialLoadComplete = true;
 				},
 			});
+	}
+
+	// --- Helper Functions ---
+
+	private groupMessagesByDate(messages: Message[]): MessageDateGroup[] {
+		if (!messages || messages.length === 0) {
+			return [];
+		}
+
+		// 1. Sort messages chronologically (oldest first)
+		const sortedMessages = [...messages].sort(
+			(a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
+		);
+
+		const groups: MessageDateGroup[] = [];
+		let currentGroup: MessageDateGroup | null = null;
+
+		for (const message of sortedMessages) {
+			const messageDate = new Date(message.sentAt);
+			const dateLabel = this.formatDateLabel(messageDate);
+
+			if (!currentGroup || currentGroup.dateLabel !== dateLabel) {
+				// Start a new group
+				currentGroup = { dateLabel: dateLabel, messages: [message] };
+				groups.push(currentGroup);
+			} else {
+				// Add to the existing group
+				currentGroup.messages.push(message);
+			}
+		}
+
+		// 2. Reverse the order of groups so newest date group is first (for column-reverse)
+		return groups.reverse();
+	}
+
+	private addMessageToGroups(newMessage: Message): void {
+		this.groupedMessages.update(currentGroups => {
+			const messageDate = new Date(newMessage.sentAt);
+			const dateLabel = this.formatDateLabel(messageDate);
+			const groupsCopy = [...currentGroups]; // Create a mutable copy
+
+			// Check if the newest group (first in the reversed array) matches the date
+			if (groupsCopy.length > 0 && groupsCopy[0].dateLabel === dateLabel) {
+				// Add to the newest group, ensuring no duplicates and maintaining order
+				const groupMessages = groupsCopy[0].messages;
+				if (!groupMessages.some(m => m.id === newMessage.id)) {
+					// Insert while maintaining sort (oldest first within group)
+					// Since it's a new message, it should usually go at the end
+					groupMessages.push(newMessage);
+					// Optional: Re-sort just in case of out-of-order arrival, though unlikely for new messages
+					// groupMessages.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime());
+				}
+			} else {
+				// Create a new group for the new date and add it to the beginning (since groups are reversed)
+				groupsCopy.unshift({ dateLabel: dateLabel, messages: [newMessage] });
+			}
+			return groupsCopy; // Return the modified copy
+		});
+	}
+
+	private formatDateLabel(date: Date): string {
+		const now = new Date();
+		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		const yesterday = new Date(today);
+		yesterday.setDate(today.getDate() - 1);
+		const messageDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+		if (messageDay.getTime() === today.getTime()) {
+			return 'Today';
+		}
+		if (messageDay.getTime() === yesterday.getTime()) {
+			return 'Yesterday';
+		}
+		// Format for older dates (e.g., "May 1, 2025" or "4/23/2025")
+		return date.toLocaleDateString([], {
+			year: 'numeric',
+			month: 'long', // Use 'long' for full month name
+			day: 'numeric',
+		});
 	}
 
 	scrollToBottom(): void {

@@ -15,4 +15,6 @@ public class WebSocketConstants {
     // STOMP Endpoint (Configured in WebSocketConfig, but useful as a constant)
     // Note: This includes the context path '/api' as configured
     public static final String STOMP_ENDPOINT = "/api/ws";
+
+	public static final String CONVERSATION_QUEUE = "/queue/conversations";
 }

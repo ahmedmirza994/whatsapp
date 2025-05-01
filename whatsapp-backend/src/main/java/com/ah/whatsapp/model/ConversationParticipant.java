@@ -11,6 +11,7 @@ public class ConversationParticipant {
   private UUID id;
   private UUID conversationId;
   private UUID participantId;
+  private String participantEmail;
   private String participantName;
   private LocalDateTime joinedAt;
 }
