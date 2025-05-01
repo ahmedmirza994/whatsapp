@@ -3,6 +3,23 @@
 	align-items: center;
 	padding: 10px 15px;
 	background-color: #f0f2f5; /* Match chat-detail background */
+	position: relative; /* Needed for absolute positioning of the picker */
+}
+
+/* Style for the emoji button */
+.emoji-button {
+	background: none;
+	border: none;
+	font-size: 1.5em; /* Adjust size as needed */
+	cursor: pointer;
+	padding: 5px 10px 5px 0; /* Adjust padding */
+	color: #7f8c8d; /* Muted color */
+	transition: color 0.2s ease;
+	flex-shrink: 0;
+}
+
+.emoji-button:hover {
+	color: #555; /* Darker on hover */
 }
 
 .message-input {
@@ -45,4 +62,13 @@
 .send-button:disabled {
 	background-color: #a9cce3; /* Lighter blue when disabled */
 	cursor: not-allowed;
+}
+
+/* Basic styling for the picker container */
+.emoji-picker {
+	/* Styles are set inline via [style] binding for position */
+	/* You can add box-shadow, border-radius etc. here if needed */
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	border-radius: 8px;
+	background-color: #fff; /* Ensure it has a background */
 }

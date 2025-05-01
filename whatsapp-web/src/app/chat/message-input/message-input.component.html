@@ -1,4 +1,13 @@
-<div class="input-container">
+<div class="input-container" (click)="handleClickOutside($event, emojiButton)">
+	<button
+		#emojiButton
+		type="button"
+		class="emoji-button"
+		(click)="toggleEmojiPicker(); $event.stopPropagation()"
+		aria-label="Toggle emoji picker"
+	>
+		😊
+	</button>
 	<input
 		type="text"
 		class="message-input"
@@ -6,6 +15,7 @@
 		[(ngModel)]="messageContent"
 		(keydown.enter)="sendMessage()"
 		aria-label="Message input"
+		(click)="$event.stopPropagation()"
 	/>
 	<button
 		class="send-button"
@@ -16,4 +26,20 @@
 		Send
 		<!-- Consider using an SVG icon -->
 	</button>
+
+	@if (showEmojiPicker()) {
+		<emoji-mart
+			(emojiClick)="addEmoji($event)"
+			[style]="{
+				position: 'absolute',
+				bottom: '60px',
+				left: '10px',
+				background: 'white',
+			}"
+			[perLine]="9"
+			[isNative]="true"
+			set="apple"
+			[totalFrequentLines]="4"
+		></emoji-mart>
+	}
 </div>

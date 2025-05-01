@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router'; // Import RouterOutlet, ActivatedRoute, NavigationEnd
 import { Observable, Subject } from 'rxjs'; // Import Observable
-import { filter, map, startWith, takeUntil } from 'rxjs/operators'; // Import operators
+import { filter, map, startWith, takeUntil, tap } from 'rxjs/operators'; // Import operators
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
 import { User } from '../../shared/models/user.model';
@@ -32,15 +32,23 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 	conversations = signal<Conversation[]>([]);
 	currentUser = signal<User | null>(null);
 	error = signal<string | null>(null);
+	selectedConversationId = signal<string | null>(null);
+
+	private destroy$ = new Subject<void>();
 
 	// Signal to hold the currently selected conversation ID from the route
 	selectedConversationId$: Observable<string | null | undefined> = this.router.events.pipe(
 		filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-		map(() => this.route.firstChild?.snapshot.paramMap.get('id')), // Get ID from the child route
-		startWith(this.route.firstChild?.snapshot.paramMap.get('id')) // Get initial value
+		map(() => this.route.firstChild?.snapshot.paramMap.get('id') ?? null), // Get ID from the child route
+		startWith(this.route.firstChild?.snapshot.paramMap.get('id') ?? null),
+		tap(id => {
+			// Prevent setting signal if value hasn't changed
+			if (this.selectedConversationId() !== id) {
+				this.selectedConversationId.set(id);
+			}
+		}),
+		takeUntil(this.destroy$) // Get initial value
 	);
-
-	private destroy$ = new Subject<void>();
 
 	ngOnInit(): void {
 		this.currentUser.set(this.authService.loggedInUser); // Use signal getter
@@ -50,6 +58,7 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 		}
 		this.loadConversations();
 		this.subscribeToConversationUpdates();
+		this.selectedConversationId$.subscribe();
 	}
 
 	loadConversations(): void {
