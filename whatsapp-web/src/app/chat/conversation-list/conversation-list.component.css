@@ -64,3 +64,94 @@
 	text-align: center;
 	color: #7f8c8d;
 }
+
+/* Add styles for search */
+.search-container {
+	padding: 10px 15px;
+	background-color: #f0f2f5; /* Match sidebar background */
+	border-bottom: 1px solid #e0e6ed;
+	position: relative; /* For clear button positioning */
+}
+
+.search-input {
+	width: 100%;
+	padding: 8px 12px;
+	padding-right: 30px; /* Space for clear button */
+	border: 1px solid #d1d5db;
+	border-radius: 18px; /* More rounded */
+	background-color: #ffffff;
+	font-size: 0.9em;
+	outline: none;
+	box-sizing: border-box; /* Include padding and border in width */
+}
+
+.clear-search-button {
+	position: absolute;
+	right: 25px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	font-size: 1.4em;
+	color: #999;
+	cursor: pointer;
+	padding: 0 5px;
+	line-height: 1;
+}
+.clear-search-button:hover {
+	color: #555;
+}
+
+.search-status {
+	padding: 10px 15px;
+	font-size: 0.9em;
+	color: #7f8c8d;
+	text-align: center;
+}
+.search-status.error {
+	color: #e74c3c;
+}
+
+.search-results-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	max-height: 200px; /* Limit height and make scrollable if needed */
+	overflow-y: auto;
+	border-bottom: 1px solid #e0e6ed; /* Separator */
+}
+
+.search-results-header {
+	padding: 8px 15px;
+	font-size: 0.8em;
+	font-weight: 600;
+	color: #7f8c8d;
+	background-color: #f0f2f5;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.search-result-item {
+	display: flex;
+	flex-direction: column; /* Stack name and email */
+	padding: 10px 15px;
+	cursor: pointer;
+	border-bottom: 1px solid #f0f2f5; /* Light separator */
+	transition: background-color 0.15s ease;
+}
+
+.search-result-item:hover {
+	background-color: #e9edf0;
+}
+
+.search-result-item .user-name {
+	font-weight: 500;
+	color: #333;
+	font-size: 0.95em;
+	margin-bottom: 2px;
+}
+
+.search-result-item .user-email {
+	font-size: 0.8em;
+	color: #7f8c8d;
+}

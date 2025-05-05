@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, computed, inject, Input, Signal, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
 import { Participant } from '../../shared/models/participant.model';
@@ -8,22 +9,45 @@ import { NavigationService } from './../../shared/services/navigation.service';
 @Component({
 	selector: 'app-conversation-list',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, FormsModule],
 	templateUrl: './conversation-list.component.html',
 	styleUrls: ['./conversation-list.component.css'],
 })
 export class ConversationListComponent {
-	@Input({ required: true }) conversations: Conversation[] = [];
-	selectedConversationId: string | null | undefined = null;
+	@Input({ required: true }) conversations!: Signal<Conversation[]>;
+
+	@Input({ required: true }) selectedId: string | null | undefined;
 
 	private navigationService = inject(NavigationService);
-
 	private authService = inject(AuthService);
+
 	private currentUserId = this.authService.loggedInUser?.id; // Use signal getter
+	searchQuery = signal<string>('');
+
+	filteredConversations = computed(() => {
+		const query = this.searchQuery().toLowerCase().trim();
+		const currentConversations = this.conversations(); // Read the signal value here
+
+		if (!query) {
+			return currentConversations; // Return all if no query
+		}
+		return currentConversations.filter(conv => {
+			const participantName = this.getOtherParticipantName(conv.participants).toLowerCase();
+			return participantName.includes(query);
+		});
+	});
+
+	onFilterQueryChange(query: string): void {
+		console.log('Filter query changed:', query);
+		this.searchQuery.set(query);
+	}
+
+	clearFilter(): void {
+		this.searchQuery.set('');
+	}
 
 	selectConversation(id: string): void {
-		if (id !== this.selectedConversationId) {
-			this.selectedConversationId = id; // Update the selected ID
+		if (id !== this.selectedId) {
 			this.navigationService.toChat(id);
 		}
 	}

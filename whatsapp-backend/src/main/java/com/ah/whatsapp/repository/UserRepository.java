@@ -15,7 +15,7 @@ public interface UserRepository {
 
 	Optional<User> findById(UUID id);
 
-	List<User> searchUsers(String query);
+	List<User> searchUsers(String query, UUID excludeUserId);
 
 	boolean existsById(UUID id);
 

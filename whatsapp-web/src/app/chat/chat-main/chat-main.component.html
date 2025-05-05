@@ -17,6 +17,26 @@
 					<span class="user-name">Loading...</span>
 				}
 			</div>
+			<button
+				title="New Chat"
+				(click)="openNewConversationModal()"
+				class="new-chat-button icon-button"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M12 5v14" />
+					<path d="M5 12h14" />
+				</svg>
+			</button>
 			<button title="Logout" (click)="logout()" class="logout-button">
 				<!-- Replace text with an icon (e.g., SVG or icon font) later -->
 				<svg
@@ -36,7 +56,10 @@
 				</svg>
 			</button>
 		</div>
-		<app-conversation-list [conversations]="conversations()" />
+		<app-conversation-list
+			[conversations]="conversations"
+			[selectedId]="selectedConversationIdSignal()"
+		/>
 		@if (error()) {
 			<p class="error-message">{{ error() }}</p>
 		}
@@ -47,8 +70,28 @@
 		<!-- You could add a default message here if router-outlet is empty -->
 		@if (!(selectedConversationId$ | async)) {
 			<div class="no-conversation-selected">
-				<p>Select a conversation to start chatting</p>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="80"
+					height="80"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+				</svg>
+				<p>Select a conversation or start a new one.</p>
 			</div>
 		}
 	</main>
 </div>
+
+@if (showNewConversationModal()) {
+	<app-new-conversation-modal
+		(closeModal)="closeNewConversationModal()"
+		(userSelectedToChat)="startChatWithUser($event)"
+	/>
+}

@@ -3,7 +3,6 @@ package com.ah.whatsapp.service.impl;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -12,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-
 import com.ah.whatsapp.dto.LoginDto;
 import com.ah.whatsapp.dto.UserDto;
 import com.ah.whatsapp.exception.InvalidCredentialsException;
@@ -82,12 +80,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-    public List<UserDto> searchUsers(String query) {
+    public List<UserDto> searchUsers(String query, UUID excludeUserId) {
         if (ObjectUtils.isEmpty(query) ) {
             return List.of();
         }
 
-        List<User> users = userRepository.searchUsers(query.trim());
+        List<User> users = userRepository.searchUsers(query.trim(), excludeUserId);
 
         return users.stream()
 			.map(user -> userMapper.toDto(user))

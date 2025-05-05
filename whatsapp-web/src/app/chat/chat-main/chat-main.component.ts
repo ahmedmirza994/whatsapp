@@ -1,15 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router'; // Import RouterOutlet, ActivatedRoute, NavigationEnd
 import { Observable, Subject } from 'rxjs'; // Import Observable
-import { filter, map, startWith, takeUntil, tap } from 'rxjs/operators'; // Import operators
+import { filter, map, startWith, takeUntil } from 'rxjs/operators'; // Import operators
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
 import { User } from '../../shared/models/user.model';
 import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
+import { NavigationService } from '../../shared/services/navigation.service';
 import { WebSocketService } from '../../shared/services/websocket.service';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
-import { ConversationService } from '../conversation.service'; // Correct path
+import { ConversationService } from '../conversation.service';
+import { NewConversationModalComponent } from '../new-conversation-modal/new-conversation-modal.component'; // Correct path
 
 @Component({
 	selector: 'app-chat-main',
@@ -18,6 +21,7 @@ import { ConversationService } from '../conversation.service'; // Correct path
 		CommonModule,
 		RouterOutlet, // Add RouterOutlet for child routes
 		ConversationListComponent,
+		NewConversationModalComponent,
 	],
 	templateUrl: './chat-main.component.html',
 	styleUrls: ['./chat-main.component.css'],
@@ -28,11 +32,12 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute); // Inject ActivatedRoute
 	private webSocketService = inject(WebSocketService);
+	private navigationService = inject(NavigationService);
 
 	conversations = signal<Conversation[]>([]);
 	currentUser = signal<User | null>(null);
 	error = signal<string | null>(null);
-	selectedConversationId = signal<string | null>(null);
+	showNewConversationModal = signal<boolean>(false);
 
 	private destroy$ = new Subject<void>();
 
@@ -40,15 +45,13 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 	selectedConversationId$: Observable<string | null | undefined> = this.router.events.pipe(
 		filter((event): event is NavigationEnd => event instanceof NavigationEnd),
 		map(() => this.route.firstChild?.snapshot.paramMap.get('id') ?? null), // Get ID from the child route
-		startWith(this.route.firstChild?.snapshot.paramMap.get('id') ?? null),
-		tap(id => {
-			// Prevent setting signal if value hasn't changed
-			if (this.selectedConversationId() !== id) {
-				this.selectedConversationId.set(id);
-			}
-		}),
-		takeUntil(this.destroy$) // Get initial value
+		startWith(this.route.firstChild?.snapshot.paramMap.get('id') ?? null)
 	);
+
+	selectedConversationIdSignal = toSignal(this.selectedConversationId$, {
+		initialValue: this.route.firstChild?.snapshot.paramMap.get('id') ?? null, // Provide initial value
+		// destroyRef: this.destroyRef // Automatically unsubscribes
+	});
 
 	ngOnInit(): void {
 		this.currentUser.set(this.authService.loggedInUser); // Use signal getter
@@ -58,7 +61,6 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 		}
 		this.loadConversations();
 		this.subscribeToConversationUpdates();
-		this.selectedConversationId$.subscribe();
 	}
 
 	loadConversations(): void {
@@ -106,6 +108,45 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 					return this.sortConversations(updatedList);
 				});
 			});
+	}
+
+	openNewConversationModal(): void {
+		this.showNewConversationModal.set(true);
+	}
+
+	// Method to close the modal
+	closeNewConversationModal(): void {
+		this.showNewConversationModal.set(false);
+	}
+
+	startChatWithUser(user: User): void {
+		console.log('ChatMain: User selected from modal, starting chat with:', user);
+		this.closeNewConversationModal(); // Close modal after selection
+
+		const existingConvo = this.conversations().find(convo =>
+			convo.participants.some(p => p.userId === user.id && convo.participants.length === 2)
+		);
+
+		if (existingConvo) {
+			console.log('Navigating to existing conversation:', existingConvo.id);
+			this.navigationService.toChat(existingConvo.id);
+		} else {
+			console.log('Attempting to find or create conversation for user:', user.id);
+			// Call backend service to find/create conversation
+			// this.conversationService.findOrCreateConversation(user.id).subscribe({
+			// 	next: convo => {
+			// 		console.log('Found or created conversation:', convo);
+			// 		// Update conversation list locally or reload
+			// 		this.loadConversations(); // Simple reload for now to ensure list is up-to-date
+			// 		// Navigate to the new/existing chat
+			// 		this.navigationService.toChat(convo.id);
+			// 	},
+			// 	error: err => {
+			// 		console.error('Error finding or creating conversation:', err);
+			// 		this.error.set('Could not start conversation.'); // Show error feedback
+			// 	},
+			// });
+		}
 	}
 
 	// Helper function to sort conversations by updatedAt descending

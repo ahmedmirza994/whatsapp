@@ -16,8 +16,8 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
 	UserEntity findByEmail(String email);
 
 	@Query(
-		value = "select * from users where name ilike '%' || :query || '%' or email ilike '%' || :query || '%' or phone like '%' || :query || '%'",
+		value = "select * from users where (name ilike '%' || :query || '%' or email ilike '%' || :query || '%' or phone like '%' || :query || '%') and id != :excludeUserId",
 		nativeQuery = true
 	)
-	List<UserEntity> searchUsers(String query);
+	List<UserEntity> searchUsers(String query, UUID excludeUserId);
 }

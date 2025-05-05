@@ -1,8 +1,26 @@
+<div class="search-container">
+	<input
+		type="text"
+		placeholder="Filter conversations..."
+		class="search-input"
+		[ngModel]="searchQuery()"
+		(ngModelChange)="onFilterQueryChange($event)"
+		aria-label="Filter conversations"
+	/>
+	<!-- Optional: Clear button -->
+	@if (searchQuery()) {
+		<button class="clear-search-button" (click)="clearFilter()" aria-label="Clear filter">
+			<!-- Updated method call -->
+			&times;
+		</button>
+	}
+</div>
+
 <ul class="conversation-list">
-	@for (conv of conversations; track conv.id) {
+	@for (conv of filteredConversations(); track conv.id) {
 		<li
 			class="conversation-item"
-			[class.selected]="conv.id === selectedConversationId"
+			[class.selected]="conv.id === selectedId"
 			(click)="selectConversation(conv.id)"
 		>
 			<div class="conversation-info">
@@ -21,6 +39,10 @@
 			}
 		</li>
 	} @empty {
-		<li class="no-conversations">No conversations found.</li>
+		@if (searchQuery()) {
+			<li class="no-conversations">No conversations match your filter.</li>
+		} @else {
+			<li class="no-conversations">No conversations found.</li>
+		}
 	}
 </ul>

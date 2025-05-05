@@ -2,9 +2,9 @@ package com.ah.whatsapp.controller;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,15 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ah.whatsapp.dto.ApiResponse;
 import com.ah.whatsapp.dto.LoginDto;
 import com.ah.whatsapp.dto.UserDto;
 import com.ah.whatsapp.dto.UserSignupDto;
 import com.ah.whatsapp.mapper.UserMapper;
+import com.ah.whatsapp.model.JwtUser;
 import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.service.UserService;
-
 import jakarta.validation.Valid;
 
 @RestController
@@ -52,9 +51,9 @@ public class UserController {
 
 	@GetMapping("/search")
     public ResponseEntity<ApiResponse<List<UserDto>>> searchUsers(
-            @RequestParam(required = false) String query) {
+            @RequestParam(required = true) String query, @AuthenticationPrincipal JwtUser currentUser) {
 
-        List<UserDto> results = userService.searchUsers(query);
+        List<UserDto> results = userService.searchUsers(query, currentUser.getUserId());
         ApiResponse<List<UserDto>> response = ApiResponse.success(results);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
