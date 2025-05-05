@@ -2,12 +2,11 @@ package com.ah.whatsapp.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.CreateConversationRequest;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
@@ -20,9 +19,10 @@ import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.ConversationService;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConversationServiceImpl implements ConversationService {
@@ -61,13 +61,24 @@ public class ConversationServiceImpl implements ConversationService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        ConversationParticipant participant = new ConversationParticipant();
-        participant.setConversationId(conversationId);
-        participant.setParticipantId(userId);
+		boolean alreadyExists = conversationParticipantRepository.existsByConversationIdAndUserId(conversationId, userId);
+
+		if (!alreadyExists) {
+			addParticipantInternal(conversationId, user);
+		} else {
+			log.warn("User {} is already a participant in conversation {}", userId, conversationId);
+		}
+	}
+
+	private void addParticipantInternal(UUID conversationId, User user) {
+		ConversationParticipant participant = new ConversationParticipant();
+		participant.setConversationId(conversationId);
+		participant.setParticipantId(user.getId());
 		participant.setParticipantName(user.getName());
-        participant.setJoinedAt(LocalDateTime.now());
+		participant.setJoinedAt(LocalDateTime.now());
 
 		conversationParticipantRepository.save(participant);
+		log.info("Added participant {} ({}) to conversation {}", user.getId(), user.getName(), conversationId);
 	}
 
 	@Override
@@ -101,5 +112,39 @@ public class ConversationServiceImpl implements ConversationService {
                 .orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + conversationId));
 
         return conversationMapper.toDto(conversation);
+    }
+
+	@Override
+    @Transactional
+    public ConversationDto findOrCreateConversation(CreateConversationRequest createConversationRequest, UUID creatorId) {
+		UUID participantId = createConversationRequest.participantId();
+        log.info("Attempting to find or create conversation between {} and {}", creatorId, participantId);
+        // Check if users exist first
+        if (!userRepository.existsById(creatorId)) {
+            throw new UserNotFoundException("Creator user not found: " + creatorId);
+        }
+        if (!userRepository.existsById(participantId)) {
+            throw new UserNotFoundException("Participant user not found: " + participantId);
+        }
+
+        // Try to find an existing direct conversation
+        Optional<Conversation> existingConversation = conversationRepository.findDirectConversationBetweenUsers(
+            creatorId,
+            participantId
+        );
+
+        if (existingConversation.isPresent()) {
+            log.info(
+                "Found existing direct conversation {} between {} and {}",
+                existingConversation.get().getId(),
+                creatorId,
+                participantId
+            );
+            return conversationMapper.toDto(existingConversation.get());
+        } else {
+            log.info("No existing direct conversation found. Creating new one between {} and {}", creatorId, participantId);
+            // The createConversation method now handles adding both participants
+            return createConversation(createConversationRequest, creatorId);
+        }
     }
 }

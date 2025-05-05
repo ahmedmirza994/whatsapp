@@ -133,19 +133,19 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 		} else {
 			console.log('Attempting to find or create conversation for user:', user.id);
 			// Call backend service to find/create conversation
-			// this.conversationService.findOrCreateConversation(user.id).subscribe({
-			// 	next: convo => {
-			// 		console.log('Found or created conversation:', convo);
-			// 		// Update conversation list locally or reload
-			// 		this.loadConversations(); // Simple reload for now to ensure list is up-to-date
-			// 		// Navigate to the new/existing chat
-			// 		this.navigationService.toChat(convo.id);
-			// 	},
-			// 	error: err => {
-			// 		console.error('Error finding or creating conversation:', err);
-			// 		this.error.set('Could not start conversation.'); // Show error feedback
-			// 	},
-			// });
+			this.conversationService.findOrCreateConversation(user.id).subscribe({
+				next: convo => {
+					console.log('Found or created conversation:', convo);
+					// Update conversation list locally or reload
+					this.loadConversations(); // Simple reload for now to ensure list is up-to-date
+					// Navigate to the new/existing chat
+					this.navigationService.toChat(convo.id);
+				},
+				error: err => {
+					console.error('Error finding or creating conversation:', err);
+					this.error.set('Could not start conversation.'); // Show error feedback
+				},
+			});
 		}
 	}
 

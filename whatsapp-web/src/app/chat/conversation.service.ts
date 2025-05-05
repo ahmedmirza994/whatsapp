@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/enviroment'; // Correct path if needed
 import { Conversation } from '../shared/models/conversation.model';
+import { CreateConversationRequest } from '../shared/models/create-conversation-request.model';
 import { HttpClientService } from '../shared/services/http-client.service';
 
 @Injectable({
@@ -24,5 +25,10 @@ export class ConversationService {
 			.pipe(map(response => response.data || null)); // Return null if not found or error
 	}
 
-	// Add other methods like createConversation etc. later
+	findOrCreateConversation(participantId: string): Observable<Conversation> {
+		const payload: CreateConversationRequest = { participantId };
+		return this.httpClientService
+			.post<Conversation>(`${this.apiUrl}/find-or-create`, payload)
+			.pipe(map(response => response.data!)); // Assume data is present
+	}
 }

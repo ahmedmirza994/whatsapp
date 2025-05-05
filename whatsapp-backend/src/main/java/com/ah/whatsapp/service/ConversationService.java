@@ -2,9 +2,7 @@ package com.ah.whatsapp.service;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.security.access.AccessDeniedException;
-
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.CreateConversationRequest;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
@@ -47,4 +45,7 @@ public interface ConversationService {
      */
     ConversationDto findConversationByIdAndUser(UUID conversationId, UUID userId)
             throws ConversationNotFoundException, AccessDeniedException;
+
+
+	ConversationDto findOrCreateConversation(CreateConversationRequest createConversationRequest, UUID creatorId);
 }

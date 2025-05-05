@@ -18,7 +18,9 @@ import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConversationRepositoryImpl implements ConversationRepository {
@@ -89,5 +91,27 @@ public class ConversationRepositoryImpl implements ConversationRepository {
 	public boolean existsById(UUID id) {
 		 return conversationEntityRepository.existsById(id);
 	}
+
+	@Override
+    public Optional<Conversation> findDirectConversationBetweenUsers(UUID userId1, UUID userId2) {
+        log.debug("Searching for direct conversation between users {} and {}", userId1, userId2);
+        // Find conversations where BOTH users are participants
+        List<UUID> potentialConversationIds = conversationEntityRepository.findConversationsWithParticipants(
+            List.of(userId1, userId2),
+            2L
+        ); // Ensure exactly 2 participants
+
+        if (potentialConversationIds.isEmpty()) {
+            log.debug("No potential direct conversations found between {} and {}", userId1, userId2);
+            return Optional.empty();
+        }
+
+        // Since the query ensures exactly 2 participants and both are present,
+        // any result is a direct conversation. We take the first one found.
+        // We still need to load participants and last message for the found conversation.
+        UUID conversationId = potentialConversationIds.get(0);
+        log.info("Found direct conversation {} between users {} and {}", conversationId, userId1, userId2);
+        return findById(conversationId); // Reuse findById to load details
+    }
 
 }
