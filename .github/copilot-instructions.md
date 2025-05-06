@@ -12,19 +12,19 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
     -   JWT security for all backend endpoints
     -   Password encryption and secure session management
 
--   **Messaging System** 🔄
+-   **Messaging System** ✅
 
     -   One-to-one conversations
     -   Text message exchange
     -   Message timestamps
 
--   **User Discovery** 🔄
+-   **User Discovery** ✅
 
     -   Search users by name, email, or phone number
     -   Add contacts to conversation list
-    -   User profile information display
+    -   User profile information display 🔄
 
--   **Real-time Communication** 🔄
+-   **Real-time Communication** ✅
     -   WebSocket implementation for instant message delivery
 
 ## Technical Stack
