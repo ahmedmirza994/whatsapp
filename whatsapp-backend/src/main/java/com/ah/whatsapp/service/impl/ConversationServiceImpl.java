@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.CreateConversationRequest;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
@@ -19,6 +21,7 @@ import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.ConversationService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
