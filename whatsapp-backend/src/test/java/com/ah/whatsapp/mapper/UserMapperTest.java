@@ -24,7 +24,7 @@ public class UserMapperTest {
 		userEntity.setEmail("john.doe@example.com");
 		userEntity.setPassword("password123");
 		userEntity.setPhone("+1234567890");
-		userEntity.setProfilePictureUrl("http://example.com/profile.jpg");
+		userEntity.setProfilePicture("http://example.com/profile.jpg");
 
 		User user = userMapper.toModel(userEntity);
 
@@ -32,7 +32,7 @@ public class UserMapperTest {
 		assertEquals(userEntity.getEmail(), user.getEmail());
 		assertEquals(userEntity.getPassword(), user.getPassword());
 		assertEquals(userEntity.getPhone(), user.getPhone());
-		assertEquals(userEntity.getProfilePictureUrl(), user.getProfilePictureUrl());
+		assertEquals(userEntity.getProfilePicture(), user.getProfilePicture());
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class UserMapperTest {
 		user.setEmail("john.doe@example.com");
 		user.setPassword("password123");
 		user.setPhone("+1234567890");
-		user.setProfilePictureUrl("http://example.com/profile.jpg");
+		user.setProfilePicture("http://example.com/profile.jpg");
 
 		UserEntity userEntity = userMapper.toEntity(user);
 
@@ -67,7 +67,7 @@ public class UserMapperTest {
 		assertEquals(user.getEmail(), userEntity.getEmail());
 		assertEquals(user.getPassword(), userEntity.getPassword());
 		assertEquals(user.getPhone(), userEntity.getPhone());
-		assertEquals(user.getProfilePictureUrl(), userEntity.getProfilePictureUrl());
+		assertEquals(user.getProfilePicture(), userEntity.getProfilePicture());
 	}
 
 }

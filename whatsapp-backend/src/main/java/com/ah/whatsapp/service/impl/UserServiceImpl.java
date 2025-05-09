@@ -1,5 +1,10 @@
 package com.ah.whatsapp.service.impl;
 
+import com.ah.whatsapp.dto.UserUpdateDto;
+import com.ah.whatsapp.enums.FolderName;
+import com.ah.whatsapp.service.FileStorage;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,6 +26,7 @@ import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.UserService;
 import com.ah.whatsapp.util.JwtUtil;
+import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @Service
@@ -30,13 +36,15 @@ public class UserServiceImpl implements UserService {
 	private final JwtUtil jwtUtil;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
+	private final FileStorage fileStorage;
 
-	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, FileStorage fileStorage) {
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
 		this.jwtUtil = jwtUtil;
 		this.passwordEncoder = passwordEncoder;
 		this.authenticationManager = authenticationManager;
+		this.fileStorage = fileStorage;
 	}
 
 	@Override
@@ -97,5 +105,44 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsById(id);
     }
 
+	@Override
+	public UserDto updateUser(UUID userId, UserUpdateDto userUpdateDto) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
+		boolean updated = false;
+
+		if (userUpdateDto.name() != null && !userUpdateDto.name().equals(user.getName())) {
+			user.setName(userUpdateDto.name());
+			updated = true;
+		}
+
+		if (userUpdateDto.phone() != null && !userUpdateDto.phone().equals(user.getPhone())) {
+			user.setPhone(userUpdateDto.phone());
+			updated = true;
+		}
+
+		if (updated) {
+			user.setUpdatedAt(LocalDateTime.now());
+			User savedUser = userRepository.save(user);
+			return userMapper.toDto(savedUser);
+		} else {
+			return userMapper.toDto(user);
+		}
+	}
+
+	@Override
+	public UserDto updateProfilePicture(UUID userId, MultipartFile profilePicture) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+		try {
+			String filename = fileStorage.storeFile(profilePicture, FolderName.PROFILE_PICTURES, userId.toString());
+			user.setProfilePicture(filename);
+			user.setUpdatedAt(LocalDateTime.now());
+			User savedUser = userRepository.save(user);
+			return userMapper.toDto(savedUser);
+		} catch (IOException ex) {
+			throw new RuntimeException("Could not store profile picture for user " + userId + ". Please try again!", ex);
+		}
+	}
 }

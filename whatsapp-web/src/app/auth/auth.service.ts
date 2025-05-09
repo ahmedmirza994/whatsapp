@@ -76,6 +76,25 @@ export class AuthService {
 		this.currentUserSubject.next(user);
 	}
 
+	/**
+	 * Updates the locally stored current user information.
+	 * This is useful after profile updates.
+	 * @param updatedUser Partial or full User object with updated fields.
+	 */
+	updateLoggedInUser(updatedUserFields: Partial<User>): void {
+		const currentUser = this.currentUserSubject.value;
+		if (currentUser) {
+			// Create a new user object merging old and new fields
+			// Preserve the JWT token from the original currentUser object
+			const newUserData: User = {
+				...currentUser,
+				...updatedUserFields,
+				jwtToken: updatedUserFields.jwtToken || currentUser.jwtToken, // Ensure token is preserved
+			};
+			this.setCurrentUser(newUserData);
+		}
+	}
+
 	logout(): void {
 		localStorage.removeItem('currentUser');
 		this.currentUserSubject.next(null);

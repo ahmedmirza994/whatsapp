@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -24,7 +24,10 @@ export class HttpClientService {
 		return throwError(() => new Error(errorMessage));
 	}
 
-	get<T>(url: string, options?: { headers?: HttpHeaders }): Observable<ApiResponse<T>> {
+	get<T>(
+		url: string,
+		options?: { headers?: HttpHeaders; params?: HttpParams }
+	): Observable<ApiResponse<T>> {
 		return this.http.get<ApiResponse<T>>(url, options).pipe(
 			map(response => {
 				if (response.status === 200 && response.data) {
@@ -37,13 +40,65 @@ export class HttpClientService {
 		);
 	}
 
+	getBlob(
+		url: string,
+		options?: {
+			headers?: HttpHeaders;
+			params?: HttpParams;
+		}
+	): Observable<Blob> {
+		const requestOptions = {
+			...options,
+			responseType: 'blob' as 'blob',
+		};
+		return this.http.get(url, requestOptions).pipe(
+			map(response => {
+				if (response instanceof Blob) {
+					return response;
+				} else {
+					throw new Error('Request failed');
+				}
+			}),
+			catchError(this.handleError)
+		);
+	}
+
 	post<T>(
 		url: string,
 		body: any,
 		options?: { headers?: HttpHeaders }
 	): Observable<ApiResponse<T>> {
+		const processedBody = body instanceof FormData ? body : this.preprocessRequestBody(body);
+
+		// For FormData, Angular's HttpClient typically sets the Content-Type automatically
+		// with the correct boundary. Explicitly setting it can cause issues.
+		// If options.headers are provided and include Content-Type, it might need to be removed for FormData.
+		let requestOptions = options;
+		if (body instanceof FormData && options?.headers?.has('Content-Type')) {
+			// Clone headers and remove Content-Type if it's FormData
+			const clonedHeaders = options.headers.delete('Content-Type');
+			requestOptions = { ...options, headers: clonedHeaders };
+		}
+
+		return this.http.post<ApiResponse<T>>(url, processedBody, requestOptions).pipe(
+			map(response => {
+				if (response.status === 200 && response.data) {
+					return response;
+				} else {
+					throw new Error(response.error || 'Request failed');
+				}
+			}),
+			catchError(this.handleError)
+		);
+	}
+
+	put<T>(
+		url: string,
+		body: any,
+		options?: { headers?: HttpHeaders }
+	): Observable<ApiResponse<T>> {
 		const processedBody = this.preprocessRequestBody(body);
-		return this.http.post<ApiResponse<T>>(url, processedBody, options).pipe(
+		return this.http.put<ApiResponse<T>>(url, processedBody, options).pipe(
 			map(response => {
 				if (response.status === 200 && response.data) {
 					return response;
@@ -56,7 +111,7 @@ export class HttpClientService {
 	}
 
 	private preprocessRequestBody(body: any): any {
-		if (body && typeof body === 'object') {
+		if (body && typeof body === 'object' && !(body instanceof FormData)) {
 			return Object.keys(body).reduce((acc: { [key: string]: any }, key) => {
 				acc[key] = body[key] === '' ? null : body[key];
 				return acc;

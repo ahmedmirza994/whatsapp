@@ -64,9 +64,9 @@ export class NewConversationModalComponent implements OnInit, OnDestroy {
 			)
 			.subscribe({
 				next: res => {
-					this.searchResults.set(res.data!);
+					this.searchResults.set(res);
 					this.isLoading.set(false);
-					this.noResultsFound.set(res.data!.length === 0);
+					this.noResultsFound.set(res.length === 0);
 				},
 				error: err => {
 					console.error('Error searching users:', err);

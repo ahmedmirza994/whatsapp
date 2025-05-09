@@ -29,7 +29,7 @@ public class UserEntity {
 	private String email;
 	private String password;
 	private String phone;
-	private String profilePictureUrl;
+	private String profilePicture;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)

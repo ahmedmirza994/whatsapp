@@ -39,7 +39,7 @@ public class UserMapper {
 			model.getName(),
 			model.getEmail(),
 			model.getPhone(),
-			model.getProfilePictureUrl(),
+			model.getProfilePicture(),
 			jwtToken
 		);
 	}

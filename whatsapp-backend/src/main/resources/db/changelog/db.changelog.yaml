@@ -5,3 +5,6 @@ databaseChangeLog:
     - include:
           relativeToChangelogFile: true
           file: yaml/V002__create_messages_table.yaml
+    - include:
+          relativeToChangelogFile: true
+          file: yaml/V003__alter_users_table.yaml

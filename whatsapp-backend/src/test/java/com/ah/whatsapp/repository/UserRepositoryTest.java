@@ -38,14 +38,14 @@ public class UserRepositoryTest {
 		userEntity.setEmail("john.doe@example.com");
 		userEntity.setPassword("password123");
 		userEntity.setPhone("+1234567890");
-		userEntity.setProfilePictureUrl("http://example.com/profile.jpg");
+		userEntity.setProfilePicture("http://example.com/profile.jpg");
 
 		user = new User();
 		user.setName("John Doe");
 		user.setEmail("john.doe@example.com");
 		user.setPassword("password123");
 		user.setPhone("+1234567890");
-		user.setProfilePictureUrl("http://example.com/profile.jpg");
+		user.setProfilePicture("http://example.com/profile.jpg");
 
 		when(userMapper.toEntity(any(User.class))).thenReturn(userEntity);
 		when(userMapper.toModel(any(UserEntity.class))).thenReturn(user);
@@ -61,6 +61,6 @@ public class UserRepositoryTest {
 		assertEquals(user.getEmail(), savedUser.getEmail());
 		assertEquals(user.getPassword(), savedUser.getPassword());
 		assertEquals(user.getPhone(), savedUser.getPhone());
-		assertEquals(user.getProfilePictureUrl(), savedUser.getProfilePictureUrl());
+		assertEquals(user.getProfilePicture(), savedUser.getProfilePicture());
 	}
 }

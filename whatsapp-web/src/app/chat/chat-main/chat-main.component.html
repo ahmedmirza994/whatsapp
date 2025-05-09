@@ -1,12 +1,24 @@
 <div class="chat-container">
 	<aside class="sidebar">
 		<div class="user-info">
-			<div class="user-details">
+			<div
+				class="user-details"
+				(click)="openProfileSettingsModal()"
+				title="Open Profile Settings"
+				style="cursor: pointer"
+			>
 				<div class="avatar-placeholder">
-					<!-- Placeholder: You can replace this with an <img> tag later -->
 					@if (currentUser(); as user) {
-						<span>{{ user.name[0].toUpperCase() }}</span>
-						<!-- Display first initial -->
+						@if (profilePictureObjectUrl(); as picUrl) {
+							<img
+								[src]="picUrl"
+								[alt]="user.name"
+								class="avatar-image"
+								title="{{ user.name }}"
+							/>
+						} @else {
+							<span>{{ getInitial(user.name) }}</span>
+						}
 					} @else {
 						<span>?</span>
 					}
@@ -93,5 +105,14 @@
 	<app-new-conversation-modal
 		(closeModal)="closeNewConversationModal()"
 		(userSelectedToChat)="startChatWithUser($event)"
+	/>
+}
+
+@if (showProfileSettingsModal() && currentUser()) {
+	<app-profile-settings-modal
+		[currentUser]="currentUser()!"
+		[currentProfilePictureUrl]="profilePictureObjectUrl()"
+		(closeModal)="closeProfileSettingsModal()"
+		(profileUpdated)="handleProfileUpdated($event)"
 	/>
 }

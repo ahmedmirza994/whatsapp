@@ -7,7 +7,7 @@ public record UserDto(
 	String name,
 	String email,
 	String phone,
-	String profilePictureUrl,
+	String profilePicture,
 	String jwtToken
 ) {
 

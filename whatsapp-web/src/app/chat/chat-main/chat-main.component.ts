@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, effect, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router'; // Import RouterOutlet, ActivatedRoute, NavigationEnd
-import { Observable, Subject } from 'rxjs'; // Import Observable
+import { Observable, Subject, Subscription } from 'rxjs'; // Import Observable
 import { filter, map, startWith, takeUntil } from 'rxjs/operators'; // Import operators
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
-import { User } from '../../shared/models/user.model';
+import { getInitial, User } from '../../shared/models/user.model';
 import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
 import { NavigationService } from '../../shared/services/navigation.service';
+import { UserService } from '../../shared/services/user.service';
 import { WebSocketService } from '../../shared/services/websocket.service';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
 import { ConversationService } from '../conversation.service';
-import { NewConversationModalComponent } from '../new-conversation-modal/new-conversation-modal.component'; // Correct path
+import { NewConversationModalComponent } from '../new-conversation-modal/new-conversation-modal.component';
+import { ProfileSettingsModalComponent } from '../profile-settings-modal/profile-settings-modal.component'; // Correct path
 
 @Component({
 	selector: 'app-chat-main',
@@ -22,6 +24,7 @@ import { NewConversationModalComponent } from '../new-conversation-modal/new-con
 		RouterOutlet, // Add RouterOutlet for child routes
 		ConversationListComponent,
 		NewConversationModalComponent,
+		ProfileSettingsModalComponent,
 	],
 	templateUrl: './chat-main.component.html',
 	styleUrls: ['./chat-main.component.css'],
@@ -33,11 +36,17 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 	private route = inject(ActivatedRoute); // Inject ActivatedRoute
 	private webSocketService = inject(WebSocketService);
 	private navigationService = inject(NavigationService);
+	private userService = inject(UserService);
 
 	conversations = signal<Conversation[]>([]);
 	currentUser = signal<User | null>(null);
 	error = signal<string | null>(null);
 	showNewConversationModal = signal<boolean>(false);
+	showProfileSettingsModal = signal(false);
+
+	profilePictureObjectUrl = signal<string | null>(null); // Signal for the profile picture object URL
+	private previousBlobUrl: string | null = null;
+	private subscriptions = new Subscription();
 
 	private destroy$ = new Subject<void>();
 
@@ -52,6 +61,40 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 		initialValue: this.route.firstChild?.snapshot.paramMap.get('id') ?? null, // Provide initial value
 		// destroyRef: this.destroyRef // Automatically unsubscribes
 	});
+
+	constructor() {
+		effect(() => {
+			const user = this.currentUser();
+			if (user && user.profilePicture) {
+				this.subscriptions.add(
+					this.userService.getCurrentUserProfilePicture().subscribe({
+						next: blob => {
+							if (this.previousBlobUrl) {
+								URL.revokeObjectURL(this.previousBlobUrl);
+							}
+							const newUrl = URL.createObjectURL(blob);
+							this.profilePictureObjectUrl.set(newUrl);
+							this.previousBlobUrl = newUrl;
+						},
+						error: err => {
+							console.error('Error loading profile picture:', err);
+							if (this.previousBlobUrl) {
+								URL.revokeObjectURL(this.previousBlobUrl);
+								this.previousBlobUrl = null;
+							}
+							this.profilePictureObjectUrl.set(null);
+						},
+					})
+				);
+			} else {
+				if (this.previousBlobUrl) {
+					URL.revokeObjectURL(this.previousBlobUrl);
+					this.previousBlobUrl = null;
+				}
+				this.profilePictureObjectUrl.set(null);
+			}
+		});
+	}
 
 	ngOnInit(): void {
 		this.currentUser.set(this.authService.loggedInUser); // Use signal getter
@@ -119,6 +162,14 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 		this.showNewConversationModal.set(false);
 	}
 
+	openProfileSettingsModal(): void {
+		this.showProfileSettingsModal.set(true);
+	}
+
+	closeProfileSettingsModal(): void {
+		this.showProfileSettingsModal.set(false);
+	}
+
 	startChatWithUser(user: User): void {
 		console.log('ChatMain: User selected from modal, starting chat with:', user);
 		this.closeNewConversationModal(); // Close modal after selection
@@ -158,12 +209,25 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	getInitial(name: string) {
+		return getInitial(name);
+	}
+
 	ngOnDestroy(): void {
 		this.destroy$.next();
 		this.destroy$.complete();
 	}
 
+	handleProfileUpdated(updatedUser: User): void {
+		this.currentUser.set(updatedUser); // Update the current user signal
+		this.closeProfileSettingsModal();
+	}
+
 	logout(): void {
 		this.authService.logout();
+		this.subscriptions.unsubscribe();
+		if (this.previousBlobUrl) {
+			URL.revokeObjectURL(this.previousBlobUrl);
+		}
 	}
 }
