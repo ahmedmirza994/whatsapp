@@ -36,9 +36,11 @@ public class ConversationParticipantMapper {
         ConversationParticipant model = new ConversationParticipant();
         model.setId(entity.getId());
         model.setConversationId(entity.getConversation().getId());
-        model.setParticipantId(entity.getUser().getId());
-		model.setParticipantEmail(entity.getUser().getEmail());
-		model.setParticipantName(entity.getUser().getName());
+	    UserEntity user = entity.getUser();
+	    model.setParticipantId(user.getId());
+		model.setParticipantEmail(user.getEmail());
+		model.setParticipantName(user.getName());
+		model.setParticipantProfilePicture(user.getProfilePicture());
         model.setJoinedAt(entity.getJoinedAt());
         return model;
     }
@@ -52,7 +54,7 @@ public class ConversationParticipantMapper {
             model.getParticipantId(),
 	        model.getParticipantEmail(),
 	        model.getParticipantName(),
-            null,
+	        model.getParticipantProfilePicture(),
             model.getJoinedAt()
         );
     }

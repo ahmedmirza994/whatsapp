@@ -13,5 +13,6 @@ public class ConversationParticipant {
   private UUID participantId;
   private String participantEmail;
   private String participantName;
+  private String participantProfilePicture;
   private LocalDateTime joinedAt;
 }

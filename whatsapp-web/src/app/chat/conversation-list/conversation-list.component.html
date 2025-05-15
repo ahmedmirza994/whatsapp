@@ -17,17 +17,28 @@
 </div>
 
 <ul class="conversation-list">
-	@for (conv of filteredConversations(); track conv.id) {
+	@for (conv of processedConversations(); track conv.id) {
 		<li
 			class="conversation-item"
-			[class.selected]="conv.id === selectedId"
+			[class.selected]="conv.id === selectedId()"
 			(click)="selectConversation(conv.id)"
 		>
+			<div class="avatar-placeholder">
+				@if (conv.displayParticipant.profilePicture) {
+					<img
+						[src]="conv.displayParticipant.profilePicture"
+						[alt]="conv.displayParticipant.name"
+						title="conv.displayParticipant.name"
+						class="avatar-image"
+					/>
+				} @else {
+					<span>{{ conv.displayParticipant.initial || '?' }}</span>
+				}
+			</div>
 			<div class="conversation-info">
-				<!-- Ensure participants exist before accessing -->
-				<span class="participant-name">{{
-					getOtherParticipantName(conv.participants)
-				}}</span>
+				<span class="participant-name">
+					{{ conv.displayParticipant.name || 'Uknown' }}
+				</span>
 				@if (conv.lastMessage?.content) {
 					<p class="last-message">{{ conv.lastMessage?.content }}</p>
 				} @else {

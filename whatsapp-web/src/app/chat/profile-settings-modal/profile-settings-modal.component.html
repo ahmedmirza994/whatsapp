@@ -10,7 +10,7 @@
 						[src]="
 							previewUrl ||
 							currentProfilePictureUrl ||
-							'./assets/icons/default-avatar.png'
+							'./assets/images/default-avatar.png'
 						"
 						alt="Profile Picture"
 						class="profile-picture-preview"
@@ -21,7 +21,7 @@
 					type="file"
 					id="profilePictureInput"
 					(change)="onFileSelected($event)"
-					accept="image/png, image/jpeg, image/gif"
+					accept="image/png, image/jpeg"
 				/>
 			</div>
 

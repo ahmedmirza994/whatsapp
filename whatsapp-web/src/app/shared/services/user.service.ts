@@ -13,6 +13,7 @@ import { HttpClientService } from './http-client.service';
 export class UserService {
 	private http = inject(HttpClientService);
 	private apiUrl = `${environment.apiUrl}/users`;
+	private fileApiBaseUrl = `${environment.apiUrl}/files/profile-pictures`;
 	constructor() {}
 
 	/**
@@ -72,5 +73,17 @@ export class UserService {
 				return response.data;
 			})
 		);
+	}
+
+	/**
+	 * Constructs the full URL for a user's profile picture.
+	 * @param filename The filename of the profile picture.
+	 * @returns The full URL string if a filename is provided, otherwise null.
+	 */
+	getPublicProfilePictureUrl(filename: string | null | undefined): string | null {
+		if (!filename) {
+			return null;
+		}
+		return `${this.fileApiBaseUrl}/${filename}`;
 	}
 }

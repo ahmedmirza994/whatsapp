@@ -8,7 +8,7 @@ public record ParticipantDto(
 	UUID userId,
 	String email,
 	String name,
-	String profilePictureUrl,
+	String profilePicture,
 	LocalDateTime joinedAt
 ) {
 

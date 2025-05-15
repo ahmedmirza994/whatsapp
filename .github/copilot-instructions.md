@@ -22,7 +22,7 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
 
     -   Search users by name, email, or phone number
     -   Add contacts to conversation list
-    -   User profile information display 🔄
+    -   User profile information display
 
 -   **Real-time Communication** ✅
     -   WebSocket implementation for instant message delivery

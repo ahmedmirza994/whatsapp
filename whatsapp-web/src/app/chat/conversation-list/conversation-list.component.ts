@@ -4,7 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { Conversation } from '../../shared/models/conversation.model';
 import { Participant } from '../../shared/models/participant.model';
+import { getInitial } from '../../shared/models/user.model';
+import { UserService } from '../../shared/services/user.service';
 import { NavigationService } from './../../shared/services/navigation.service';
+
+interface ProcessedConversation extends Conversation {
+	displayParticipant: Participant;
+}
 
 @Component({
 	selector: 'app-conversation-list',
@@ -15,16 +21,16 @@ import { NavigationService } from './../../shared/services/navigation.service';
 })
 export class ConversationListComponent {
 	@Input({ required: true }) conversations!: Signal<Conversation[]>;
-
-	@Input({ required: true }) selectedId: string | null | undefined;
+	@Input({ required: true }) selectedId!: Signal<string | null | undefined>;
 
 	private navigationService = inject(NavigationService);
 	private authService = inject(AuthService);
+	private userService = inject(UserService);
 
 	private currentUserId = this.authService.loggedInUser?.id; // Use signal getter
 	searchQuery = signal<string>('');
 
-	filteredConversations = computed(() => {
+	private internalFilteredConversations = computed(() => {
 		const query = this.searchQuery().toLowerCase().trim();
 		const currentConversations = this.conversations(); // Read the signal value here
 
@@ -32,8 +38,18 @@ export class ConversationListComponent {
 			return currentConversations; // Return all if no query
 		}
 		return currentConversations.filter(conv => {
-			const participantName = this.getOtherParticipantName(conv.participants).toLowerCase();
-			return participantName.includes(query);
+			const participantName = this.getOtherParticipant(conv.participants)?.name.toLowerCase();
+			return participantName?.includes(query);
+		});
+	});
+
+	processedConversations: Signal<ProcessedConversation[]> = computed(() => {
+		const conversations = this.internalFilteredConversations();
+		return conversations.map(conv => {
+			return {
+				...conv,
+				displayParticipant: this.getOtherParticipant(conv.participants),
+			};
 		});
 	});
 
@@ -47,20 +63,40 @@ export class ConversationListComponent {
 	}
 
 	selectConversation(id: string): void {
-		if (id !== this.selectedId) {
+		if (id !== this.selectedId()) {
 			this.navigationService.toChat(id);
 		}
 	}
 
-	getOtherParticipantName(participants: Participant[] | undefined): string {
-		if (!participants || participants.length === 0) {
-			return 'Unknown';
+	getOtherParticipant(participants: Participant[] | undefined): Participant {
+		if (!participants || !this.currentUserId) {
+			return {
+				id: '',
+				userId: '',
+				name: 'Unknown User',
+				profilePicture: null,
+				joinedAt: '',
+				initial: '?',
+			};
 		}
 		const otherParticipants = participants.filter(p => p.userId !== this.currentUserId);
-		if (otherParticipants.length === 0 && participants.length > 0)
-			return participants[0].name ?? 'Yourself'; // Handle self-chat or groups where user is only participant shown
-		if (otherParticipants.length === 1) return otherParticipants[0].name ?? 'Unknown User';
-		return otherParticipants.map(p => p.name ?? 'Unknown').join(', '); // Basic group chat display
+		if (otherParticipants.length > 0) {
+			const other = otherParticipants[0];
+			return {
+				...other,
+				initial: getInitial(other.name),
+				profilePicture: this.userService.getPublicProfilePictureUrl(other.profilePicture),
+			};
+		}
+		const fallbackName = participants.map(p => p.name ?? 'Unknown').join(', ');
+		return {
+			id: '',
+			userId: '',
+			name: fallbackName,
+			profilePicture: null,
+			joinedAt: '',
+			initial: getInitial(fallbackName),
+		};
 	}
 
 	formatTimestamp(timestamp: string | null | undefined): string {

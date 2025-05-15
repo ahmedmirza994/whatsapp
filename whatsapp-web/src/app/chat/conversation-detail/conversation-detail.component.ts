@@ -10,6 +10,8 @@ import {
 } from '../../shared/constants/websocket.constants';
 import { Participant } from '../../shared/models/participant.model'; // Import Participant model
 import { SendMessageRequest } from '../../shared/models/send-message-request.model';
+import { getInitial } from '../../shared/models/user.model';
+import { UserService } from '../../shared/services/user.service';
 import { WebSocketService } from '../../shared/services/websocket.service';
 import { ConversationService } from '../conversation.service'; // Import ConversationService
 import { MessageAreaComponent } from '../message-area/message-area.component';
@@ -27,10 +29,10 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 	private conversationService = inject(ConversationService); // Inject ConversationService
 	private authService = inject(AuthService); // Inject AuthService
 	private webSocketService = inject(WebSocketService);
+	private userService = inject(UserService); // Inject UserService
 
 	conversationId = signal<string | null>(null);
-	participantName = signal<string>('Chat'); // Default name
-	participantInitial = signal<string>('?'); // Default initial
+	participant = signal<Participant | null>(null);
 	isLoadingHeader = signal<boolean>(false);
 
 	private currentUserId = this.authService.loggedInUser?.id;
@@ -53,8 +55,6 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 
 					// Reset state when ID changes
 					this.conversationId.set(id);
-					this.participantName.set('Loading...');
-					this.participantInitial.set('?');
 					this.isLoadingHeader.set(true);
 
 					// Subscribe to the new topic if an ID exists
@@ -81,7 +81,6 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 				},
 				error: err => {
 					console.error('Error loading conversation details:', err);
-					this.participantName.set('Error');
 					this.isLoadingHeader.set(false);
 				},
 			});
@@ -98,27 +97,29 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 
 	// Helper to get the name and initial of the other participant(s)
 	private updateParticipantDetails(participants: Participant[] | undefined): void {
+		var participant = null;
 		if (!participants || participants.length === 0) {
-			this.participantName.set('Unknown Chat');
-			this.participantInitial.set('?');
+			participant = null;
 			return;
 		}
 
 		const otherParticipants = participants.filter(p => p.userId !== this.currentUserId);
-		let name = 'Unknown';
 
 		if (otherParticipants.length === 0 && participants.length > 0) {
-			// Chat with self or group where user is only one listed
-			name = participants[0].name ?? 'Yourself';
+			// Only the current user is present
+			participant = participants[0];
 		} else if (otherParticipants.length === 1) {
-			name = otherParticipants[0].name ?? 'Unknown User';
+			participant = otherParticipants[0];
 		} else {
-			// Group chat with multiple others
-			name = otherParticipants.map(p => p.name ?? 'Unknown').join(', ');
+			participant = otherParticipants[0];
 		}
 
-		this.participantName.set(name);
-		this.participantInitial.set(name?.[0]?.toUpperCase() ?? '?');
+		participant = {
+			...participant,
+			initial: getInitial(participant.name),
+			profilePicture: this.userService.getPublicProfilePictureUrl(participant.profilePicture),
+		};
+		this.participant.set(participant);
 	}
 
 	handleSendMessage(content: string): void {

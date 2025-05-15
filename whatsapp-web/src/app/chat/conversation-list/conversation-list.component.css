@@ -13,6 +13,7 @@
 	border-bottom: 1px solid #f0f2f5; /* Lighter separator */
 	cursor: pointer;
 	transition: background-color 0.2s ease;
+	gap: 12px;
 }
 
 .conversation-item:hover {
@@ -21,6 +22,27 @@
 
 .conversation-item.selected {
 	background-color: #e0e6ed; /* Selected background */
+}
+
+.avatar-placeholder {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #3498db; /* Theme primary color for avatar */
+	color: #ffffff; /* White text on blue */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.2em;
+	flex-shrink: 0;
+	overflow: hidden; /* Important for image */
+}
+
+.avatar-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .conversation-info {

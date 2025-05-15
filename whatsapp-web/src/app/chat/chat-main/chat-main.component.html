@@ -70,7 +70,7 @@
 		</div>
 		<app-conversation-list
 			[conversations]="conversations"
-			[selectedId]="selectedConversationIdSignal()"
+			[selectedId]="selectedConversationIdSignal"
 		/>
 		@if (error()) {
 			<p class="error-message">{{ error() }}</p>
