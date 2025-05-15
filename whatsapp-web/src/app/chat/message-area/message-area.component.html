@@ -14,9 +14,42 @@
 						[class.sent]="msg.senderId === currentUserId"
 						[class.received]="msg.senderId !== currentUserId"
 					>
-						<div class="message-bubble">
+						<div
+							class="message-bubble"
+							(mouseenter)="onBubbleHover(msg.id, true)"
+							(mouseleave)="onBubbleHover(msg.id, false)"
+						>
 							<p class="message-content">{{ msg.content }}</p>
 							<span class="message-timestamp">{{ formatTimestamp(msg.sentAt) }}</span>
+							@if (msg.senderId === currentUserId) {
+								<div class="message-actions">
+									<button
+										class="menu-btn"
+										*ngIf="shouldShowMenuIcon(msg.id)"
+										(click)="openMessageMenu(msg.id); $event.stopPropagation()"
+										aria-label="Message actions"
+										(mouseenter)="menuButtonHovered = true"
+										(mouseleave)="
+											menuButtonHovered = false; maybeCloseMenu(msg.id)
+										"
+									>
+										<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+											<circle cx="5" cy="12" r="2" fill="#7f8c8d" />
+											<circle cx="12" cy="12" r="2" fill="#7f8c8d" />
+											<circle cx="19" cy="12" r="2" fill="#7f8c8d" />
+										</svg>
+									</button>
+									@if (openMenuForMessageId === msg.id) {
+										<ul
+											class="message-menu menu-animate-in"
+											(mouseenter)="menuHovered = true"
+											(mouseleave)="onMenuLeave(msg.id)"
+										>
+											<li (click)="showDeleteDialog(msg)">Delete</li>
+										</ul>
+									}
+								</div>
+							}
 						</div>
 					</div>
 				}
@@ -27,6 +60,18 @@
 			} @empty {
 				<p class="no-messages">No messages in this conversation yet.</p>
 			}
+		</div>
+	</div>
+}
+
+@if (showDeleteConfirmDialog) {
+	<div class="dialog-backdrop" (click)="closeDeleteDialog()"></div>
+	<div class="delete-dialog" (click)="$event.stopPropagation()">
+		<h3>Delete Message?</h3>
+		<p>This message will be permanently deleted for you. This action cannot be undone.</p>
+		<div class="dialog-actions">
+			<button class="cancel-btn" (click)="closeDeleteDialog()">Cancel</button>
+			<button class="delete-btn" (click)="confirmDelete()">Delete</button>
 		</div>
 	</div>
 }

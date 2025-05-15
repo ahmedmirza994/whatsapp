@@ -23,4 +23,10 @@ export class MessageService {
 			.get<Message[]>(`${this.apiUrl}/conversation/${conversationId}`)
 			.pipe(map((response: ApiResponse<Message[]>) => response.data ?? []));
 	}
+
+	deleteMessage(messageId: string): Observable<string> {
+		return this.httpClientService
+			.delete<string>(`${this.apiUrl}/${messageId}`)
+			.pipe(map((response: ApiResponse<string>) => response.data || messageId));
+	}
 }
