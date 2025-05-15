@@ -110,6 +110,19 @@ export class HttpClientService {
 		);
 	}
 
+	delete<T>(url: string, options?: { headers?: HttpHeaders }): Observable<ApiResponse<T>> {
+		return this.http.delete<ApiResponse<T>>(url, options).pipe(
+			map(response => {
+				if (response.status === 200 && response.data) {
+					return response;
+				} else {
+					throw new Error(response.error || 'Request failed');
+				}
+			}),
+			catchError(this.handleError)
+		);
+	}
+
 	private preprocessRequestBody(body: any): any {
 		if (body && typeof body === 'object' && !(body instanceof FormData)) {
 			return Object.keys(body).reduce((acc: { [key: string]: any }, key) => {

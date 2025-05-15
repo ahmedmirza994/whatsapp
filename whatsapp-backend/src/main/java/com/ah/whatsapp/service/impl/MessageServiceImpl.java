@@ -1,19 +1,27 @@
 package com.ah.whatsapp.service.impl;
 
+import com.ah.whatsapp.event.ConversationUpdateEvent;
+import com.ah.whatsapp.event.MessageDeletedEvent;
+import com.ah.whatsapp.event.NewMessageEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.ah.whatsapp.constant.WebSocketConstants;
+import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_QUEUE;
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
 import com.ah.whatsapp.dto.WebSocketEvent;
 import com.ah.whatsapp.enums.EventType;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
+import com.ah.whatsapp.exception.MessageNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
 import com.ah.whatsapp.mapper.ConversationMapper;
 import com.ah.whatsapp.mapper.MessageMapper;
@@ -25,10 +33,9 @@ import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.UserRepository;
 import com.ah.whatsapp.service.MessageService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_QUEUE;
 
 @Slf4j
 @Service
@@ -41,6 +48,7 @@ public class MessageServiceImpl implements MessageService {
     private final MessageMapper messageMapper;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ConversationMapper conversationMapper;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Override
 	@Transactional
@@ -69,27 +77,12 @@ public class MessageServiceImpl implements MessageService {
 
 		MessageDto messageDto = messageMapper.toDto(savedMessage);
 
-		WebSocketEvent<MessageDto> event = new WebSocketEvent<>(EventType.NEW_MESSAGE, messageDto);
-
-        String destination = String.format(WebSocketConstants.CONVERSATION_TOPIC_TEMPLATE, messageDto.conversationId());
-        log.info("Broadcasting event to destination: {}", destination);
-        messagingTemplate.convertAndSend(destination, event);
+		eventPublisher.publishEvent(new NewMessageEvent(this, messageDto));
 
 		Conversation updatedConversation = conversationRepository.findById(conversation.getId()).orElse(conversation); // Re-fetch or use existing
         ConversationDto conversationDto = conversationMapper.toDto(updatedConversation);
 
-		WebSocketEvent<ConversationDto> conversationUpdateEvent = new WebSocketEvent<>(EventType.CONVERSATION_UPDATE, conversationDto);
-        String userQueueDestination = CONVERSATION_QUEUE; // Destination relative to user prefix
-
-        conversationDto.getParticipants().forEach(participant -> {
-            String participantEmail = participant.email(); // Assuming email is the username used in Principal
-            if (participantEmail != null) {
-                 log.info("Sending CONVERSATION_UPDATE event to user: {} at destination: {}{}", participantEmail, "/user/" + participantEmail, userQueueDestination);
-                 messagingTemplate.convertAndSendToUser(participantEmail, userQueueDestination, conversationUpdateEvent);
-            } else {
-                 log.warn("Cannot send CONVERSATION_UPDATE to participant {} as email (username) is null.", participant.id());
-            }
-        });
+		eventPublisher.publishEvent(new ConversationUpdateEvent(this, conversationDto));
 
         return messageDto;
 	}
@@ -109,5 +102,18 @@ public class MessageServiceImpl implements MessageService {
             .toList();
 	}
 
+	@Override
+    @Transactional
+    public void deleteMessage(UUID messageId, UUID userId) {
+        Message message = messageRepository.findById(messageId)
+            .orElseThrow(() -> new MessageNotFoundException("Message not found"));
 
+        if (!message.getSender().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only delete your own messages.");
+        }
+
+		messageRepository.delete(messageId);
+
+		eventPublisher.publishEvent(new MessageDeletedEvent(this, messageId, message.getConversationId()));
+    }
 }

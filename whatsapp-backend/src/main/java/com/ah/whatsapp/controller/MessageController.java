@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,8 +81,17 @@ public class MessageController {
         } else {
             // This should not happen if AuthChannelInterceptor is working correctly
             log.error("Unauthenticated or unexpected principal type for WebSocket message. Principal: {}", userPrincipal);
-            // Handle unauthenticated access
-            return;
         }
     }
+
+	@DeleteMapping("/{messageId}")
+	public ResponseEntity<ApiResponse<UUID>> deleteMessage(
+		@PathVariable UUID messageId,
+		@AuthenticationPrincipal JwtUser jwtUser) {
+		if (jwtUser == null) {
+			return new ResponseEntity<>(ApiResponse.failure("Unauthorized", HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
+		}
+		messageService.deleteMessage(messageId, jwtUser.getUserId());
+		return ResponseEntity.ok(ApiResponse.success(messageId));
+	}
 }

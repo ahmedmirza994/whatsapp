@@ -27,4 +27,13 @@ public interface MessageService {
 	 * @throws AccessDeniedException if the user is not a participant in the conversation
      */
     List<MessageDto> findConversationMessages(UUID conversationId, UUID userId);
+
+	/**
+     * Deletes a message by its ID if the user is the sender.
+     *
+     * @param messageId The ID of the message to delete.
+     * @param userId    The ID of the user requesting deletion.
+     * @throws AccessDeniedException if not the sender.
+     */
+    void deleteMessage(UUID messageId, UUID userId);
 }

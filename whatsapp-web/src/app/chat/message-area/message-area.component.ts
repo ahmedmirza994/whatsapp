@@ -49,6 +49,13 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 	error = signal<string | null>(null);
 	currentUserId = this.authService.loggedInUser?.id; // Use signal getter
 
+	openMenuForMessageId: string | null = null;
+	showDeleteConfirmDialog = false;
+	messageToDelete: Message | null = null;
+	hoveredMessageId: string | null = null;
+	menuButtonHovered = false;
+	menuHovered = false;
+
 	private shouldScrollToBottom = false;
 	private initialLoadComplete = false;
 	private destroy$ = new Subject<void>(); // For unsubscribing
@@ -72,19 +79,24 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 		this.wsSubscription = this.webSocketService.events$
 			.pipe(
 				filter(
-					(event: WebSocketEvent): event is WebSocketEvent<Message> =>
-						event.type === EventType.NEW_MESSAGE &&
+					(event: WebSocketEvent) =>
+						(event.type === EventType.NEW_MESSAGE ||
+							event.type === EventType.DELETE_MESSAGE) &&
 						event.payload?.conversationId === this.conversationId
 				),
 				takeUntil(this.destroy$)
 			)
 			.subscribe(event => {
 				const newMessage = event.payload;
-				console.log('MessageArea: Received relevant message via WS:', newMessage);
-				// Add the new message to the signal, ensuring no duplicates
-				this.addMessageToGroups(newMessage);
-				// Ensure scroll happens for new incoming messages
-				this.shouldScrollToBottom = true;
+				console.log('WebSocket event received:', event);
+				if (event.type === EventType.NEW_MESSAGE) {
+					// Add the new message to the signal, ensuring no duplicates
+					this.addMessageToGroups(newMessage);
+					// Ensure scroll happens for new incoming messages
+					this.shouldScrollToBottom = true;
+				} else if (event.type === EventType.DELETE_MESSAGE) {
+					this.removeMessageFromGroups(newMessage.messageId);
+				}
 			});
 	}
 
@@ -111,6 +123,7 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 	ngOnDestroy(): void {
 		this.destroy$.next();
 		this.destroy$.complete();
+		this.wsSubscription?.unsubscribe(); // Unsubscribe from WebSocket events
 	}
 
 	loadMessages(convId: string): void {
@@ -244,5 +257,78 @@ export class MessageAreaComponent implements OnChanges, AfterViewChecked, OnDest
 			console.error('Error formatting timestamp:', timestamp, e);
 			return '';
 		}
+	}
+
+	closeMessageMenu(): void {
+		this.openMenuForMessageId = null;
+	}
+
+	showDeleteDialog(msg: Message): void {
+		this.messageToDelete = msg;
+		this.showDeleteConfirmDialog = true;
+		this.closeMessageMenu();
+	}
+
+	closeDeleteDialog(): void {
+		this.showDeleteConfirmDialog = false;
+		this.messageToDelete = null;
+	}
+
+	onBubbleHover(messageId: string, isHovering: boolean): void {
+		if (isHovering) {
+			this.hoveredMessageId = messageId;
+		} else {
+			// Only clear if menu is not open for this message
+			setTimeout(() => {
+				if (!this.menuHovered && this.openMenuForMessageId !== messageId) {
+					this.hoveredMessageId = null;
+				}
+			}, 80);
+		}
+	}
+
+	openMessageMenu(messageId: string): void {
+		this.openMenuForMessageId = messageId;
+		this.menuHovered = false;
+	}
+
+	onMenuLeave(messageId: string): void {
+		this.menuHovered = false;
+		setTimeout(() => {
+			if (this.openMenuForMessageId === messageId && !this.menuHovered) {
+				this.openMenuForMessageId = null;
+				this.hoveredMessageId = null;
+			}
+		}, 80);
+	}
+
+	shouldShowMenuIcon(messageId: string): boolean {
+		return this.hoveredMessageId === messageId || this.openMenuForMessageId === messageId;
+	}
+
+	confirmDelete(): void {
+		if (this.messageToDelete) {
+			this.messageService.deleteMessage(this.messageToDelete.id).subscribe({
+				next: () => {
+					this.removeMessageFromGroups(this.messageToDelete!.id);
+					this.closeDeleteDialog();
+				},
+				error: err => {
+					alert('Failed to delete message.');
+					this.closeDeleteDialog();
+				},
+			});
+		}
+	}
+
+	private removeMessageFromGroups(messageId: string): void {
+		this.groupedMessages.update(groups =>
+			groups
+				.map(group => ({
+					...group,
+					messages: group.messages.filter(m => m.id !== messageId),
+				}))
+				.filter(group => group.messages.length > 0)
+		);
 	}
 }
