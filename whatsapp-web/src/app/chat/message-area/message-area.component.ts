@@ -17,6 +17,7 @@ import { Subject, Subscription } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service'; // Correct path
 import { MessageService } from '../../message/message.service'; // Correct path
+import { DeleteConfirmationModalComponent } from '../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { Message } from '../../shared/models/message.model';
 import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
 import { WebSocketService } from '../../shared/services/websocket.service';
@@ -30,7 +31,7 @@ interface MessageDateGroup {
 @Component({
 	selector: 'app-message-area',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, DeleteConfirmationModalComponent],
 	templateUrl: './message-area.component.html',
 	styleUrls: ['./message-area.component.css'],
 })

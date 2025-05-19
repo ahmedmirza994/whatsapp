@@ -61,13 +61,10 @@
 }
 
 @if (showDeleteConfirmDialog) {
-	<div class="dialog-backdrop" (click)="closeDeleteDialog()"></div>
-	<div class="delete-dialog" (click)="$event.stopPropagation()">
-		<h3>Delete Message?</h3>
-		<p>This message will be permanently deleted for you. This action cannot be undone.</p>
-		<div class="dialog-actions">
-			<button class="cancel-btn" (click)="closeDeleteDialog()">Cancel</button>
-			<button class="delete-btn" (click)="confirmDelete()">Delete</button>
-		</div>
-	</div>
+	<app-delete-confirmation-modal
+		title="Delete Message?"
+		message="This message will be permanently deleted for you. This action cannot be undone."
+		(confirmed)="confirmDelete()"
+		(cancelled)="closeDeleteDialog()"
+	/>
 }
