@@ -1,9 +1,9 @@
 package com.ah.whatsapp.websocket;
 
-import com.ah.whatsapp.constant.WebSocketConstants;
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.DeleteMessageEvent;
 import com.ah.whatsapp.dto.MessageDto;
+import com.ah.whatsapp.dto.TypingIndicatorDto;
 import com.ah.whatsapp.dto.WebSocketEvent;
 import com.ah.whatsapp.enums.EventType;
 import com.ah.whatsapp.event.ConversationUpdateEvent;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_QUEUE;
 import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_TOPIC_TEMPLATE;
+import static com.ah.whatsapp.constant.WebSocketConstants.TYPING_INDICATOR_TOPIC;
 
 @Component
 public class WebSocketEventListener {
@@ -42,8 +43,8 @@ public class WebSocketEventListener {
 		// Send to each participant's queue
 		conversationDto.getParticipants().forEach(participant -> {
 			String email = participant.email();
-			if(email != null) {
-				messagingTemplate.convertAndSendToUser(email, CONVERSATION_QUEUE ,wsEvent);
+			if (email != null) {
+				messagingTemplate.convertAndSendToUser(email, CONVERSATION_QUEUE, wsEvent);
 			}
 		});
 	}
@@ -57,5 +58,13 @@ public class WebSocketEventListener {
 		);
 		String destination = String.format(CONVERSATION_TOPIC_TEMPLATE, event.getConversationId());
 		messagingTemplate.convertAndSend(destination, webSocketEvent);
+	}
+
+	@Async
+	@EventListener
+	public void handleTypingIndicator(TypingIndicatorDto typingDto) {
+		WebSocketEvent<TypingIndicatorDto> wsEvent = new WebSocketEvent<>(typingDto.getEventType(), typingDto);
+		String destination = String.format(TYPING_INDICATOR_TOPIC, typingDto.getConversationId());
+		messagingTemplate.convertAndSend(destination, wsEvent);
 	}
 }

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
 	Component,
 	computed,
+	effect,
 	EventEmitter,
 	inject,
 	Input,
@@ -15,7 +16,9 @@ import { DeleteConfirmationModalComponent } from '../../shared/components/delete
 import { Conversation } from '../../shared/models/conversation.model';
 import { Participant } from '../../shared/models/participant.model';
 import { getInitial } from '../../shared/models/user.model';
+import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
 import { UserService } from '../../shared/services/user.service';
+import { WebSocketService } from '../../shared/services/websocket.service';
 import { ConversationService } from '../conversation.service';
 import { NavigationService } from './../../shared/services/navigation.service';
 
@@ -28,7 +31,7 @@ interface ProcessedConversation extends Conversation {
 	standalone: true,
 	imports: [CommonModule, FormsModule, DeleteConfirmationModalComponent],
 	templateUrl: './conversation-list.component.html',
-	styleUrls: ['./conversation-list.component.css'],
+	styleUrls: ['./conversation-list.component.css', '../../app.component.css'],
 })
 export class ConversationListComponent {
 	@Input({ required: true }) conversations!: Signal<Conversation[]>;
@@ -38,13 +41,36 @@ export class ConversationListComponent {
 	showDeleteModal = signal(false);
 	conversationToDelete: string | null = null;
 
+	typingMap = signal<Record<string, boolean>>({});
+
 	private navigationService = inject(NavigationService);
 	private authService = inject(AuthService);
 	private userService = inject(UserService);
 	private conversationService = inject(ConversationService);
+	private webSocketService = inject(WebSocketService);
 
 	currentUserId = this.authService.loggedInUser?.id; // Use signal getter
 	searchQuery = signal<string>('');
+
+	constructor() {
+		effect(() => {
+			this.subscribeToTyping();
+		});
+	}
+
+	private subscribeToTyping() {
+		this.processedConversations().forEach(convo => {
+			this.webSocketService.subscribeToTyping(convo.id, (event: WebSocketEvent) => {
+				const data = event.payload;
+				if (data.userId !== this.currentUserId) {
+					this.typingMap.update(typing => ({
+						...typing,
+						[convo.id]: event.type === EventType.TYPING_START,
+					}));
+				}
+			});
+		});
+	}
 
 	private internalFilteredConversations = computed(() => {
 		const query = this.searchQuery().toLowerCase().trim();

@@ -11,6 +11,7 @@ import {
 import { Participant } from '../../shared/models/participant.model'; // Import Participant model
 import { SendMessageRequest } from '../../shared/models/send-message-request.model';
 import { getInitial } from '../../shared/models/user.model';
+import { EventType, WebSocketEvent } from '../../shared/models/websocket-event.model';
 import { UserService } from '../../shared/services/user.service';
 import { WebSocketService } from '../../shared/services/websocket.service';
 import { ConversationService } from '../conversation.service'; // Import ConversationService
@@ -22,7 +23,7 @@ import { MessageInputComponent } from '../message-input/message-input.component'
 	standalone: true,
 	imports: [CommonModule, MessageAreaComponent, MessageInputComponent],
 	templateUrl: './conversation-detail.component.html',
-	styleUrls: ['./conversation-detail.component.css'],
+	styleUrls: ['./conversation-detail.component.css', '../../app.component.css'],
 })
 export class ConversationDetailComponent implements OnInit, OnDestroy {
 	private route = inject(ActivatedRoute);
@@ -38,6 +39,9 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 	private currentUserId = this.authService.loggedInUser?.id;
 	private currentSubscriptionDestination: string | null = null;
 	private destroy$ = new Subject<void>();
+
+	isTyping = signal<boolean>(false);
+	private typingSubscription: any;
 
 	ngOnInit(): void {
 		this.route.paramMap
@@ -95,6 +99,22 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 					this.isLoadingHeader.set(false);
 				},
 			});
+
+		if (this.conversationId) {
+			this.typingSubscription = this.webSocketService.subscribeToTyping(
+				this.conversationId()!,
+				(event: WebSocketEvent) => {
+					const data = event.payload;
+					if (data.userId !== this.currentUserId) {
+						if (event.type === EventType.TYPING_START) {
+							this.isTyping.set(true);
+						} else if (event.type === EventType.TYPING_STOP) {
+							this.isTyping.set(false);
+						}
+					}
+				}
+			);
+		}
 	}
 
 	ngOnDestroy(): void {
@@ -104,6 +124,7 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 		}
 		this.destroy$.next();
 		this.destroy$.complete();
+		this.typingSubscription?.unsubscribe();
 	}
 
 	// Helper to get the name and initial of the other participant(s)

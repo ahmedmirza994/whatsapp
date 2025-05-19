@@ -39,73 +39,79 @@
 				<span class="participant-name">
 					{{ conv.displayParticipant.name || 'Uknown' }}
 				</span>
-				@if (conv.lastMessage) {
-					<p class="last-message">
-						@if (conv.lastMessage.senderId === currentUserId) {
-							<span class="message-status">
-								@if (isSeen(conv)) {
-									<svg
-										width="16px"
-										height="16px"
-										viewBox="0 0 16 16"
-										xmlns="http://www.w3.org/2000/svg"
-										version="1.1"
-										fill="none"
-										stroke="#3498db"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="1.5"
-										transform="rotate(0)"
-									>
-										<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-										<g
-											id="SVGRepo_tracerCarrier"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke="#3498db"
-											stroke-width="0.128"
-										></g>
-										<g id="SVGRepo_iconCarrier">
-											<path
-												d="m1.75 9.75 2.5 2.5m3.5-4 2.5-2.5m-4.5 4 2.5 2.5 6-6.5"
-											></path>
-										</g>
-									</svg>
-								} @else {
-									<svg
-										width="16px"
-										height="16px"
-										viewBox="0 0 16 16"
-										xmlns="http://www.w3.org/2000/svg"
-										version="1.1"
-										fill="none"
-										stroke="#7f8c8d"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="1.5"
-										transform="rotate(0)"
-									>
-										<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-										<g
-											id="SVGRepo_tracerCarrier"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke="#7f8c8d"
-											stroke-width="0.128"
-										></g>
-										<g id="SVGRepo_iconCarrier">
-											<path
-												d="m1.75 9.75 2.5 2.5m3.5-4 2.5-2.5m-4.5 4 2.5 2.5 6-6.5"
-											></path>
-										</g>
-									</svg>
-								}
-							</span>
-						}
-						{{ conv.lastMessage.content }}
-					</p>
+				@if (typingMap()[conv.id]) {
+					<em class="typing-indicator">Typing…</em>
 				} @else {
-					<p class="last-message no-message">No messages yet</p>
+					<div class="conversation-preview">
+						@if (conv.lastMessage) {
+							<p class="last-message">
+								@if (conv.lastMessage.senderId === currentUserId) {
+									<span class="message-status">
+										@if (isSeen(conv)) {
+											<svg
+												width="16px"
+												height="16px"
+												viewBox="0 0 16 16"
+												xmlns="http://www.w3.org/2000/svg"
+												version="1.1"
+												fill="none"
+												stroke="#3498db"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="1.5"
+												transform="rotate(0)"
+											>
+												<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+												<g
+													id="SVGRepo_tracerCarrier"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke="#3498db"
+													stroke-width="0.128"
+												></g>
+												<g id="SVGRepo_iconCarrier">
+													<path
+														d="m1.75 9.75 2.5 2.5m3.5-4 2.5-2.5m-4.5 4 2.5 2.5 6-6.5"
+													></path>
+												</g>
+											</svg>
+										} @else {
+											<svg
+												width="16px"
+												height="16px"
+												viewBox="0 0 16 16"
+												xmlns="http://www.w3.org/2000/svg"
+												version="1.1"
+												fill="none"
+												stroke="#7f8c8d"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="1.5"
+												transform="rotate(0)"
+											>
+												<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+												<g
+													id="SVGRepo_tracerCarrier"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke="#7f8c8d"
+													stroke-width="0.128"
+												></g>
+												<g id="SVGRepo_iconCarrier">
+													<path
+														d="m1.75 9.75 2.5 2.5m3.5-4 2.5-2.5m-4.5 4 2.5 2.5 6-6.5"
+													></path>
+												</g>
+											</svg>
+										}
+									</span>
+								}
+								{{ conv.lastMessage.content }}
+							</p>
+						} @else {
+							<p class="last-message no-message">No messages yet</p>
+						}
+					</div>
 				}
 			</div>
 			@if (conv.lastMessage?.sentAt) {

@@ -19,5 +19,12 @@
 	</div>
 
 	<app-message-area class="message-display-area" [conversationId]="convId" />
-	<app-message-input class="message-input-area" (messageSent)="handleSendMessage($event)" />
+	@if (isTyping()) {
+		<div class="typing-indicator">{{ participant()?.name }} is typing…</div>
+	}
+	<app-message-input
+		class="message-input-area"
+		(messageSent)="handleSendMessage($event)"
+		[conversationId]="convId"
+	/>
 } @else {}
