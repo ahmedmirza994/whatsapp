@@ -80,6 +80,8 @@ export class HttpClientService {
 			requestOptions = { ...options, headers: clonedHeaders };
 		}
 
+		console.log('Request URL:', url);
+		console.log('Request Body:', processedBody);
 		return this.http.post<ApiResponse<T>>(url, processedBody, requestOptions).pipe(
 			map(response => {
 				if (response.status === 200 && response.data) {

@@ -37,4 +37,11 @@ export class ConversationService {
 			.delete<string>(`${this.apiUrl}/${convId}`)
 			.pipe(map(response => response.data || convId));
 	}
+
+	markConversationAsRead(convId: string): Observable<string> {
+		console.log('Marking conversation as read:', convId);
+		return this.httpClientService
+			.post<string>(`${this.apiUrl}/${convId}/read`, {})
+			.pipe(map(response => response.data || convId));
+	}
 }

@@ -43,7 +43,7 @@ export class ConversationListComponent {
 	private userService = inject(UserService);
 	private conversationService = inject(ConversationService);
 
-	private currentUserId = this.authService.loggedInUser?.id; // Use signal getter
+	currentUserId = this.authService.loggedInUser?.id; // Use signal getter
 	searchQuery = signal<string>('');
 
 	private internalFilteredConversations = computed(() => {
@@ -121,6 +121,8 @@ export class ConversationListComponent {
 				profilePicture: null,
 				joinedAt: '',
 				initial: '?',
+				leftAt: null,
+				lastReadAt: null,
 			};
 		}
 		const otherParticipants = participants.filter(p => p.userId !== this.currentUserId);
@@ -140,7 +142,14 @@ export class ConversationListComponent {
 			profilePicture: null,
 			joinedAt: '',
 			initial: getInitial(fallbackName),
+			leftAt: null,
+			lastReadAt: null,
 		};
+	}
+
+	isSeen(conv: ProcessedConversation): boolean {
+		const lastReadAt = conv.displayParticipant.lastReadAt;
+		return !!lastReadAt && conv.lastMessage?.sentAt!! <= lastReadAt;
 	}
 
 	formatTimestamp(timestamp: string | null | undefined): string {

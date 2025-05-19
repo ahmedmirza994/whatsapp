@@ -43,4 +43,5 @@ public class ConversationParticipantEntity {
 	private boolean isActive;
 
 	private LocalDateTime leftAt;
+	private LocalDateTime lastReadAt;
 }

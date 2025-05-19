@@ -2,6 +2,7 @@ package com.ah.whatsapp.service.impl;
 
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.CreateConversationRequest;
+import com.ah.whatsapp.event.ConversationUpdateEvent;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
 import com.ah.whatsapp.mapper.ConversationMapper;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class ConversationServiceImpl implements ConversationService {
 	private final UserRepository userRepository;
 	private final ConversationMapper conversationMapper;
 	private final ConversationParticipantRepository conversationParticipantRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Override
 	@Transactional
@@ -136,14 +139,14 @@ public class ConversationServiceImpl implements ConversationService {
 
 			ConversationParticipant participant = conversation.getParticipants().stream().filter(p -> p.getParticipantId().equals(creatorId))
 				.findFirst().orElse(null);
-				if (participant != null && !participant.isActive()) {
-					participant.setActive(true);
-					participant.setJoinedAt(LocalDateTime.now());
-					participant.setLeftAt(null);
-					conversationParticipantRepository.save(participant);
-					conversation = conversationRepository.findById(conversation.getId())
-						.orElseThrow(() -> new ConversationNotFoundException("Conversation not found"));
-				}
+			if (participant != null && !participant.isActive()) {
+				participant.setActive(true);
+				participant.setJoinedAt(LocalDateTime.now());
+				participant.setLeftAt(null);
+				conversationParticipantRepository.save(participant);
+				conversation = conversationRepository.findById(conversation.getId())
+					.orElseThrow(() -> new ConversationNotFoundException("Conversation not found"));
+			}
 			return conversationMapper.toDto(conversation);
 
 		} else {
@@ -154,6 +157,7 @@ public class ConversationServiceImpl implements ConversationService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteConversationForUser(UUID conversationId, UUID userId) {
 		ConversationParticipant participant = conversationParticipantRepository.findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
 			.orElseThrow(() -> new AccessDeniedException("User is not a participant in this conversation"));
@@ -167,5 +171,20 @@ public class ConversationServiceImpl implements ConversationService {
 		if (participants.stream().noneMatch(ConversationParticipant::isActive)) {
 			conversationRepository.delete(conversationId);
 		}
+	}
+
+	@Override
+	@Transactional
+	public void markConversationAsRead(UUID conversationId, UUID userId) {
+		ConversationParticipant participant = conversationParticipantRepository.findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
+			.orElseThrow(() -> new AccessDeniedException("User is not a participant in this conversation"));
+
+		participant.setLastReadAt(LocalDateTime.now());
+		conversationParticipantRepository.save(participant);
+
+		ConversationDto conversation = conversationMapper.toDto(conversationRepository.findById(conversationId)
+			.orElseThrow(() -> new ConversationNotFoundException("Conversation not found with id: " + conversationId)));
+
+		applicationEventPublisher.publishEvent(new ConversationUpdateEvent(this, conversation));
 	}
 }

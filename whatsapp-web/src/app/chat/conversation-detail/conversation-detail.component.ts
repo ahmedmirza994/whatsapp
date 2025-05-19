@@ -74,6 +74,17 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 				}),
 				takeUntil(this.destroy$)
 			)
+			.pipe(
+				tap(conv => {
+					if (
+						conv &&
+						conv.lastMessage &&
+						conv.lastMessage.senderId !== this.currentUserId
+					) {
+						this.conversationService.markConversationAsRead(conv.id).subscribe();
+					}
+				})
+			)
 			.subscribe({
 				next: convo => {
 					this.updateParticipantDetails(convo?.participants);

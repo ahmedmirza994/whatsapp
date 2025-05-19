@@ -56,4 +56,11 @@ public interface ConversationService {
 	 * @param userId The ID of the user requesting the deletion.
 	 */
 	void deleteConversationForUser(UUID conversationId, UUID userId);
+
+	/**
+	 * Marks a conversation as read for a specific user.
+	 * @param conversationId
+	 * @param userId
+	 */
+	void markConversationAsRead(UUID conversationId, UUID userId);
 }

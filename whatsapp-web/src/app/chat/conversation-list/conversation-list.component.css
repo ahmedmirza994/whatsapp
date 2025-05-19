@@ -187,6 +187,14 @@
 	font-size: 0.8em;
 	transition: color 0.2s;
 }
+
 .delete-conversation-btn:hover {
 	color: #e74c3c;
+}
+
+.message-status {
+	display: inline-flex;
+	align-items: center;
+	margin-left: 6px;
+	vertical-align: middle;
 }

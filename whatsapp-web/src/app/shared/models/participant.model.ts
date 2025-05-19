@@ -5,4 +5,6 @@ export interface Participant {
 	profilePicture: string | null;
 	joinedAt: string;
 	initial: string | null;
+	leftAt: string | null;
+	lastReadAt: string | null;
 }

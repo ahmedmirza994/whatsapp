@@ -72,7 +72,9 @@ public class ConversationMapper {
 			participant.getParticipantEmail(),
 			participant.getParticipantName(),
 			participant.getParticipantProfilePicture(),
-            participant.getJoinedAt()
+            participant.getJoinedAt(),
+	        participant.getLeftAt(),
+			participant.getLastReadAt()
         );
     }
 }

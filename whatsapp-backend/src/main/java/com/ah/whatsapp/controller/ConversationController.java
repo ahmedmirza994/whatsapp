@@ -112,4 +112,12 @@ public class ConversationController {
 		return ResponseEntity.ok(ApiResponse.success(conversationId));
 	}
 
+	@PostMapping("/{conversationId}/read")
+	public ResponseEntity<ApiResponse<UUID>> markAsRead(
+		@PathVariable UUID conversationId,
+		@AuthenticationPrincipal JwtUser currentUser) {
+		conversationService.markConversationAsRead(conversationId, currentUser.getUserId());
+		return ResponseEntity.ok(ApiResponse.success(conversationId));
+	}
+
 }

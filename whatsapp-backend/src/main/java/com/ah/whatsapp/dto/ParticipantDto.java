@@ -9,7 +9,9 @@ public record ParticipantDto(
 	String email,
 	String name,
 	String profilePicture,
-	LocalDateTime joinedAt
+	LocalDateTime joinedAt,
+	LocalDateTime leftAt,
+	LocalDateTime lastReadAt
 ) {
 
 }

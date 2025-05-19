@@ -40,7 +40,70 @@
 					{{ conv.displayParticipant.name || 'Uknown' }}
 				</span>
 				@if (conv.lastMessage) {
-					<p class="last-message">{{ conv.lastMessage.content }}</p>
+					<p class="last-message">
+						@if (conv.lastMessage.senderId === currentUserId) {
+							<span class="message-status">
+								@if (isSeen(conv)) {
+									<svg
+										width="16px"
+										height="16px"
+										viewBox="0 0 16 16"
+										xmlns="http://www.w3.org/2000/svg"
+										version="1.1"
+										fill="none"
+										stroke="#3498db"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="1.5"
+										transform="rotate(0)"
+									>
+										<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+										<g
+											id="SVGRepo_tracerCarrier"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke="#3498db"
+											stroke-width="0.128"
+										></g>
+										<g id="SVGRepo_iconCarrier">
+											<path
+												d="m1.75 9.75 2.5 2.5m3.5-4 2.5-2.5m-4.5 4 2.5 2.5 6-6.5"
+											></path>
+										</g>
+									</svg>
+								} @else {
+									<svg
+										width="16px"
+										height="16px"
+										viewBox="0 0 16 16"
+										xmlns="http://www.w3.org/2000/svg"
+										version="1.1"
+										fill="none"
+										stroke="#7f8c8d"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="1.5"
+										transform="rotate(0)"
+									>
+										<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+										<g
+											id="SVGRepo_tracerCarrier"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke="#7f8c8d"
+											stroke-width="0.128"
+										></g>
+										<g id="SVGRepo_iconCarrier">
+											<path
+												d="m1.75 9.75 2.5 2.5m3.5-4 2.5-2.5m-4.5 4 2.5 2.5 6-6.5"
+											></path>
+										</g>
+									</svg>
+								}
+							</span>
+						}
+						{{ conv.lastMessage.content }}
+					</p>
 				} @else {
 					<p class="last-message no-message">No messages yet</p>
 				}
@@ -54,7 +117,43 @@
 				title="Delete conversation"
 				aria-label="Delete conversation"
 			>
-				🗑️
+				<svg
+					width="20px"
+					height="20px"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+					<g
+						id="SVGRepo_tracerCarrier"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					></g>
+					<g id="SVGRepo_iconCarrier">
+						<path
+							d="M4 7H20"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+						<path
+							d="M6 7V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V7"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+						<path
+							d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+					</g>
+				</svg>
 			</button>
 		</li>
 	} @empty {

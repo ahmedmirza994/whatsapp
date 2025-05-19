@@ -17,4 +17,5 @@ public class ConversationParticipant {
 	private LocalDateTime joinedAt;
 	private boolean isActive;
 	private LocalDateTime leftAt;
+	private LocalDateTime lastReadAt;
 }

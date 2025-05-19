@@ -25,7 +25,28 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
     -   User profile information display
 
 -   **Real-time Communication** ✅
+
     -   WebSocket implementation for instant message delivery
+
+-   **Profile & Settings** ✅
+
+    -   User profile management
+    -   Update profile picture
+
+-   **Message Deletion** ✅
+
+    -   Delete messages from conversations
+    -   Delete entire conversations
+    -   Soft delete implementation (messages are not permanently deleted)
+
+-   **Conversation Read Receipts** ✅
+
+    -   Display "Seen" status for messages
+    -   Timestamps for sent and received messages
+    -   Last seen status for users
+
+-   **Typing Indicators** In Progress
+    -   Show when a user is typing in a conversation
 
 ## Technical Stack
 
