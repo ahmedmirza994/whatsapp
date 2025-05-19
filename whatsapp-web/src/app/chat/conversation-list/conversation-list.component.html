@@ -39,8 +39,8 @@
 				<span class="participant-name">
 					{{ conv.displayParticipant.name || 'Uknown' }}
 				</span>
-				@if (conv.lastMessage?.content) {
-					<p class="last-message">{{ conv.lastMessage?.content }}</p>
+				@if (conv.lastMessage) {
+					<p class="last-message">{{ conv.lastMessage.content }}</p>
 				} @else {
 					<p class="last-message no-message">No messages yet</p>
 				}
@@ -48,6 +48,14 @@
 			@if (conv.lastMessage?.sentAt) {
 				<span class="timestamp">{{ formatTimestamp(conv.lastMessage?.sentAt) }}</span>
 			}
+			<button
+				class="delete-conversation-btn"
+				(click)="onDeleteConversation(conv.id, $event)"
+				title="Delete conversation"
+				aria-label="Delete conversation"
+			>
+				🗑️
+			</button>
 		</li>
 	} @empty {
 		@if (searchQuery()) {
@@ -57,3 +65,12 @@
 		}
 	}
 </ul>
+
+@if (showDeleteModal()) {
+	<app-delete-confirmation-modal
+		title="Delete Conversation?"
+		message="This conversation will be permanently deleted for you. This action cannot be undone."
+		(confirmed)="handleDeleteConfirmed()"
+		(cancelled)="handleDeleteCancelled()"
+	/>
+}

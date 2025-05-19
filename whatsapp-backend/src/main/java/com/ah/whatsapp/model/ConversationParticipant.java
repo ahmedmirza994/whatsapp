@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ConversationParticipant {
-  private UUID id;
-  private UUID conversationId;
-  private UUID participantId;
-  private String participantEmail;
-  private String participantName;
-  private String participantProfilePicture;
-  private LocalDateTime joinedAt;
+	private UUID id;
+	private UUID conversationId;
+	private UUID participantId;
+	private String participantEmail;
+	private String participantName;
+	private String participantProfilePicture;
+	private LocalDateTime joinedAt;
+	private boolean isActive;
+	private LocalDateTime leftAt;
 }

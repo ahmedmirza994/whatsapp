@@ -71,6 +71,7 @@
 		<app-conversation-list
 			[conversations]="conversations"
 			[selectedId]="selectedConversationIdSignal"
+			(conversationDeleted)="handleConversationDeleted($event)"
 		/>
 		@if (error()) {
 			<p class="error-message">{{ error() }}</p>

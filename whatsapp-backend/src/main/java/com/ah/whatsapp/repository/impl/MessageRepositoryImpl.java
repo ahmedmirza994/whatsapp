@@ -1,5 +1,6 @@
 package com.ah.whatsapp.repository.impl;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,8 @@ public class MessageRepositoryImpl implements MessageRepository {
 	}
 
 	@Override
-	public List<Message> findByConversationId(UUID conversationId) {
-		return messageEntityRepository.findByConversationIdOrderBySentAtAsc(conversationId).stream()
+	public List<Message> findByConversationIdAndSentAtAfter(UUID conversationId,  LocalDateTime sentAt) {
+		return messageEntityRepository.findByConversationIdAndSendAtAfterOrderBySentAtAsc(conversationId, sentAt).stream()
 			.map(messageMapper::toModel)
 			.collect(Collectors.toList());
 	}

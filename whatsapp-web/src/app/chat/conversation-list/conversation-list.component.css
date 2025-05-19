@@ -177,3 +177,16 @@
 	font-size: 0.8em;
 	color: #7f8c8d;
 }
+
+.delete-conversation-btn {
+	background: none;
+	border: none;
+	color: #7f8c8d;
+	cursor: pointer;
+	margin-left: auto;
+	font-size: 0.8em;
+	transition: color 0.2s;
+}
+.delete-conversation-btn:hover {
+	color: #e74c3c;
+}

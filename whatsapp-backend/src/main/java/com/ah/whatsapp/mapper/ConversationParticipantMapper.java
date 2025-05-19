@@ -26,6 +26,8 @@ public class ConversationParticipantMapper {
         entity.setConversation(conversationEntity);
         entity.setUser(userEntity);
         entity.setJoinedAt(model.getJoinedAt());
+		entity.setLeftAt(model.getLeftAt());
+	    entity.setActive(model.isActive());
         return entity;
     }
 
@@ -42,6 +44,8 @@ public class ConversationParticipantMapper {
 		model.setParticipantName(user.getName());
 		model.setParticipantProfilePicture(user.getProfilePicture());
         model.setJoinedAt(entity.getJoinedAt());
+	    model.setActive(entity.isActive());
+	    model.setLeftAt(entity.getLeftAt());
         return model;
     }
 

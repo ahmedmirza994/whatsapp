@@ -2,7 +2,6 @@ package com.ah.whatsapp.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

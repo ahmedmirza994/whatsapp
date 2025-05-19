@@ -31,4 +31,10 @@ export class ConversationService {
 			.post<Conversation>(`${this.apiUrl}/find-or-create`, payload)
 			.pipe(map(response => response.data!)); // Assume data is present
 	}
+
+	deleteConversation(convId: string): Observable<string> {
+		return this.httpClientService
+			.delete<string>(`${this.apiUrl}/${convId}`)
+			.pipe(map(response => response.data || convId));
+	}
 }

@@ -14,17 +14,21 @@ public interface ConversationParticipantEntityRepository
 	extends JpaRepository<ConversationParticipantEntity, UUID> {
 
 	@Query("select cpe from ConversationParticipantEntity cpe join fetch cpe.user where cpe.conversation.id = :conversationId")
-	List<ConversationParticipantEntity> findByConversationIdWithUser(UUID conversationId);
+	List<ConversationParticipantEntity> findByConversationIdAndIsActiveTrueWithUser(UUID conversationId);
 
-	List<ConversationParticipantEntity> findByUserId(UUID userId);
-
-	Optional<ConversationParticipantEntity> findByConversationIdAndUserId(
+	@Query("select cpe from ConversationParticipantEntity cpe join fetch cpe.user where cpe.conversation.id = :conversationId and cpe.user.id = :userId and cpe.isActive = true")
+	Optional<ConversationParticipantEntity> findByConversationIdAndUserIdAndIsActiveTrue(
 		UUID conversationId, UUID userId);
 
-	boolean existsByConversationIdAndUserId(UUID conversationId, UUID userId);
-
-	List<ConversationParticipantEntity> findByConversationIdIn(List<UUID> conversationIds);
+	boolean existsByConversationIdAndUserIdAndIsActiveTrue(UUID conversationId, UUID userId);
 
 	@Query("select cpe from ConversationParticipantEntity cpe join fetch cpe.user where cpe.conversation.id in :conversationIds")
-	List<ConversationParticipantEntity> findByConversationIdInWithUser(@Param("conversationIds") List<UUID> conversationIds);
+	List<ConversationParticipantEntity> findByConversationIdInAndIsActiveTrueWithUser(@Param("conversationIds") List<UUID> conversationIds);
+
+	@Query("select cpe from ConversationParticipantEntity cpe join fetch cpe.user where cpe.conversation.id = :conversationId")
+	List<ConversationParticipantEntity> findByConversationIdWithUser(UUID conversationId);
+
+	@Query("select cpe from ConversationParticipantEntity cpe join fetch cpe.user where cpe.conversation.id = :conversationId and cpe.user.id = :userId")
+	Optional<ConversationParticipantEntity> findByConversationIdAndUserId(
+		UUID conversationId, UUID userId);
 }

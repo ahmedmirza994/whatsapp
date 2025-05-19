@@ -1,11 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, Input, Signal, signal } from '@angular/core';
+import {
+	Component,
+	computed,
+	EventEmitter,
+	inject,
+	Input,
+	Output,
+	Signal,
+	signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service'; // Correct path
+import { DeleteConfirmationModalComponent } from '../../shared/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { Conversation } from '../../shared/models/conversation.model';
 import { Participant } from '../../shared/models/participant.model';
 import { getInitial } from '../../shared/models/user.model';
 import { UserService } from '../../shared/services/user.service';
+import { ConversationService } from '../conversation.service';
 import { NavigationService } from './../../shared/services/navigation.service';
 
 interface ProcessedConversation extends Conversation {
@@ -15,17 +26,22 @@ interface ProcessedConversation extends Conversation {
 @Component({
 	selector: 'app-conversation-list',
 	standalone: true,
-	imports: [CommonModule, FormsModule],
+	imports: [CommonModule, FormsModule, DeleteConfirmationModalComponent],
 	templateUrl: './conversation-list.component.html',
 	styleUrls: ['./conversation-list.component.css'],
 })
 export class ConversationListComponent {
 	@Input({ required: true }) conversations!: Signal<Conversation[]>;
 	@Input({ required: true }) selectedId!: Signal<string | null | undefined>;
+	@Output() conversationDeleted = new EventEmitter<string>();
+
+	showDeleteModal = signal(false);
+	conversationToDelete: string | null = null;
 
 	private navigationService = inject(NavigationService);
 	private authService = inject(AuthService);
 	private userService = inject(UserService);
+	private conversationService = inject(ConversationService);
 
 	private currentUserId = this.authService.loggedInUser?.id; // Use signal getter
 	searchQuery = signal<string>('');
@@ -52,6 +68,34 @@ export class ConversationListComponent {
 			};
 		});
 	});
+
+	onDeleteConversation(id: string, event: MouseEvent): void {
+		event.stopPropagation(); // Prevent navigation
+		this.conversationToDelete = id;
+		this.showDeleteModal.set(true);
+	}
+
+	handleDeleteConfirmed() {
+		if (this.conversationToDelete) {
+			this.conversationService.deleteConversation(this.conversationToDelete).subscribe({
+				next: () => {
+					this.conversationDeleted.emit(this.conversationToDelete!);
+					this.showDeleteModal.set(false);
+					this.conversationToDelete = null;
+				},
+				error: err => {
+					alert('Failed to delete conversation.');
+					this.showDeleteModal.set(false);
+					this.conversationToDelete = null;
+				},
+			});
+		}
+	}
+
+	handleDeleteCancelled() {
+		this.showDeleteModal.set(false);
+		this.conversationToDelete = null;
+	}
 
 	onFilterQueryChange(query: string): void {
 		console.log('Filter query changed:', query);

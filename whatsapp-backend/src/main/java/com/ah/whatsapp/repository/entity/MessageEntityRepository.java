@@ -1,6 +1,7 @@
 package com.ah.whatsapp.repository.entity;
 
 import com.ah.whatsapp.entity.MessageEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageEntityRepository extends JpaRepository<MessageEntity, UUID> {
 
-	@Query("select m from MessageEntity m join fetch m.sender where m.conversation.id = :conversationId")
-	List<MessageEntity> findByConversationIdOrderBySentAtAsc(UUID conversationId);
+	@Query("select m from MessageEntity m join fetch m.sender where m.conversation.id = :conversationId and m.sentAt > :sentAt")
+	List<MessageEntity> findByConversationIdAndSendAtAfterOrderBySentAtAsc(UUID conversationId, LocalDateTime sentAt);
 
 	List<MessageEntity> findBySenderId(UUID senderId);
 

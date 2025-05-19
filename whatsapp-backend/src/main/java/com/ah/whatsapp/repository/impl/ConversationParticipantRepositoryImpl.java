@@ -1,13 +1,5 @@
 package com.ah.whatsapp.repository.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.entity.ConversationParticipantEntity;
 import com.ah.whatsapp.entity.UserEntity;
@@ -19,7 +11,15 @@ import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 import com.ah.whatsapp.repository.entity.ConversationParticipantEntityRepository;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +60,37 @@ public class ConversationParticipantRepositoryImpl implements ConversationPartic
 	}
 
 	@Override
+	public List<ConversationParticipant> findByConversationIdAndIsActiveTrue(UUID conversationId) {
+		return participantEntityRepository.findByConversationIdAndIsActiveTrueWithUser(conversationId).stream()
+			.map(participantMapper::toModel)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean existsByConversationIdAndUserIdAndIsActiveTrue(UUID conversationId, UUID userId) {
+		return participantEntityRepository.existsByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId);
+	}
+
+	@Override
+	public Map<UUID, List<ConversationParticipant>> findParticipantsForConversationsAndIsActiveTrue(List<UUID> conversationIds) {
+		if (conversationIds == null || conversationIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		List<ConversationParticipantEntity> participantEntities = participantEntityRepository.findByConversationIdInAndIsActiveTrueWithUser(conversationIds);
+
+		return participantEntities.stream()
+			.map(participantMapper::toModel)
+			.collect(Collectors.groupingBy(ConversationParticipant::getConversationId));
+	}
+
+	@Override
+	public Optional<ConversationParticipant> findByConversationIdAndUserIdAndIsActiveTrue(UUID conversationId, UUID userId) {
+		return participantEntityRepository
+			.findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
+			.map(participantMapper::toModel);
+	}
+
+	@Override
 	public List<ConversationParticipant> findByConversationId(UUID conversationId) {
 		return participantEntityRepository.findByConversationIdWithUser(conversationId).stream()
 			.map(participantMapper::toModel)
@@ -67,38 +98,9 @@ public class ConversationParticipantRepositoryImpl implements ConversationPartic
 	}
 
 	@Override
-	public List<ConversationParticipant> findByUserId(UUID userId) {
-		return participantEntityRepository.findByUserId(userId).stream()
-			.map(participantMapper::toModel)
-			.collect(Collectors.toList());
-	}
-
-	@Override
 	public Optional<ConversationParticipant> findByConversationIdAndUserId(UUID conversationId, UUID userId) {
-		return participantEntityRepository.findByConversationIdAndUserId(conversationId, userId)
+		return participantEntityRepository
+			.findByConversationIdAndUserId(conversationId, userId)
 			.map(participantMapper::toModel);
 	}
-
-	@Override
-	public boolean existsByConversationIdAndUserId(UUID conversationId, UUID userId) {
-		return participantEntityRepository.existsByConversationIdAndUserId(conversationId, userId);
-	}
-
-	@Override
-	@Transactional
-	public void delete(UUID id) {
-		participantEntityRepository.deleteById(id);
-	}
-
-	@Override
-    public Map<UUID, List<ConversationParticipant>> findParticipantsForConversations(List<UUID> conversationIds) {
-        if (conversationIds == null || conversationIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        List<ConversationParticipantEntity> participantEntities = participantEntityRepository.findByConversationIdInWithUser(conversationIds);
-
-        return participantEntities.stream()
-            .map(participantMapper::toModel)
-            .collect(Collectors.groupingBy(ConversationParticipant::getConversationId));
-    }
 }

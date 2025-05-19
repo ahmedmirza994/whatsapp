@@ -13,7 +13,7 @@ public interface ConversationEntityRepository extends JpaRepository<Conversation
       value =
           "select c.* from conversations c "
               + "join conversation_participants cp on c.id = cp.conversation_id "
-              + "where cp.user_id = :userId order by c.updated_at desc",
+              + "where cp.user_id = :userId and cp.is_active = true order by c.updated_at desc",
       nativeQuery = true)
   List<ConversationEntity> findConversationsByUserId(UUID userId);
 

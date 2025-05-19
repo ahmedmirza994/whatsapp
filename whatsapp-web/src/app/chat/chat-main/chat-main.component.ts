@@ -153,6 +153,13 @@ export class ChatMainComponent implements OnInit, OnDestroy {
 			});
 	}
 
+	handleConversationDeleted(conversationId: string): void {
+		this.conversations.update(list => list.filter(c => c.id !== conversationId));
+		if (this.selectedConversationIdSignal() === conversationId) {
+			this.navigationService.toChat(null);
+		}
+	}
+
 	openNewConversationModal(): void {
 		this.showNewConversationModal.set(true);
 	}

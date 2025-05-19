@@ -3,6 +3,7 @@ package com.ah.whatsapp.service.impl;
 import com.ah.whatsapp.event.ConversationUpdateEvent;
 import com.ah.whatsapp.event.MessageDeletedEvent;
 import com.ah.whatsapp.event.NewMessageEvent;
+import com.ah.whatsapp.model.ConversationParticipant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -13,13 +14,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ah.whatsapp.constant.WebSocketConstants;
-import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_QUEUE;
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
-import com.ah.whatsapp.dto.WebSocketEvent;
-import com.ah.whatsapp.enums.EventType;
 import com.ah.whatsapp.exception.ConversationNotFoundException;
 import com.ah.whatsapp.exception.MessageNotFoundException;
 import com.ah.whatsapp.exception.UserNotFoundException;
@@ -59,9 +56,19 @@ public class MessageServiceImpl implements MessageService {
         Conversation conversation = conversationRepository.findById(request.conversationId())
             .orElseThrow(() -> new ConversationNotFoundException("Conversation not found"));
 
-		if (!conversationParticipantRepository.existsByConversationIdAndUserId(request.conversationId(), senderId)) {
+		if (!conversationParticipantRepository.existsByConversationIdAndUserIdAndIsActiveTrue(request.conversationId(), senderId)) {
             throw new AccessDeniedException("User is not a participant in this conversation");
         }
+
+		List<ConversationParticipant> participants = conversationParticipantRepository.findByConversationId(request.conversationId());
+
+		for (ConversationParticipant participant : participants) {
+			if (!participant.isActive()) {
+				participant.setActive(true);
+				participant.setJoinedAt(LocalDateTime.now());
+				conversationParticipantRepository.save(participant);
+			}
+		}
 
         Message message = new Message();
         message.setConversationId(conversation.getId());
@@ -93,11 +100,14 @@ public class MessageServiceImpl implements MessageService {
             throw new ConversationNotFoundException("Conversation not found");
         }
 
-		if (!conversationParticipantRepository.existsByConversationIdAndUserId(conversationId, userId)) {
+		if (!conversationParticipantRepository.existsByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)) {
 			throw new AccessDeniedException("User is not a participant in this conversation");
 		}
 
-		return messageRepository.findByConversationId(conversationId).stream()
+		ConversationParticipant participant = conversationParticipantRepository.findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
+			.orElseThrow(() -> new AccessDeniedException("User is not a participant in this conversation"));
+
+		return messageRepository.findByConversationIdAndSentAtAfter(conversationId, participant.getJoinedAt()).stream()
             .map(messageMapper::toDto)
             .toList();
 	}

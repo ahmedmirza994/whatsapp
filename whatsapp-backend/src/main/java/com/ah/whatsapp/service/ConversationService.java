@@ -48,4 +48,12 @@ public interface ConversationService {
 
 
 	ConversationDto findOrCreateConversation(CreateConversationRequest createConversationRequest, UUID creatorId);
+
+	/**
+	 * Deletes a conversation for a specific user.
+	 *
+	 * @param conversationId The ID of the conversation to delete.
+	 * @param userId The ID of the user requesting the deletion.
+	 */
+	void deleteConversationForUser(UUID conversationId, UUID userId);
 }

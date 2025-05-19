@@ -1,0 +1,10 @@
+databaseChangeLog:
+    - changeSet:
+          id: V004__alter_conversation_participants_add_is_active
+          author: Ahmed Haris
+          changes:
+              - sqlFile:
+                    relativeToChangelogFile: true
+                    path: ../sql/V004__alter_conversation_participants_add_is_active.sql
+                    splitStatements: false
+
