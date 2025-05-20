@@ -45,7 +45,7 @@ This project is a WhatsApp-like web application built with Spring Boot (Java) ba
     -   Timestamps for sent and received messages
     -   Last seen status for users
 
--   **Typing Indicators** In Progress
+-   **Typing Indicators** ✅
     -   Show when a user is typing in a conversation
 
 ## Technical Stack

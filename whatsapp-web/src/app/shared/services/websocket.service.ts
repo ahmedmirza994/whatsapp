@@ -5,7 +5,7 @@ import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/enviroment'; // Adjust path if needed
 import { AuthService } from '../../auth/auth.service'; // Adjust path if needed
 import { USER_CONVERSATION_QUEUE, WS_ENDPOINT_PATH } from '../constants/websocket.constants';
-import { WebSocketEvent } from '../models/websocket-event.model';
+import { EventType, WebSocketEvent } from '../models/websocket-event.model';
 
 // Define connection states
 export enum ConnectionState {
@@ -328,5 +328,26 @@ export class WebSocketService implements OnDestroy {
 		} catch (error) {
 			console.error(`WebSocket: Error during STOMP publish to ${destination}:`, error);
 		}
+	}
+
+	sendTypingEvent(conversationId: string, eventType: EventType) {
+		const userId = this.authService.loggedInUser?.id;
+		if (!userId) return;
+		this.stompClient?.publish({
+			destination: `/app/typing`,
+			body: JSON.stringify({
+				conversationId,
+				userId,
+				eventType,
+			}),
+		});
+	}
+
+	subscribeToTyping(conversationId: string, callback: (event: WebSocketEvent) => void) {
+		const destination = `/topic/conversations/${conversationId}/typing`;
+		console.log(`WebSocket: Subscribing to typing events for ${conversationId}`);
+		return this.stompClient?.subscribe(destination, message =>
+			callback(JSON.parse(message.body))
+		);
 	}
 }

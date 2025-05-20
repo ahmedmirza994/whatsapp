@@ -14,6 +14,7 @@
 		placeholder="Type a message..."
 		[(ngModel)]="messageContent"
 		(keydown.enter)="sendMessage()"
+		(input)="onInputChange()"
 		aria-label="Message input"
 		(click)="$event.stopPropagation()"
 	/>
