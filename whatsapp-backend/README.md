@@ -108,7 +108,28 @@ API base URL: [http://localhost:8080/api](http://localhost:8080/api)
 
 ---
 
-## 6️⃣ Useful Commands
+## 6️⃣ API Documentation (Swagger / OpenAPI)
+
+-   **Swagger UI** is available for interactive API exploration and testing.
+-   The backend uses [springdoc-openapi](https://springdoc.org/) for automatic OpenAPI 3 documentation.
+-   After starting the backend, access the Swagger UI at:
+
+	```
+	http://localhost:8080/api/swagger-ui/index.html
+	```
+
+-   All endpoints require a valid JWT token. Use the "Authorize" button in Swagger UI and enter your token as:
+	```
+	Bearer <your-jwt-token>
+	```
+-   The OpenAPI spec is available at:
+	```
+	http://localhost:8080/api/v3/api-docs
+	```
+
+---
+
+## 7️⃣ Useful Commands
 
 -   **Stop the database:**
     ```bash
@@ -125,7 +146,7 @@ API base URL: [http://localhost:8080/api](http://localhost:8080/api)
 
 ---
 
-## 7️⃣ Troubleshooting
+## 8️⃣ Troubleshooting
 
 -   If port 5432 is in use, change the port in `docker-compose.yml` and `application.env`.
 -   If migrations fail, check logs and ensure the DB is empty or compatible.
@@ -136,7 +157,7 @@ API base URL: [http://localhost:8080/api](http://localhost:8080/api)
 
 ---
 
-## 8️⃣ Development Best Practices
+## 9️⃣ Development Best Practices
 
 -   Use feature branches for new work.
 -   Write unit and integration tests for all changes.
@@ -147,7 +168,7 @@ API base URL: [http://localhost:8080/api](http://localhost:8080/api)
 
 ---
 
-## 9️⃣ Project Status
+## 🔟 Project Status
 
 -   Authentication system is fully implemented
 -   Database schema is defined
