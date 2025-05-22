@@ -51,7 +51,10 @@ public class SecurityConfig {
 					"/users/signup",
 					"/users/login",
 					"/files/profile-pictures/**",
-					"/ws/**"
+					"/ws/**",
+					"/v3/api-docs/**",
+					"/swagger-ui/**",
+					"/swagger-ui.html"
 					).permitAll()
 				.anyRequest().authenticated())
 			.authenticationManager(authenticationManager)
