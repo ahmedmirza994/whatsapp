@@ -1,5 +1,15 @@
 package com.ah.whatsapp.repository.impl;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.mapper.ConversationMapper;
 import com.ah.whatsapp.model.Conversation;
@@ -9,16 +19,9 @@ import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -55,7 +58,7 @@ public class ConversationRepositoryImpl implements ConversationRepository {
 
 		List<UUID> conversationIds = conversationEntities.stream()
 			.map(ConversationEntity::getId)
-			.collect(Collectors.toList());
+			.toList();
 
 		Map<UUID, Message> lastMessagesMap = messageRepository.findLatestMessagesForConversations(conversationIds);
 		Map<UUID, List<ConversationParticipant>> participantsMap = conversationParticipantRepository.findParticipantsForConversationsAndIsActiveTrue(conversationIds);
@@ -83,7 +86,7 @@ public class ConversationRepositoryImpl implements ConversationRepository {
 
 				return conversation;
 			})
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private void loadLastMessage(Conversation conversation) {

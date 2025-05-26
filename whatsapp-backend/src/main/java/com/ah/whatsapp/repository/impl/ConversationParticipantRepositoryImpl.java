@@ -1,5 +1,15 @@
 package com.ah.whatsapp.repository.impl;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.entity.ConversationParticipantEntity;
 import com.ah.whatsapp.entity.UserEntity;
@@ -11,15 +21,8 @@ import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 import com.ah.whatsapp.repository.entity.ConversationParticipantEntityRepository;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +66,7 @@ public class ConversationParticipantRepositoryImpl implements ConversationPartic
 	public List<ConversationParticipant> findByConversationIdAndIsActiveTrue(UUID conversationId) {
 		return participantEntityRepository.findByConversationIdAndIsActiveTrueWithUser(conversationId).stream()
 			.map(participantMapper::toModel)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override
@@ -94,7 +97,7 @@ public class ConversationParticipantRepositoryImpl implements ConversationPartic
 	public List<ConversationParticipant> findByConversationId(UUID conversationId) {
 		return participantEntityRepository.findByConversationIdWithUser(conversationId).stream()
 			.map(participantMapper::toModel)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override

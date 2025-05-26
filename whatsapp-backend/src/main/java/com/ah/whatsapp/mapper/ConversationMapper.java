@@ -1,19 +1,17 @@
 package com.ah.whatsapp.mapper;
 
-import com.ah.whatsapp.dto.MessageDto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import com.ah.whatsapp.dto.ConversationDto;
+import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.ParticipantDto;
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.ConversationParticipant;
-import com.ah.whatsapp.model.Message;
 
 @Component
 public class ConversationMapper {
@@ -50,14 +48,14 @@ public class ConversationMapper {
 		if(model.getParticipants() != null) {
 			List<ParticipantDto> participantDtos = model.getParticipants().stream()
                 .map(this::mapToParticipantDto)
-                .collect(Collectors.toList());
+                .toList();
             dto.setParticipants(participantDtos);
 		}
 
 		if (model.getMessages() != null) {
             List<MessageDto> messageDtos = model.getMessages().stream()
 				.map(messageMapper::toDto)
-				.collect(Collectors.toList());
+				.toList();
 			dto.setMessages(messageDtos);
         }
 		dto.setLastMessage(model.getLastMessage() != null ? messageMapper.toDto(model.getLastMessage()) : null);

@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.ConversationParticipant;
 import com.ah.whatsapp.model.Message;
@@ -18,10 +20,10 @@ import com.ah.whatsapp.repository.ConversationParticipantRepository;
 import com.ah.whatsapp.repository.ConversationRepository;
 import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Profile("dev")

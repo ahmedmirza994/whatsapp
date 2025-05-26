@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.entity.MessageEntity;
 import com.ah.whatsapp.entity.UserEntity;
@@ -19,6 +21,7 @@ import com.ah.whatsapp.repository.MessageRepository;
 import com.ah.whatsapp.repository.entity.ConversationEntityRepository;
 import com.ah.whatsapp.repository.entity.MessageEntityRepository;
 import com.ah.whatsapp.repository.entity.UserEntityRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -55,7 +58,7 @@ public class MessageRepositoryImpl implements MessageRepository {
 	public List<Message> findByConversationIdAndSentAtAfter(UUID conversationId,  LocalDateTime sentAt) {
 		return messageEntityRepository.findByConversationIdAndSendAtAfterOrderBySentAtAsc(conversationId, sentAt).stream()
 			.map(messageMapper::toModel)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override

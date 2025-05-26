@@ -1,13 +1,10 @@
 package com.ah.whatsapp.service.impl;
 
-import com.ah.whatsapp.dto.UserUpdateDto;
-import com.ah.whatsapp.enums.FolderName;
-import com.ah.whatsapp.service.FileStorage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -16,17 +13,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ah.whatsapp.dto.LoginDto;
 import com.ah.whatsapp.dto.UserDto;
+import com.ah.whatsapp.dto.UserUpdateDto;
+import com.ah.whatsapp.enums.FolderName;
 import com.ah.whatsapp.exception.InvalidCredentialsException;
 import com.ah.whatsapp.exception.UserAlreadyExistsException;
 import com.ah.whatsapp.exception.UserNotFoundException;
 import com.ah.whatsapp.mapper.UserMapper;
 import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.repository.UserRepository;
+import com.ah.whatsapp.service.FileStorage;
 import com.ah.whatsapp.service.UserService;
 import com.ah.whatsapp.util.JwtUtil;
-import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @Service
@@ -96,8 +97,8 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.searchUsers(query.trim(), excludeUserId);
 
         return users.stream()
-			.map(user -> userMapper.toDto(user))
-			.collect(Collectors.toList());
+			.map(userMapper::toDto)
+			.toList();
     }
 
     @Override
