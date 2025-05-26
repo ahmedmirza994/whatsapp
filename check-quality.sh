@@ -97,7 +97,7 @@ fi
 echo ""
 echo "🔗 Next steps:"
 echo "1. Review test coverage in: build/reports/jacoco/test/index.html"
-echo "2. Check SonarCloud dashboard: https://sonarcloud.io/project/overview?id=whatsapp-backend"
+echo "2. Check SonarCloud dashboard: https://sonarcloud.io/project/overview?id=ahmedmirza994_whatsapp"
 echo "3. Create a pull request to trigger automated quality checks"
 echo ""
 echo "🎉 Your code is ready for review!"

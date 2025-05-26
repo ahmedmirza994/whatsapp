@@ -105,10 +105,10 @@ Workflows only trigger for changes in the `whatsapp-backend/` directory to optim
 
 After running the workflows, you can access:
 
--   [📊 SonarCloud Project Dashboard](https://sonarcloud.io/project/overview?id=whatsapp-backend)
--   [📋 Coverage Details](https://sonarcloud.io/component_measures?id=whatsapp-backend&metric=coverage)
--   [🔍 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=whatsapp-backend)
--   [🎯 Quality Gate](https://sonarcloud.io/project/quality_gate?id=whatsapp-backend)
+-   [📊 SonarCloud Project Dashboard](https://sonarcloud.io/project/overview?id=ahmedmirza994_whatsapp)
+-   [📋 Coverage Details](https://sonarcloud.io/component_measures?id=ahmedmirza994_whatsapp&metric=coverage)
+-   [🔍 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=ahmedmirza994_whatsapp)
+-   [🎯 Quality Gate](https://sonarcloud.io/project/quality_gate?id=ahmedmirza994_whatsapp)
 
 ## 🛠️ Local Testing
 

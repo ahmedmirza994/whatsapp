@@ -81,7 +81,7 @@ jobs:
                   if [ "${{ github.event_name }}" = "pull_request" ]; then
                     ./gradlew sonarqube \
                       -Dsonar.organization=ahmedmirza994 \
-                      -Dsonar.projectKey=whatsapp-backend \
+                      -Dsonar.projectKey=ahmedmirza994_whatsapp \
                       -Dsonar.host.url=https://sonarcloud.io \
                       -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
                       -Dsonar.pullrequest.key=${{ github.event.number }} \
@@ -90,7 +90,7 @@ jobs:
                   else
                     ./gradlew sonarqube \
                       -Dsonar.organization=ahmedmirza994 \
-                      -Dsonar.projectKey=whatsapp-backend \
+                      -Dsonar.projectKey=ahmedmirza994_whatsapp \
                       -Dsonar.host.url=https://sonarcloud.io \
                       -Dsonar.login=${{ secrets.SONAR_TOKEN }}
                   fi
@@ -199,9 +199,9 @@ jobs:
 
                   # SonarCloud link
                   echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
-                  echo "- [📊 SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=whatsapp-backend)" >> $GITHUB_STEP_SUMMARY
-                  echo "- [📋 Detailed Coverage Report](https://sonarcloud.io/component_measures?id=whatsapp-backend&metric=coverage)" >> $GITHUB_STEP_SUMMARY
-                  echo "- [🔍 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=whatsapp-backend)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [📊 SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=ahmedmirza994_whatsapp)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [📋 Detailed Coverage Report](https://sonarcloud.io/component_measures?id=ahmedmirza994_whatsapp&metric=coverage)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [🔍 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=ahmedmirza994_whatsapp)" >> $GITHUB_STEP_SUMMARY
                   echo "" >> $GITHUB_STEP_SUMMARY
 
             - name: Quality Gate Status Check
@@ -212,7 +212,7 @@ jobs:
 
                   # Check if the quality gate passed
                   QUALITY_GATE_STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-                    "https://sonarcloud.io/api/qualitygates/project_status?projectKey=whatsapp-backend" \
+                    "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ahmedmirza994_whatsapp" \
                     | jq -r '.projectStatus.status')
 
                   echo "Quality Gate Status: $QUALITY_GATE_STATUS"

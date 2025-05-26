@@ -1,11 +1,11 @@
 # WhatsApp Clone – Full Stack Project
 
-[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=bugs)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
 
 This repository contains a full-stack WhatsApp-like web application, built with a **Spring Boot (Java)** backend and an **Angular 19** frontend.  
 **Note:** This project is developed by me to polish and deepen my skills in modern web technologies, real-time communication, and scalable application architecture.
@@ -109,9 +109,9 @@ This project uses **GitHub Actions** for automated testing, code quality analysi
 
 ### 🔗 Quality Dashboard
 
--   [📊 SonarCloud Project](https://sonarcloud.io/project/overview?id=whatsapp-backend)
--   [📋 Coverage Report](https://sonarcloud.io/component_measures?id=whatsapp-backend&metric=coverage)
--   [🔒 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=whatsapp-backend)
+-   [📊 SonarCloud Project](https://sonarcloud.io/project/overview?id=ahmedmirza994_whatsapp)
+-   [📋 Coverage Report](https://sonarcloud.io/component_measures?id=ahmedmirza994_whatsapp&metric=coverage)
+-   [🔒 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=ahmedmirza994_whatsapp)
 
 ### 📁 CI/CD Documentation
 

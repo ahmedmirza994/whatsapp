@@ -28,22 +28,22 @@ jobs:
 
                   # Get quality gate status
                   QUALITY_GATE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-                    "https://sonarcloud.io/api/qualitygates/project_status?projectKey=whatsapp-backend" \
+                    "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ahmedmirza994_whatsapp" \
                     | jq -r '.projectStatus.status')
 
                   # Get coverage percentage
                   COVERAGE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-                    "https://sonarcloud.io/api/measures/component?component=whatsapp-backend&metricKeys=coverage" \
+                    "https://sonarcloud.io/api/measures/component?component=ahmedmirza994_whatsapp&metricKeys=coverage" \
                     | jq -r '.component.measures[0].value // "0"')
 
                   # Get bugs count
                   BUGS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-                    "https://sonarcloud.io/api/measures/component?component=whatsapp-backend&metricKeys=bugs" \
+                    "https://sonarcloud.io/api/measures/component?component=ahmedmirza994_whatsapp&metricKeys=bugs" \
                     | jq -r '.component.measures[0].value // "0"')
 
                   # Get code smells count
                   CODE_SMELLS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-                    "https://sonarcloud.io/api/measures/component?component=whatsapp-backend&metricKeys=code_smells" \
+                    "https://sonarcloud.io/api/measures/component?component=ahmedmirza994_whatsapp&metricKeys=code_smells" \
                     | jq -r '.component.measures[0].value // "0"')
 
                   echo "quality_gate=$QUALITY_GATE" >> $GITHUB_OUTPUT
