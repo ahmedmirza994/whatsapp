@@ -1,3 +1,7 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.repository.entity;
 
 import java.util.List;
@@ -11,13 +15,15 @@ import com.ah.whatsapp.entity.UserEntity;
 
 @Repository
 public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
-	boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
-	UserEntity findByEmail(String email);
+    UserEntity findByEmail(String email);
 
-	@Query(
-		value = "select * from users where (name ilike '%' || :query || '%' or email ilike '%' || :query || '%' or phone like '%' || :query || '%') and id != :excludeUserId",
-		nativeQuery = true
-	)
-	List<UserEntity> searchUsers(String query, UUID excludeUserId);
+    @Query(
+            value =
+                    "select * from users where (name ilike '%' || :query || '%' or email ilike '%'"
+                            + " || :query || '%' or phone like '%' || :query || '%') and id !="
+                            + " :excludeUserId",
+            nativeQuery = true)
+    List<UserEntity> searchUsers(String query, UUID excludeUserId);
 }

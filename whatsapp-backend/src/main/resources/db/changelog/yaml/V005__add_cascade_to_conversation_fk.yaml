@@ -7,4 +7,3 @@ databaseChangeLog:
                     relativeToChangelogFile: true
                     path: ../sql/V005__add_cascade_to_conversation_fk.sql
                     splitStatements: false
-

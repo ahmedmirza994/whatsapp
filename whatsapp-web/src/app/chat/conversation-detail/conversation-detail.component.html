@@ -1,30 +1,21 @@
 @if (conversationId(); as convId) {
-	<!-- Conversation Header -->
-	<div class="conversation-header">
-		<div class="participant-details">
-			<div class="avatar-placeholder">
-				@if (participant()?.profilePicture) {
-					<img
-						[src]="participant()?.profilePicture"
-						[alt]="participant()?.name"
-						class="avatar-image"
-						title="{{ participant()?.name }}"
-					/>
-				} @else {
-					<span>{{ participant()?.initial || '?' }}</span>
-				}
-			</div>
-			<span class="participant-name">{{ participant()?.name || 'Unknown' }}</span>
-		</div>
-	</div>
+  <!-- Conversation Header -->
+  <div class="conversation-header">
+    <div class="participant-details">
+      <div class="avatar-placeholder">
+        @if (participant()?.profilePicture) {
+          <img [src]="participant()?.profilePicture" [alt]="participant()?.name" class="avatar-image" title="{{ participant()?.name }}" />
+        } @else {
+          <span>{{ participant()?.initial || '?' }}</span>
+        }
+      </div>
+      <span class="participant-name">{{ participant()?.name || 'Unknown' }}</span>
+    </div>
+  </div>
 
-	<app-message-area class="message-display-area" [conversationId]="convId" />
-	@if (isTyping()) {
-		<div class="typing-indicator">{{ participant()?.name }} is typing…</div>
-	}
-	<app-message-input
-		class="message-input-area"
-		(messageSent)="handleSendMessage($event)"
-		[conversationId]="convId"
-	/>
+  <app-message-area class="message-display-area" [conversationId]="convId" />
+  @if (isTyping()) {
+    <div class="typing-indicator">{{ participant()?.name }} is typing…</div>
+  }
+  <app-message-input class="message-input-area" (messageSent)="handleSendMessage($event)" [conversationId]="convId" />
 } @else {}

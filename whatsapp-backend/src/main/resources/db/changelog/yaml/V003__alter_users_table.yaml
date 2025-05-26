@@ -7,4 +7,3 @@ databaseChangeLog:
                     relativeToChangelogFile: true
                     path: ../sql/V003__alter_users_table.sql
                     splitStatements: false
-

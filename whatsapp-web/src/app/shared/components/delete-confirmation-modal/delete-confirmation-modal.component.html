@@ -1,18 +1,13 @@
-<div class="modal-backdrop" (click)="cancel()"></div>
-<div
-	class="modal-content"
-	role="dialog"
-	aria-modal="true"
-	aria-labelledby="deleteTitle"
-	(click)="$event.stopPropagation()"
->
-	<button class="close-button" (click)="cancel()" aria-label="Close">&times;</button>
-	<h2 id="deleteTitle">{{ title || 'Delete?' }}</h2>
-	<p>
-		{{ message || 'This item will be permanently deleted. This action cannot be undone.' }}
-	</p>
-	<div class="actions">
-		<button class="cancel-btn" (click)="cancel()">Cancel</button>
-		<button class="delete-btn" (click)="confirm()">Delete</button>
-	</div>
+<div class="modal-backdrop" (click)="cancel()" (keydown.escape)="cancel()" tabindex="0" aria-label="Close modal by clicking backdrop"></div>
+<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="deleteTitle" (click)="$event.stopPropagation()" tabindex="0">
+  <button class="close-button" (click)="cancel()" aria-label="Close">&times;</button>
+  <h2 id="deleteTitle">{{ title || 'Delete?' }}</h2>
+  <p>
+    {{ message || 'This item will be permanently deleted. This action cannot be undone.' }}
+  </p>
+  <div class="actions">
+    <button class="cancel-btn" (click)="cancel()">Cancel</button>
+    <button class="delete-btn" (click)="confirm()">Delete</button>
+  </div>
 </div>

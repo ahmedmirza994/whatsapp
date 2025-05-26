@@ -116,6 +116,52 @@ This project uses **GitHub Actions** for automated testing, code quality analysi
 
 For detailed information about the CI/CD setup, workflows, and GitHub Actions configuration, see [CI/CD Setup Guide](.github/CI-CD-SETUP.md).
 
+## 🎨 Code Formatting
+
+This project uses automated code formatting with 200-character line length to maintain consistent code style across both backend and frontend.
+
+### 📝 Formatting Tools
+
+-   **Java Backend**: [Spotless](https://github.com/diffplug/spotless) + [Google Java Format](https://github.com/google/google-java-format)
+-   **Angular Frontend**: [Prettier](https://prettier.io/) + [ESLint](https://eslint.org/) with Angular rules
+
+### 🚀 Quick Format
+
+```bash
+# Format entire project (Java + Angular)
+./format-all.sh
+
+# Format Java backend only
+./format-java.sh
+
+# Format Angular frontend only
+./format-angular.sh
+```
+
+### 🔧 IDE Integration
+
+#### VS Code
+```json
+// .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.rulers": [200],
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml"
+}
+```
+
+#### IntelliJ IDEA
+1. Install Google Java Format plugin
+2. Set line length to 200 in Settings → Code Style
+3. Enable format on save
+
+### 📋 Formatting Rules
+
+-   **Line Length**: 200 characters for both Java and TypeScript
+-   **Indentation**: 2 spaces for Angular, 4 spaces for Java
+-   **License Headers**: Automatically added to Java files
+-   **Import Organization**: Automatic sorting and organization
+
 ### 🛠️ Local Quality Checks
 
 Run the same quality checks locally before pushing:

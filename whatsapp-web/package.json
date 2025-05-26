@@ -6,7 +6,12 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format:all": "npm run format && npm run lint:fix"
   },
   "private": true,
   "dependencies": {
@@ -28,10 +33,16 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.0.1",
+    "@angular-eslint/builder": "19.5.0",
+    "@angular-eslint/eslint-plugin": "19.5.0",
+    "@angular-eslint/eslint-plugin-template": "19.5.0",
+    "@angular-eslint/schematics": "19.5.0",
+    "@angular-eslint/template-parser": "19.5.0",
     "@angular/cli": "^19.0.1",
     "@angular/compiler-cli": "^19.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/sockjs-client": "^1.5.4",
+    "angular-eslint": "^19.5.0",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

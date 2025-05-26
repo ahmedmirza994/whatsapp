@@ -1,3 +1,7 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.filter;
 
 import java.io.IOException;
@@ -22,18 +26,19 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final JwtUtil jwtUtil;
-	private UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private UserDetailsService userDetailsService;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
-		this.userDetailsService = userDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		final String authorizationHeader = request.getHeader("Authorization");
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
         String jwt = null;
@@ -45,23 +50,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     username = jwtUtil.extractEmail(jwt);
                 }
             } catch (Exception e) {
-				SecurityContextHolder.clearContext();
+                SecurityContextHolder.clearContext();
                 throw new UnauthorizedException("Invalid token");
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			JwtUser jwtUser = (JwtUser) this.userDetailsService.loadUserByUsername(username);
+            JwtUser jwtUser = (JwtUser) this.userDetailsService.loadUserByUsername(username);
 
-			if(jwtUser != null) {
-				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-						jwtUser, null, Collections.emptyList());
+            if (jwtUser != null) {
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(
+                                jwtUser, null, Collections.emptyList());
 
-				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-			}
+                authenticationToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
         }
 
         filterChain.doFilter(request, response);
-	}
+    }
 }

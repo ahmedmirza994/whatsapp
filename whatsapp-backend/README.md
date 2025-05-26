@@ -1,13 +1,13 @@
 # WhatsApp Clone – Backend
 
-This is the backend for a WhatsApp-like web application, built with **Spring Boot 3.x**, **Spring Security (JWT)**, **Spring Data JPA**, **WebSocket (STOMP)**, and **PostgreSQL**.  
+This is the backend for a WhatsApp-like web application, built with **Spring Boot 3.x**, **Spring Security (JWT)**, **Spring Data JPA**, **WebSocket (STOMP)**, and **PostgreSQL**.
 **Note:** This project is developed by me to polish and deepen my skills in the technologies used here.
 
 ---
 
 ## 🚀 Project Purpose
 
-This backend is part of a full-stack WhatsApp clone, designed to deliver a streamlined, real-time messaging experience.  
+This backend is part of a full-stack WhatsApp clone, designed to deliver a streamlined, real-time messaging experience.
 **I am developing this project to polish my skills in Java, Spring Boot, WebSocket, PostgreSQL, and related backend technologies.**
 
 ---
@@ -114,18 +114,18 @@ API base URL: [http://localhost:8080/api](http://localhost:8080/api)
 -   The backend uses [springdoc-openapi](https://springdoc.org/) for automatic OpenAPI 3 documentation.
 -   After starting the backend, access the Swagger UI at:
 
-	```
-	http://localhost:8080/api/swagger-ui/index.html
-	```
+    ```
+    http://localhost:8080/api/swagger-ui/index.html
+    ```
 
 -   All endpoints require a valid JWT token. Use the "Authorize" button in Swagger UI and enter your token as:
-	```
-	Bearer <your-jwt-token>
-	```
+    ```
+    Bearer <your-jwt-token>
+    ```
 -   The OpenAPI spec is available at:
-	```
-	http://localhost:8080/api/v3/api-docs
-	```
+    ```
+    http://localhost:8080/api/v3/api-docs
+    ```
 
 ---
 

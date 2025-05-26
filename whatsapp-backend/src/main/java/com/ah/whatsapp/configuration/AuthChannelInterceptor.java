@@ -1,3 +1,7 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.configuration;
 
 import java.util.List;
@@ -28,7 +32,8 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        StompHeaderAccessor accessor =
+                MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             // Extract token from STOMP connect headers
@@ -36,7 +41,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
             // Check both 'Authorization' and 'authorization'
             List<String> authorization = accessor.getNativeHeader("Authorization");
             if (authorization == null) {
-                 authorization = accessor.getNativeHeader("authorization");
+                authorization = accessor.getNativeHeader("authorization");
             }
 
             String jwt = null;
@@ -52,15 +57,24 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                     if (jwtUtil.validateToken(jwt)) {
                         String username = jwtUtil.extractEmail(jwt);
                         if (username != null) {
-                            JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(username);
+                            JwtUser userDetails =
+                                    (JwtUser) userDetailsService.loadUserByUsername(username);
                             // Create authentication token
-                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities()); // Use authorities from UserDetails
+                            UsernamePasswordAuthenticationToken authentication =
+                                    new UsernamePasswordAuthenticationToken(
+                                            userDetails,
+                                            null,
+                                            userDetails.getAuthorities()); // Use authorities from
+                            // UserDetails
 
                             // Set the user for the STOMP session/message
                             // This is crucial for @AuthenticationPrincipal to work later
 
-							log.info("Setting WebSocket Principal for user: '{}', Principal Name: '{}'", username, authentication.getName());
+                            log.info(
+                                    "Setting WebSocket Principal for user: '{}', Principal Name:"
+                                            + " '{}'",
+                                    username,
+                                    authentication.getName());
                             accessor.setUser(authentication);
                             log.info("Authenticated WebSocket user: {}", username);
                         }
@@ -71,8 +85,8 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                     // For now, just log the error
                 }
             } else {
-                 log.warn("WebSocket CONNECT message without valid Authorization header.");
-                 // Decide if unauthenticated connections are allowed or should be rejected
+                log.warn("WebSocket CONNECT message without valid Authorization header.");
+                // Decide if unauthenticated connections are allowed or should be rejected
             }
         }
 

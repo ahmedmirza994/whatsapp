@@ -1,3 +1,7 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.dto;
 
 import java.time.LocalDateTime;
@@ -13,10 +17,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConversationDto {
-	private UUID id;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
-	private List<ParticipantDto> participants = new ArrayList<>();
-	private List<MessageDto> messages = new ArrayList<>();
-	private MessageDto lastMessage;
+    private UUID id;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private List<ParticipantDto> participants = new ArrayList<>();
+    private List<MessageDto> messages = new ArrayList<>();
+    private MessageDto lastMessage;
 }

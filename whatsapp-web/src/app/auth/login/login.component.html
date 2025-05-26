@@ -1,75 +1,57 @@
 <div class="login-container">
-	<app-quote />
-	<div class="login-card">
-		<h2>Log In</h2>
-		<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-			<div class="form-group">
-				<label for="email">Email</label>
-				<input id="email" formControlName="email" type="email" />
-				<div
-					*ngIf="
-						loginForm.get('email')?.invalid &&
-						loginForm.get('email')?.touched
-					"
-				>
-					<small *ngIf="loginForm.get('email')?.errors?.['required']"
-						>Email is required.</small
-					>
-					<small *ngIf="loginForm.get('email')?.errors?.['email']"
-						>Email must be valid.</small
-					>
-				</div>
-			</div>
+  <app-quote />
+  <div class="login-card">
+    <h2>Log In</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" type="email" />
+        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <small *ngIf="loginForm.get('email')?.errors?.['required']">Email is required.</small>
+          <small *ngIf="loginForm.get('email')?.errors?.['email']">Email must be valid.</small>
+        </div>
+      </div>
 
-			<div class="form-group">
-				<label for="password">Password</label>
-				<div class="password-container">
-					<input
-						id="password"
-						formControlName="password"
-						[type]="showPassword ? 'text' : 'password'"
-					/>
-					<span
-						class="toggle-password"
-						(click)="togglePasswordVisibility()"
-					>
-						{{ showPassword ? "🙈" : "👁️" }}
-					</span>
-				</div>
-				<div
-					*ngIf="
-						loginForm.get('password')?.invalid &&
-						loginForm.get('password')?.touched
-					"
-				>
-					<small
-						*ngIf="loginForm.get('password')?.errors?.['required']"
-						>Password is required.</small
-					>
-				</div>
-			</div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-container">
+          <input id="password" formControlName="password" [type]="showPassword ? 'text' : 'password'" />
+          <span
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            (keydown.enter)="togglePasswordVisibility()"
+            (keydown.space)="togglePasswordVisibility()"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword ? '🙈' : '👁️' }}
+          </span>
+        </div>
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <small *ngIf="loginForm.get('password')?.errors?.['required']">Password is required.</small>
+        </div>
+      </div>
 
-			<button type="submit" [disabled]="loginForm.invalid || isLoading">
-				<span *ngIf="isLoading" class="spinner"></span>
-				<span *ngIf="!isLoading">Log In</span>
-			</button>
+      <button type="submit" [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="isLoading" class="spinner"></span>
+        <span *ngIf="!isLoading">Log In</span>
+      </button>
 
-			@if (errorMessages.length > 0) {
-				<div class="error-message">
-					<ul>
-						@for (error of errorMessages; track $index) {
-							<li>{{ error }}</li>
-						}
-					</ul>
-				</div>
-			}
+      @if (errorMessages.length > 0) {
+        <div class="error-message">
+          <ul>
+            @for (error of errorMessages; track $index) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+      }
 
-			<div class="signup-link">
-				Don't have an account?
-				<a href="javascript:void(0)" (click)="navigateToSignup()"
-					>Sign up</a
-				>
-			</div>
-		</form>
-	</div>
+      <div class="signup-link">
+        Don't have an account?
+        <a href="javascript:void(0)" (click)="navigateToSignup()">Sign up</a>
+      </div>
+    </form>
+  </div>
 </div>

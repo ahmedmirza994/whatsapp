@@ -1,3 +1,7 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.service;
 
 import java.util.List;
@@ -9,7 +13,7 @@ import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
 
 public interface MessageService {
-	/**
+    /**
      * Sends a new message in a conversation
      *
      * @param request message details
@@ -22,13 +26,13 @@ public interface MessageService {
      * Retrieves all messages for a specific conversation
      *
      * @param conversationId ID of the conversation
-	 * @param userId ID of the user requesting the messages
+     * @param userId ID of the user requesting the messages
      * @return list of messages in the conversation
-	 * @throws AccessDeniedException if the user is not a participant in the conversation
+     * @throws AccessDeniedException if the user is not a participant in the conversation
      */
     List<MessageDto> findConversationMessages(UUID conversationId, UUID userId);
 
-	/**
+    /**
      * Deletes a message by its ID if the user is the sender.
      *
      * @param messageId The ID of the message to delete.

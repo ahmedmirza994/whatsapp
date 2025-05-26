@@ -12,7 +12,7 @@ export const CHAT_SEND_MESSAGE_DESTINATION = `${APP_PREFIX}/chat.sendMessage`;
 
 // Function to generate the specific topic destination for a conversation
 export const getConversationTopicDestination = (conversationId: string): string => {
-	return `${TOPIC_PREFIX}/conversations/${conversationId}`;
+  return `${TOPIC_PREFIX}/conversations/${conversationId}`;
 };
 
 export const USER_CONVERSATION_QUEUE = '/user/queue/conversations';

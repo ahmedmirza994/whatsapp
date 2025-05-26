@@ -1,3 +1,7 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.configuration;
 
 import org.springframework.context.annotation.ComponentScan;
@@ -11,5 +15,4 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = "com.ah.whatsapp.repository")
-public class ApplicationConfig {
-}
+public class ApplicationConfig {}

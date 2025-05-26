@@ -1,70 +1,53 @@
 @if (isLoading()) {
-	<p class="loading">Loading messages...</p>
+  <p class="loading">Loading messages...</p>
 } @else if (error()) {
-	<p class="error">{{ error() }}</p>
+  <p class="error">{{ error() }}</p>
 } @else {
-	<div #messageList class="message-list-scroll-container">
-		<div class="message-list-content">
-			<!-- Outer loop for date groups (reversed order) -->
-			@for (group of groupedMessages(); track group.dateLabel) {
-				<!-- Inner loop for messages within the group (chronological order) -->
-				@for (msg of group.messages.slice().reverse(); track msg.id) {
-					<div
-						class="message-bubble-container"
-						[class.sent]="msg.senderId === currentUserId"
-						[class.received]="msg.senderId !== currentUserId"
-					>
-						<div
-							class="message-bubble"
-							(mouseenter)="onBubbleHover(msg.id, true)"
-							(mouseleave)="onBubbleHover(msg.id, false)"
-						>
-							<p class="message-content">{{ msg.content }}</p>
-							<span class="message-timestamp">{{ formatTimestamp(msg.sentAt) }}</span>
-							@if (msg.senderId === currentUserId) {
-								<div class="message-actions">
-									<button
-										class="menu-btn"
-										*ngIf="shouldShowMenuIcon(msg.id)"
-										(click)="openMessageMenu(msg.id); $event.stopPropagation()"
-										aria-label="Message actions"
-									>
-										<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-											<circle cx="5" cy="12" r="2" fill="#7f8c8d" />
-											<circle cx="12" cy="12" r="2" fill="#7f8c8d" />
-											<circle cx="19" cy="12" r="2" fill="#7f8c8d" />
-										</svg>
-									</button>
-									@if (openMenuForMessageId === msg.id) {
-										<ul
-											class="message-menu menu-animate-in"
-											(mouseenter)="menuHovered = true"
-											(mouseleave)="onMenuLeave(msg.id)"
-										>
-											<li (click)="showDeleteDialog(msg)">Delete</li>
-										</ul>
-									}
-								</div>
-							}
-						</div>
-					</div>
-				}
-				<!-- Date Separator - Displayed after the messages of the group due to column-reverse -->
-				<div class="date-separator">
-					<span>{{ group.dateLabel }}</span>
-				</div>
-			} @empty {
-				<p class="no-messages">No messages in this conversation yet.</p>
-			}
-		</div>
-	</div>
+  <div #messageList class="message-list-scroll-container">
+    <div class="message-list-content">
+      <!-- Outer loop for date groups (reversed order) -->
+      @for (group of groupedMessages(); track group.dateLabel) {
+        <!-- Inner loop for messages within the group (chronological order) -->
+        @for (msg of group.messages.slice().reverse(); track msg.id) {
+          <div class="message-bubble-container" [class.sent]="msg.senderId === currentUserId" [class.received]="msg.senderId !== currentUserId">
+            <div class="message-bubble" (mouseenter)="onBubbleHover(msg.id, true)" (mouseleave)="onBubbleHover(msg.id, false)">
+              <p class="message-content">{{ msg.content }}</p>
+              <span class="message-timestamp">{{ formatTimestamp(msg.sentAt) }}</span>
+              @if (msg.senderId === currentUserId) {
+                <div class="message-actions">
+                  <button class="menu-btn" *ngIf="shouldShowMenuIcon(msg.id)" (click)="openMessageMenu(msg.id); $event.stopPropagation()" aria-label="Message actions">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <circle cx="5" cy="12" r="2" fill="#7f8c8d" />
+                      <circle cx="12" cy="12" r="2" fill="#7f8c8d" />
+                      <circle cx="19" cy="12" r="2" fill="#7f8c8d" />
+                    </svg>
+                  </button>
+                  @if (openMenuForMessageId === msg.id) {
+                    <ul class="message-menu menu-animate-in" (mouseenter)="menuHovered = true" (mouseleave)="onMenuLeave(msg.id)">
+                      <li (click)="showDeleteDialog(msg)" (keydown.enter)="showDeleteDialog(msg)" (keydown.space)="showDeleteDialog(msg)" tabindex="0" aria-label="Delete message">Delete</li>
+                    </ul>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+        <!-- Date Separator - Displayed after the messages of the group due to column-reverse -->
+        <div class="date-separator">
+          <span>{{ group.dateLabel }}</span>
+        </div>
+      } @empty {
+        <p class="no-messages">No messages in this conversation yet.</p>
+      }
+    </div>
+  </div>
 }
 
 @if (showDeleteConfirmDialog) {
-	<app-delete-confirmation-modal
-		title="Delete Message?"
-		message="This message will be permanently deleted for you. This action cannot be undone."
-		(confirmed)="confirmDelete()"
-		(cancelled)="closeDeleteDialog()"
-	/>
+  <app-delete-confirmation-modal
+    title="Delete Message?"
+    message="This message will be permanently deleted for you. This action cannot be undone."
+    (confirmed)="confirmDelete()"
+    (cancelled)="closeDeleteDialog()"
+  />
 }
