@@ -115,7 +115,7 @@ This project uses **GitHub Actions** for automated testing, code quality analysi
 
 ### 📁 CI/CD Documentation
 
-For detailed information about the CI/CD setup, see [GitHub Actions Documentation](.github/README.md).
+For detailed information about the CI/CD setup, workflows, and GitHub Actions configuration, see [CI/CD Setup Guide](.github/CI-CD-SETUP.md).
 
 ### 🛠️ Local Quality Checks
 

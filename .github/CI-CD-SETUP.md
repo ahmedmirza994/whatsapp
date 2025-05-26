@@ -1,6 +1,8 @@
-# GitHub Actions for WhatsApp Project
+# CI/CD Setup Guide - WhatsApp Project
 
-This directory contains GitHub Actions workflows for automated testing, code quality analysis, and reporting.
+This document contains detailed information about GitHub Actions workflows for automated testing, code quality analysis, and reporting for the WhatsApp Clone project.
+
+> 📝 **Note:** This is technical documentation for CI/CD setup. For the main project information, see the [Project README](../README.md).
 
 ## 🚀 Workflows
 

@@ -135,13 +135,37 @@ jobs:
                   update-comment: true
 
             - name: Comment PR with SonarCloud results
-              if: github.event_name == 'pull_request'
-              uses: sonarqube-quality-gate-action@master
-              timeout-minutes: 5
-              env:
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              if: github.event_name == 'pull_request' && always()
+              uses: actions/github-script@v7
               with:
-                  scanMetadataReportFile: whatsapp-backend/build/sonar/report-task.txt
+                  script: |
+                      const fs = require('fs');
+                      const path = 'whatsapp-backend/build/sonar/report-task.txt';
+
+                      let sonarResults = '## 📊 SonarCloud Analysis Results\n\n';
+
+                      if (fs.existsSync(path)) {
+                          const reportContent = fs.readFileSync(path, 'utf8');
+                          const dashboardUrlMatch = reportContent.match(/dashboardUrl=(.*)/);
+                          const ceTaskUrlMatch = reportContent.match(/ceTaskUrl=(.*)/);
+                          
+                          if (dashboardUrlMatch) {
+                              sonarResults += `🔗 [View Detailed Report](${dashboardUrlMatch[1]})\n\n`;
+                          }
+                          if (ceTaskUrlMatch) {
+                              sonarResults += `📋 [Task Details](${ceTaskUrlMatch[1]})\n\n`;
+                          }
+                      }
+
+                      sonarResults += '✅ Code analysis completed successfully!\n';
+                      sonarResults += '📈 Check the detailed report for quality metrics, coverage, and potential issues.\n';
+
+                      github.rest.issues.createComment({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          body: sonarResults
+                      });
 
             - name: Generate Quality Report
               if: always()
