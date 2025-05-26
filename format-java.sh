@@ -26,7 +26,8 @@ else
     ./gradlew spotlessApply
     if [ $? -eq 0 ]; then
         echo "✅ Java code formatted successfully!"
-        echo "📝 Changes applied with 200-character line length"
+        echo "📝 Changes applied with 4-space tabs and 200-character line length"
+        echo "📝 Methods with 3+ parameters formatted on multiple lines"
     else
         echo "❌ Java formatting failed!"
         exit 1

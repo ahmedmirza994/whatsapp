@@ -1,204 +1,204 @@
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
 }
 
 .modal-content {
-  background-color: #ffffff;
-  padding: 25px 30px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 450px;
-  position: relative;
-  animation: fadeInScale 0.3s ease-out;
+	background-color: #ffffff;
+	padding: 25px 30px;
+	border-radius: 8px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	width: 100%;
+	max-width: 450px;
+	position: relative;
+	animation: fadeInScale 0.3s ease-out;
 }
 
 @keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
 .close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.8em;
-  color: #aaa;
-  cursor: pointer;
-  line-height: 1;
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	background: none;
+	border: none;
+	font-size: 1.8em;
+	color: #aaa;
+	cursor: pointer;
+	line-height: 1;
 }
 .close-button:hover {
-  color: #333;
+	color: #333;
 }
 
 h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: #333;
-  text-align: center;
-  font-weight: 600;
+	margin-top: 0;
+	margin-bottom: 20px;
+	color: #333;
+	text-align: center;
+	font-weight: 600;
 }
 
 .profile-picture-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 20px;
 }
 
 .profile-picture-label {
-  position: relative;
-  cursor: pointer;
-  display: inline-block;
-  border-radius: 50%;
+	position: relative;
+	cursor: pointer;
+	display: inline-block;
+	border-radius: 50%;
 }
 
 .profile-picture-preview {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #e0e6ed;
-  display: block;
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 3px solid #e0e6ed;
+	display: block;
 }
 
 .profile-picture-label:hover .edit-icon {
-  opacity: 1;
+	opacity: 1;
 }
 
 .edit-icon {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background-color: rgba(52, 152, 219, 0.9);
-  color: white;
-  border-radius: 50%;
-  padding: 5px;
-  font-size: 0.8em;
-  line-height: 1;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
+	background-color: rgba(52, 152, 219, 0.9);
+	color: white;
+	border-radius: 50%;
+	padding: 5px;
+	font-size: 0.8em;
+	line-height: 1;
+	opacity: 0.7;
+	transition: opacity 0.2s ease;
 }
 
 #profilePictureInput {
-  display: none; /* Hide the actual file input */
+	display: none; /* Hide the actual file input */
 }
 
 .file-name {
-  font-size: 0.8em;
-  color: #7f8c8d;
-  margin-top: 5px;
-  text-align: center;
-  word-break: break-all;
+	font-size: 0.8em;
+	color: #7f8c8d;
+	margin-top: 5px;
+	text-align: center;
+	word-break: break-all;
 }
 
 .form-group {
-  margin-bottom: 18px;
+	margin-bottom: 18px;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #555;
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 500;
+	color: #555;
 }
 
 .form-group input[type="text"],
 .form-group input[type="tel"] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  box-sizing: border-box;
-  font-size: 0.95em;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	box-sizing: border-box;
+	font-size: 0.95em;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="tel"]:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-  outline: none;
+	border-color: #3498db;
+	box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+	outline: none;
 }
 
 .error-messages small {
-  color: #e74c3c;
-  font-size: 0.85em;
-  display: block;
-  margin-top: 4px;
+	color: #e74c3c;
+	font-size: 0.85em;
+	display: block;
+	margin-top: 4px;
 }
 
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 25px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 25px;
 }
 
 .button-primary,
 .button-secondary {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95em;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+	padding: 10px 18px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 0.95em;
+	font-weight: 500;
+	transition: background-color 0.2s ease;
 }
 
 .button-primary {
-  background-color: #3498db;
-  color: white;
+	background-color: #3498db;
+	color: white;
 }
 .button-primary:hover {
-  background-color: #2980b9;
+	background-color: #2980b9;
 }
 .button-primary:disabled {
-  background-color: #a1c4db;
-  cursor: not-allowed;
+	background-color: #a1c4db;
+	cursor: not-allowed;
 }
 
 .button-secondary {
-  background-color: #e0e6ed;
-  color: #333;
+	background-color: #e0e6ed;
+	color: #333;
 }
 .button-secondary:hover {
-  background-color: #c8d0da;
+	background-color: #c8d0da;
 }
 
 .status-message {
-  margin-top: 15px;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 0.9em;
-  text-align: center;
+	margin-top: 15px;
+	padding: 10px;
+	border-radius: 4px;
+	font-size: 0.9em;
+	text-align: center;
 }
 .status-message.error {
-  background-color: #fdecea;
-  color: #e74c3c;
-  border: 1px solid #f5c6cb;
+	background-color: #fdecea;
+	color: #e74c3c;
+	border: 1px solid #f5c6cb;
 }
 .status-message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+	background-color: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
 }

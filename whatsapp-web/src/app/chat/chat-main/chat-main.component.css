@@ -1,93 +1,93 @@
 :host {
-  display: flex;
-  height: 100vh; /* Full viewport height */
-  background-color: #f5f7fa; /* General Background */
-  color: #333333; /* General Text Color */
+	display: flex;
+	height: 100vh; /* Full viewport height */
+	background-color: #f5f7fa; /* General Background */
+	color: #333333; /* General Text Color */
 }
 
 .chat-container {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  overflow: hidden; /* Prevent scrolling on the container itself */
+	display: flex;
+	width: 100%;
+	height: 100%;
+	overflow: hidden; /* Prevent scrolling on the container itself */
 }
 
 .sidebar {
-  width: 30%;
-  min-width: 250px; /* Minimum width for sidebar */
-  max-width: 400px; /* Maximum width */
-  border-right: 1px solid #e0e6ed;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff; /* Slightly different background for sidebar */
+	width: 30%;
+	min-width: 250px; /* Minimum width for sidebar */
+	max-width: 400px; /* Maximum width */
+	border-right: 1px solid #e0e6ed;
+	display: flex;
+	flex-direction: column;
+	background-color: #ffffff; /* Slightly different background for sidebar */
 }
 
 .user-info {
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  background-color: #f0f2f5; /* Header background */
-  border-bottom: 1px solid #e0e6ed;
-  height: 60px; /* Give header a fixed height */
-  box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	padding: 10px 15px;
+	background-color: #f0f2f5; /* Header background */
+	border-bottom: 1px solid #e0e6ed;
+	height: 60px; /* Give header a fixed height */
+	box-sizing: border-box;
 }
 
 .user-details {
-  display: flex;
-  align-items: center;
-  flex-grow: 1; /* Allow details to take up space */
-  margin-right: 10px; /* Space before buttons */
+	display: flex;
+	align-items: center;
+	flex-grow: 1; /* Allow details to take up space */
+	margin-right: 10px; /* Space before buttons */
 }
 
 .avatar-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  /* Use theme primary color for avatar background */
-  background-color: #3498db;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: #ffffff; /* White text on blue */
-  margin-right: 10px;
-  font-size: 1.1em; /* Slightly larger initial */
-  overflow: hidden; /* Add this to ensure image respects border-radius */
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	/* Use theme primary color for avatar background */
+	background-color: #3498db;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	color: #ffffff; /* White text on blue */
+	margin-right: 10px;
+	font-size: 1.1em; /* Slightly larger initial */
+	overflow: hidden; /* Add this to ensure image respects border-radius */
 }
 
 .avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensures the image covers the area, cropping if necessary */
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* Ensures the image covers the area, cropping if necessary */
 }
 
 .user-name {
-  font-weight: 600;
-  color: #333;
+	font-weight: 600;
+	color: #333;
 }
 
 .icon-button {
-  /* Common style for icon buttons */
-  background: none;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Use a slightly darker gray for icons */
-  color: #54656f;
-  margin-left: 5px; /* Spacing between icons */
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease; /* Add color transition */
+	/* Common style for icon buttons */
+	background: none;
+	border: none;
+	padding: 8px;
+	cursor: pointer;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/* Use a slightly darker gray for icons */
+	color: #54656f;
+	margin-left: 5px; /* Spacing between icons */
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease; /* Add color transition */
 }
 
 .icon-button:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* Subtle hover */
-  /* Optional: Change icon color on hover */
-  /* color: #3498db; */
+	background-color: rgba(0, 0, 0, 0.05); /* Subtle hover */
+	/* Optional: Change icon color on hover */
+	/* color: #3498db; */
 }
 
 .new-chat-button {
@@ -97,60 +97,60 @@
 }
 
 app-conversation-list {
-  flex-grow: 1; /* Takes remaining space in sidebar */
-  overflow-y: auto; /* Allows scrolling for conversation list */
-  min-height: 0; /* Prevent flexbox overflow issues */
+	flex-grow: 1; /* Takes remaining space in sidebar */
+	overflow-y: auto; /* Allows scrolling for conversation list */
+	min-height: 0; /* Prevent flexbox overflow issues */
 }
 
 .chat-area {
-  flex-grow: 1; /* Takes remaining horizontal space */
-  display: flex; /* Use flexbox */
-  flex-direction: column; /* Stack children vertically */
-  height: 100%; /* Ensure it takes full height */
-  overflow: hidden; /* Prevent scrolling on the chat area itself */
-  background-color: #f5f7fa; /* Ensure chat area background matches */
+	flex-grow: 1; /* Takes remaining horizontal space */
+	display: flex; /* Use flexbox */
+	flex-direction: column; /* Stack children vertically */
+	height: 100%; /* Ensure it takes full height */
+	overflow: hidden; /* Prevent scrolling on the chat area itself */
+	background-color: #f5f7fa; /* Ensure chat area background matches */
 }
 
 /* Style for the router-outlet content */
 :host ::ng-deep router-outlet + * {
-  /* Target elements rendered by router-outlet more reliably */
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0; /* Important for nested flex scrolling */
+	/* Target elements rendered by router-outlet more reliably */
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 0; /* Important for nested flex scrolling */
 }
 
 .no-conversation-selected {
-  display: flex;
-  flex-direction: column; /* Stack icon and text */
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: #7f8c8d; /* Muted text color */
-  text-align: center;
-  padding: 20px;
-  background-color: #f5f7fa; /* Match chat area background */
+	display: flex;
+	flex-direction: column; /* Stack icon and text */
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	color: #7f8c8d; /* Muted text color */
+	text-align: center;
+	padding: 20px;
+	background-color: #f5f7fa; /* Match chat area background */
 }
 
 /* Style for the message icon */
 .no-conversation-selected svg {
-  width: 80px; /* Adjust size as needed */
-  height: 80px;
-  margin-bottom: 20px; /* Space between icon and text */
-  color: #c3cfe2; /* Lighter, softer color for the icon */
+	width: 80px; /* Adjust size as needed */
+	height: 80px;
+	margin-bottom: 20px; /* Space between icon and text */
+	color: #c3cfe2; /* Lighter, softer color for the icon */
 }
 
 .no-conversation-selected p {
-  font-size: 1.1em; /* Slightly larger text */
-  color: #54656f; /* Darker text than the icon */
+	font-size: 1.1em; /* Slightly larger text */
+	color: #54656f; /* Darker text than the icon */
 }
 
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 10px 15px; /* Match other padding */
-  text-align: center;
-  flex-shrink: 0;
-  border-top: 1px solid #f5c6cb; /* Add border */
-  font-size: 0.9em;
+	background-color: #f8d7da;
+	color: #721c24;
+	padding: 10px 15px; /* Match other padding */
+	text-align: center;
+	flex-shrink: 0;
+	border-top: 1px solid #f5c6cb; /* Add border */
+	font-size: 0.9em;
 }

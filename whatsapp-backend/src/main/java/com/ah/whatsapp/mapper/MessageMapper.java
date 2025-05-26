@@ -21,7 +21,10 @@ public class MessageMapper {
     }
 
     public MessageEntity toEntity(
-            Message model, ConversationEntity conversationEntity, UserEntity senderEntity) {
+			Message model,
+			ConversationEntity conversationEntity,
+			UserEntity senderEntity
+	) {
         MessageEntity entity = new MessageEntity();
         entity.setId(model.getId());
         entity.setContent(model.getContent());

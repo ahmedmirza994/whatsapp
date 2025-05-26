@@ -1,4 +1,4 @@
 export interface UserUpdate {
-  name?: string;
-  phone?: string | null;
+	name?: string;
+	phone?: string | null;
 }

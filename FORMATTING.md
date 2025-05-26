@@ -7,7 +7,9 @@ This document describes the code formatting configuration for the WhatsApp Clone
 The project uses automated code formatting with consistent rules across both backend and frontend:
 
 - **Line Length**: 200 characters for optimal readability on modern screens
-- **Backend**: Java with Google Java Format via Spotless
+- **Indentation**: Tabs with 4-space width for both Java and TypeScript/Angular
+- **Multi-line Formatting**: Functions/methods with 3+ parameters and HTML tags with 3+ attributes are formatted across multiple lines
+- **Backend**: Java with Google Java Format (AOSP variant) via Spotless
 - **Frontend**: TypeScript/Angular with Prettier + ESLint
 - **Automation**: Format-on-save in IDEs, CI/CD validation, manual scripts
 
@@ -41,15 +43,16 @@ spotless {
 ```json
 {
   "printWidth": 200,
-  "tabWidth": 2,
-  "useTabs": false,
+  "tabWidth": 4,
+  "useTabs": true,
   "semi": true,
-  "singleQuote": false,
+  "singleQuote": true,
   "quoteProps": "as-needed",
   "trailingComma": "es5",
   "bracketSpacing": true,
-  "arrowParens": "always",
-  "endOfLine": "lf"
+  "arrowParens": "avoid",
+  "endOfLine": "lf",
+  "singleAttributePerLine": true
 }
 ```
 
@@ -61,7 +64,7 @@ spotless {
       "error",
       {
         "code": 200,
-        "tabWidth": 2,
+        "tabWidth": 4,
         "ignoreUrls": true,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true,
@@ -155,19 +158,21 @@ cd whatsapp-web && npm run format:check && npm run lint
 ## 📝 Formatting Rules Summary
 
 ### Java
-- **Indentation**: 4 spaces
+- **Indentation**: 4 spaces (via tabs)
 - **Line Length**: 200 characters
 - **Import Order**: Automatic organization
 - **String Wrapping**: Long strings are reflowed
 - **License Headers**: Automatically added to new files
+- **Multi-line Methods**: Functions with 3+ parameters formatted across multiple lines
 
 ### TypeScript/Angular
-- **Indentation**: 2 spaces
+- **Indentation**: 4 spaces (via tabs)
 - **Line Length**: 200 characters
 - **Semicolons**: Always required
-- **Quotes**: Double quotes preferred
+- **Quotes**: Single quotes preferred
 - **Trailing Commas**: ES5 compatible
-- **Arrow Functions**: Always use parentheses
+- **Arrow Functions**: Avoid parentheses when possible
+- **HTML Attributes**: Tags with 3+ attributes formatted on multiple lines
 
 ## 🔍 Quality Checks
 

@@ -44,12 +44,13 @@ public class UserServiceImpl implements UserService {
     private final FileStorage fileStorage;
 
     public UserServiceImpl(
-            UserRepository userRepository,
-            UserMapper userMapper,
-            JwtUtil jwtUtil,
-            PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager,
-            FileStorage fileStorage) {
+			UserRepository userRepository,
+			UserMapper userMapper,
+			JwtUtil jwtUtil,
+			PasswordEncoder passwordEncoder,
+			AuthenticationManager authenticationManager,
+			FileStorage fileStorage
+	) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.jwtUtil = jwtUtil;

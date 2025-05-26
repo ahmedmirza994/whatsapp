@@ -1,200 +1,200 @@
 .conversation-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  overflow-y: auto; /* Ensure list itself can scroll if needed */
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	overflow-y: auto; /* Ensure list itself can scroll if needed */
 }
 
 .conversation-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 15px;
-  border-bottom: 1px solid #f0f2f5; /* Lighter separator */
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  gap: 12px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 15px;
+	border-bottom: 1px solid #f0f2f5; /* Lighter separator */
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	gap: 12px;
 }
 
 .conversation-item:hover {
-  background-color: #f5f7fa; /* Hover effect */
+	background-color: #f5f7fa; /* Hover effect */
 }
 
 .conversation-item.selected {
-  background-color: #e0e6ed; /* Selected background */
+	background-color: #e0e6ed; /* Selected background */
 }
 
 .avatar-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #3498db; /* Theme primary color for avatar */
-  color: #ffffff; /* White text on blue */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1.2em;
-  flex-shrink: 0;
-  overflow: hidden; /* Important for image */
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #3498db; /* Theme primary color for avatar */
+	color: #ffffff; /* White text on blue */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.2em;
+	flex-shrink: 0;
+	overflow: hidden; /* Important for image */
 }
 
 .avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .conversation-info {
-  overflow: hidden; /* Prevent text overflow */
-  margin-right: 10px;
-  flex-grow: 1; /* Allow info to take available space */
-  min-width: 0; /* Prevent flex item from overflowing */
+	overflow: hidden; /* Prevent text overflow */
+	margin-right: 10px;
+	flex-grow: 1; /* Allow info to take available space */
+	min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .participant-name {
-  font-weight: 500;
-  display: block; /* Ensure it takes full width */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #333333; /* Ensure text color matches theme */
+	font-weight: 500;
+	display: block; /* Ensure it takes full width */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #333333; /* Ensure text color matches theme */
 }
 
 .last-message {
-  font-size: 0.9em;
-  color: #7f8c8d; /* Muted color for last message */
-  margin: 2px 0 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+	font-size: 0.9em;
+	color: #7f8c8d; /* Muted color for last message */
+	margin: 2px 0 0 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .last-message.no-message {
-  font-style: italic;
+	font-style: italic;
 }
 
 .timestamp {
-  font-size: 0.8em;
-  color: #7f8c8d;
-  white-space: nowrap;
-  flex-shrink: 0; /* Prevent timestamp from shrinking */
+	font-size: 0.8em;
+	color: #7f8c8d;
+	white-space: nowrap;
+	flex-shrink: 0; /* Prevent timestamp from shrinking */
 }
 
 .no-conversations {
-  padding: 20px;
-  text-align: center;
-  color: #7f8c8d;
+	padding: 20px;
+	text-align: center;
+	color: #7f8c8d;
 }
 
 /* Add styles for search */
 .search-container {
-  padding: 10px 15px;
-  background-color: #f0f2f5; /* Match sidebar background */
-  border-bottom: 1px solid #e0e6ed;
-  position: relative; /* For clear button positioning */
+	padding: 10px 15px;
+	background-color: #f0f2f5; /* Match sidebar background */
+	border-bottom: 1px solid #e0e6ed;
+	position: relative; /* For clear button positioning */
 }
 
 .search-input {
-  width: 100%;
-  padding: 8px 12px;
-  padding-right: 30px; /* Space for clear button */
-  border: 1px solid #d1d5db;
-  border-radius: 18px; /* More rounded */
-  background-color: #ffffff;
-  font-size: 0.9em;
-  outline: none;
-  box-sizing: border-box; /* Include padding and border in width */
+	width: 100%;
+	padding: 8px 12px;
+	padding-right: 30px; /* Space for clear button */
+	border: 1px solid #d1d5db;
+	border-radius: 18px; /* More rounded */
+	background-color: #ffffff;
+	font-size: 0.9em;
+	outline: none;
+	box-sizing: border-box; /* Include padding and border in width */
 }
 
 .clear-search-button {
-  position: absolute;
-  right: 25px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 1.4em;
-  color: #999;
-  cursor: pointer;
-  padding: 0 5px;
-  line-height: 1;
+	position: absolute;
+	right: 25px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	font-size: 1.4em;
+	color: #999;
+	cursor: pointer;
+	padding: 0 5px;
+	line-height: 1;
 }
 .clear-search-button:hover {
-  color: #555;
+	color: #555;
 }
 
 .search-status {
-  padding: 10px 15px;
-  font-size: 0.9em;
-  color: #7f8c8d;
-  text-align: center;
+	padding: 10px 15px;
+	font-size: 0.9em;
+	color: #7f8c8d;
+	text-align: center;
 }
 .search-status.error {
-  color: #e74c3c;
+	color: #e74c3c;
 }
 
 .search-results-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 200px; /* Limit height and make scrollable if needed */
-  overflow-y: auto;
-  border-bottom: 1px solid #e0e6ed; /* Separator */
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	max-height: 200px; /* Limit height and make scrollable if needed */
+	overflow-y: auto;
+	border-bottom: 1px solid #e0e6ed; /* Separator */
 }
 
 .search-results-header {
-  padding: 8px 15px;
-  font-size: 0.8em;
-  font-weight: 600;
-  color: #7f8c8d;
-  background-color: #f0f2f5;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+	padding: 8px 15px;
+	font-size: 0.8em;
+	font-weight: 600;
+	color: #7f8c8d;
+	background-color: #f0f2f5;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .search-result-item {
-  display: flex;
-  flex-direction: column; /* Stack name and email */
-  padding: 10px 15px;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f2f5; /* Light separator */
-  transition: background-color 0.15s ease;
+	display: flex;
+	flex-direction: column; /* Stack name and email */
+	padding: 10px 15px;
+	cursor: pointer;
+	border-bottom: 1px solid #f0f2f5; /* Light separator */
+	transition: background-color 0.15s ease;
 }
 
 .search-result-item:hover {
-  background-color: #e9edf0;
+	background-color: #e9edf0;
 }
 
 .search-result-item .user-name {
-  font-weight: 500;
-  color: #333;
-  font-size: 0.95em;
-  margin-bottom: 2px;
+	font-weight: 500;
+	color: #333;
+	font-size: 0.95em;
+	margin-bottom: 2px;
 }
 
 .search-result-item .user-email {
-  font-size: 0.8em;
-  color: #7f8c8d;
+	font-size: 0.8em;
+	color: #7f8c8d;
 }
 
 .delete-conversation-btn {
-  background: none;
-  border: none;
-  color: #7f8c8d;
-  cursor: pointer;
-  margin-left: auto;
-  font-size: 0.8em;
-  transition: color 0.2s;
+	background: none;
+	border: none;
+	color: #7f8c8d;
+	cursor: pointer;
+	margin-left: auto;
+	font-size: 0.8em;
+	transition: color 0.2s;
 }
 
 .delete-conversation-btn:hover {
-  color: #e74c3c;
+	color: #e74c3c;
 }
 
 .message-status {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 6px;
-  vertical-align: middle;
+	display: inline-flex;
+	align-items: center;
+	margin-left: 6px;
+	vertical-align: middle;
 }

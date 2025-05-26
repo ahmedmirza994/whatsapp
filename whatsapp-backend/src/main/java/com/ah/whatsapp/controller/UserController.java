@@ -47,7 +47,11 @@ public class UserController {
     private final UserMapper userMapper;
     private final FileStorage fileStorage;
 
-    public UserController(UserService userService, UserMapper userMapper, FileStorage fileStorage) {
+    public UserController(
+			UserService userService,
+			UserMapper userMapper,
+			FileStorage fileStorage
+	) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.fileStorage = fileStorage;

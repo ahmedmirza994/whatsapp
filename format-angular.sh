@@ -27,7 +27,8 @@ else
     npm run format
     if [ $? -eq 0 ]; then
         echo "✅ Prettier formatting applied successfully!"
-        echo "📝 Code formatted with 200-character line length"
+        echo "📝 Code formatted with tabs (4 spaces) and 200-character line length"
+        echo "📝 HTML tags with 3+ attributes formatted on multiple lines"
         NEEDS_FORMAT=true
     else
         echo "❌ Prettier formatting failed!"

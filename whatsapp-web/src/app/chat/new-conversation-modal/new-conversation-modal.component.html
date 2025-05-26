@@ -1,53 +1,86 @@
 <!-- Backdrop - Now a sibling -->
-<div class="modal-backdrop" (click)="close()" (keydown.escape)="close()" tabindex="0" aria-label="Close modal by clicking backdrop"></div>
+<div
+	class="modal-backdrop"
+	(click)="close()"
+	(keydown.escape)="close()"
+	tabindex="0"
+	aria-label="Close modal by clicking backdrop"
+></div>
 
 <!-- Modal Content - Now a sibling, centered by :host flex properties -->
-<div class="modal-content" (click)="onModalContentClick($event)" (keydown.escape)="close()" tabindex="0" role="dialog" aria-labelledby="modal-title" aria-modal="true">
-  <!-- Header -->
-  <div class="modal-header">
-    <h2>Start New Conversation</h2>
-    <button class="close-button" (click)="close()" aria-label="Close modal">&times;</button>
-  </div>
+<div
+	class="modal-content"
+	(click)="onModalContentClick($event)"
+	(keydown.escape)="close()"
+	tabindex="0"
+	role="dialog"
+	aria-labelledby="modal-title"
+	aria-modal="true"
+>
+	<!-- Header -->
+	<div class="modal-header">
+		<h2>Start New Conversation</h2>
+		<button
+			class="close-button"
+			(click)="close()"
+			aria-label="Close modal"
+		>
+			&times;
+		</button>
+	</div>
 
-  <!-- Search Input -->
-  <div class="search-container">
-    <input type="text" placeholder="Search users by name or email..." class="search-input" [ngModel]="searchQuery()" (ngModelChange)="onSearchQueryChange($event)" aria-label="Search users" />
-    @if (searchQuery()) {
-      <button class="clear-search-button" (click)="onSearchQueryChange('')" aria-label="Clear search">&times;</button>
-    }
-  </div>
+	<!-- Search Input -->
+	<div class="search-container">
+		<input
+			type="text"
+			placeholder="Search users by name or email..."
+			class="search-input"
+			[ngModel]="searchQuery()"
+			(ngModelChange)="onSearchQueryChange($event)"
+			aria-label="Search users"
+		/>
+		@if (searchQuery()) {
+			<button
+				class="clear-search-button"
+				(click)="onSearchQueryChange('')"
+				aria-label="Clear search"
+			>
+				&times;
+			</button>
+		}
+	</div>
 
-  <!-- Results Area -->
-  <div class="results-container">
-    @if (isLoading()) {
-      <div class="status-message loading">Searching...</div>
-    } @else if (error()) {
-      <div class="status-message error">{{ error() }}</div>
-    } @else if (searchResults().length > 0) {
-      <ul class="results-list">
-        @for (user of searchResults(); track user.id) {
-          <li
-            class="result-item"
-            (click)="selectUser(user)"
-            (keydown.enter)="selectUser(user)"
-            (keydown.space)="selectUser(user)"
-            tabindex="0"
-            [attr.aria-label]="'Start conversation with ' + user.name"
-          >
-            <div class="avatar-placeholder">
-              <span>{{ user.name[0].toUpperCase() }}</span>
-            </div>
-            <div class="user-details">
-              <span class="user-name">{{ user.name }}</span>
-              <span class="user-email">{{ user.email }}</span>
-            </div>
-          </li>
-        }
-      </ul>
-    } @else if (noResultsFound()) {
-      <div class="status-message no-results">No users found matching your search.</div>
-    } @else if (!searchQuery()) {
-      <div class="status-message prompt">Enter a name or email to search.</div>
-    }
-  </div>
+	<!-- Results Area -->
+	<div class="results-container">
+		@if (isLoading()) {
+			<div class="status-message loading">Searching...</div>
+		} @else if (error()) {
+			<div class="status-message error">{{ error() }}</div>
+		} @else if (searchResults().length > 0) {
+			<ul class="results-list">
+				@for (user of searchResults(); track user.id) {
+					<li
+						class="result-item"
+						(click)="selectUser(user)"
+						(keydown.enter)="selectUser(user)"
+						(keydown.space)="selectUser(user)"
+						tabindex="0"
+						[attr.aria-label]="'Start conversation with ' + user.name"
+					>
+						<div class="avatar-placeholder">
+							<span>{{ user.name[0].toUpperCase() }}</span>
+						</div>
+						<div class="user-details">
+							<span class="user-name">{{ user.name }}</span>
+							<span class="user-email">{{ user.email }}</span>
+						</div>
+					</li>
+				}
+			</ul>
+		} @else if (noResultsFound()) {
+			<div class="status-message no-results">No users found matching your search.</div>
+		} @else if (!searchQuery()) {
+			<div class="status-message prompt">Enter a name or email to search.</div>
+		}
+	</div>
 </div>

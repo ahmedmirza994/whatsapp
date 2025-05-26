@@ -3,8 +3,8 @@
   "trailingComma": "es5",
   "singleQuote": true,
   "printWidth": 200,
-  "tabWidth": 2,
-  "useTabs": false,
+  "tabWidth": 4,
+  "useTabs": true,
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "endOfLine": "lf",
@@ -20,7 +20,11 @@
       "files": "*.html",
       "options": {
         "parser": "angular",
-        "printWidth": 200
+        "printWidth": 200,
+        "tabWidth": 4,
+        "useTabs": true,
+        "singleAttributePerLine": true,
+        "htmlWhitespaceSensitivity": "ignore"
       }
     },
     {
@@ -28,21 +32,47 @@
       "options": {
         "parser": "angular",
         "printWidth": 200,
-        "htmlWhitespaceSensitivity": "ignore"
+        "tabWidth": 4,
+        "useTabs": true,
+        "htmlWhitespaceSensitivity": "ignore",
+        "singleAttributePerLine": true
+      }
+    },
+    {
+      "files": "*.ts",
+      "options": {
+        "parser": "typescript",
+        "printWidth": 200,
+        "tabWidth": 4,
+        "useTabs": true,
+        "arrowParens": "avoid"
+      }
+    },
+    {
+      "files": "*.js",
+      "options": {
+        "parser": "babel",
+        "printWidth": 200,
+        "tabWidth": 4,
+        "useTabs": true
       }
     },
     {
       "files": "*.scss",
       "options": {
         "printWidth": 200,
-        "singleQuote": false
+        "singleQuote": false,
+        "tabWidth": 4,
+        "useTabs": true
       }
     },
     {
       "files": "*.css",
       "options": {
         "printWidth": 200,
-        "singleQuote": false
+        "singleQuote": false,
+        "tabWidth": 4,
+        "useTabs": true
       }
     }
   ]

@@ -1,9 +1,13 @@
 @if (quote) {
-  <div class="quote-container">
-    <div class="quote-wrapper" [class.fade-in]="fadeState === 'in'" [class.fade-out]="fadeState === 'out'">
-      <div class="quote-mark">"</div>
-      <div class="quote-text">{{ quote.text }}</div>
-      <div class="quote-author">— {{ quote.author }}</div>
-    </div>
-  </div>
+	<div class="quote-container">
+		<div
+			class="quote-wrapper"
+			[class.fade-in]="fadeState === 'in'"
+			[class.fade-out]="fadeState === 'out'"
+		>
+			<div class="quote-mark">"</div>
+			<div class="quote-text">{{ quote.text }}</div>
+			<div class="quote-author">— {{ quote.author }}</div>
+		</div>
+	</div>
 }

@@ -21,9 +21,10 @@ public class ConversationParticipantMapper {
      * Convert model to entity
      */
     public ConversationParticipantEntity toEntity(
-            ConversationParticipant model,
-            ConversationEntity conversationEntity,
-            UserEntity userEntity) {
+			ConversationParticipant model,
+			ConversationEntity conversationEntity,
+			UserEntity userEntity
+	) {
         ConversationParticipantEntity entity = new ConversationParticipantEntity();
         entity.setId(model.getId());
         entity.setConversation(conversationEntity);

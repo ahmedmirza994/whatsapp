@@ -98,12 +98,25 @@ spotless {
 	java {
 		target("src/**/*.java")
 
-		// Use Google Java Format with custom line length
+		// Use Google Java Format with AOSP style (4-space indentation)
 		googleJavaFormat("1.22.0").aosp().reflowLongStrings().formatJavadoc(false)
 
-		// Apply custom formatting rules
-		custom("Line length adjustment") { content ->
-			content
+		// Apply custom formatting rules for multi-line method parameters
+		custom("Multi-line parameter formatting") { content ->
+			// This will enforce multi-line formatting for methods with 3+ parameters
+			content.replace(
+				Regex("(\\w+)\\s*\\(([^)]{60,})\\)\\s*\\{"),
+				{ matchResult ->
+					val methodName = matchResult.groupValues[1]
+					val params = matchResult.groupValues[2].split(",").map { it.trim() }
+					if (params.size >= 3) {
+						val formattedParams = params.joinToString(",\n\t\t\t")
+						"$methodName(\n\t\t\t$formattedParams\n\t) {"
+					} else {
+						matchResult.value
+					}
+				},
+			)
 		}
 
 		// Additional formatting rules
