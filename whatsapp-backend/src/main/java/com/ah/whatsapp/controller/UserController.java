@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.ah.whatsapp.dto.ApiResponse;
 import com.ah.whatsapp.dto.LoginDto;
 import com.ah.whatsapp.dto.UserDto;
@@ -35,7 +33,6 @@ import com.ah.whatsapp.model.JwtUser;
 import com.ah.whatsapp.model.User;
 import com.ah.whatsapp.service.FileStorage;
 import com.ah.whatsapp.service.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -75,7 +72,7 @@ public class UserController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<UserDto>>> searchUsers(
-            @RequestParam(required = true) String query,
+            @RequestParam(required = true, name= "query") String query,
             @AuthenticationPrincipal JwtUser currentUser) {
 
         List<UserDto> results = userService.searchUsers(query, currentUser.getUserId());

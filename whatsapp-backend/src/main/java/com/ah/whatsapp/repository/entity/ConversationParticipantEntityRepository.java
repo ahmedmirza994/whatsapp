@@ -23,16 +23,17 @@ public interface ConversationParticipantEntityRepository
             "select cpe from ConversationParticipantEntity cpe join fetch cpe.user where"
                     + " cpe.conversation.id = :conversationId")
     List<ConversationParticipantEntity> findByConversationIdAndIsActiveTrueWithUser(
-            UUID conversationId);
+            @Param("conversationId") UUID conversationId);
 
     @Query(
             "select cpe from ConversationParticipantEntity cpe join fetch cpe.user where"
                     + " cpe.conversation.id = :conversationId and cpe.user.id = :userId and"
                     + " cpe.isActive = true")
     Optional<ConversationParticipantEntity> findByConversationIdAndUserIdAndIsActiveTrue(
-            UUID conversationId, UUID userId);
+            @Param("conversationId") UUID conversationId, @Param("userId") UUID userId);
 
-    boolean existsByConversationIdAndUserIdAndIsActiveTrue(UUID conversationId, UUID userId);
+    boolean existsByConversationIdAndUserIdAndIsActiveTrue(
+            @Param("conversationId") UUID conversationId, @Param("userId") UUID userId);
 
     @Query(
             "select cpe from ConversationParticipantEntity cpe join fetch cpe.user where"
@@ -43,11 +44,12 @@ public interface ConversationParticipantEntityRepository
     @Query(
             "select cpe from ConversationParticipantEntity cpe join fetch cpe.user where"
                     + " cpe.conversation.id = :conversationId")
-    List<ConversationParticipantEntity> findByConversationIdWithUser(UUID conversationId);
+    List<ConversationParticipantEntity> findByConversationIdWithUser(
+            @Param("conversationId") UUID conversationId);
 
     @Query(
             "select cpe from ConversationParticipantEntity cpe join fetch cpe.user where"
                     + " cpe.conversation.id = :conversationId and cpe.user.id = :userId")
     Optional<ConversationParticipantEntity> findByConversationIdAndUserId(
-            UUID conversationId, UUID userId);
+            @Param("conversationId") UUID conversationId, @Param("userId") UUID userId);
 }

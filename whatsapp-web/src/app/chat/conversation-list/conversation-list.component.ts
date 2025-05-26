@@ -64,7 +64,7 @@ export class ConversationListComponent {
 
 	private internalFilteredConversations = computed(() => {
 		const query = this.searchQuery().toLowerCase().trim();
-		const currentConversations = this.conversations(); // Read the signal value here
+		const currentConversations = this.conversations();
 
 		if (!query) {
 			return currentConversations; // Return all if no query

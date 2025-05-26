@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ah.whatsapp.entity.UserEntity;
@@ -25,5 +26,6 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
                             + " || :query || '%' or phone like '%' || :query || '%') and id !="
                             + " :excludeUserId",
             nativeQuery = true)
-    List<UserEntity> searchUsers(String query, UUID excludeUserId);
+    List<UserEntity> searchUsers(
+            @Param("query") String query, @Param("excludeUserId") UUID excludeUserId);
 }

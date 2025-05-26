@@ -34,10 +34,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 	implementation("org.liquibase:liquibase-core")
-	compileOnly("org.projectlombok:lombok")
+	compileOnly("org.projectlombok:lombok:1.18.38")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
-	annotationProcessor("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok:1.18.38")
 
 	// Security
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
@@ -52,6 +52,10 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.hamcrest:hamcrest")
+}
+
+tasks.withType<JavaCompile> {
+	options.compilerArgs.addAll(listOf("-parameters"))
 }
 
 tasks.withType<Test> {

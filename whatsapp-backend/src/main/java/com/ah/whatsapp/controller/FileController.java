@@ -6,7 +6,6 @@ package com.ah.whatsapp.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,10 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ah.whatsapp.enums.FolderName;
 import com.ah.whatsapp.service.FileStorage;
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +31,7 @@ public class FileController {
 
     @GetMapping("/profile-pictures/{filename:.+}")
     public ResponseEntity<Resource> getProfilePicture(
-            @PathVariable String filename, HttpServletRequest request) {
+            @PathVariable(name = "filename") String filename, HttpServletRequest request) {
         log.debug("Request to get profile picture: {}", filename);
         try {
             Resource resource =

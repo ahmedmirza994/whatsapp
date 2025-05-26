@@ -108,7 +108,7 @@ export class WebSocketService implements OnDestroy {
 		});
 
 		this.stompClient.onConnect = (frame: IFrame) => {
-			console.log('WebSocket: Connected successfully.', frame);
+			console.log('WebSocket: Connected successfully.', frame.command);
 			this.connectionState.set(ConnectionState.CONNECTED);
 			// Re-subscribe to any topics if needed after reconnection
 			this.resubscribeTopics();

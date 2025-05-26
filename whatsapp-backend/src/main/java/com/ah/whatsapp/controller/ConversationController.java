@@ -6,7 +6,6 @@ package com.ah.whatsapp.controller;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,13 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ah.whatsapp.dto.ApiResponse;
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.CreateConversationRequest;
 import com.ah.whatsapp.model.JwtUser;
 import com.ah.whatsapp.service.ConversationService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +78,7 @@ public class ConversationController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ConversationDto>> getConversationById(
-            @PathVariable UUID id, @AuthenticationPrincipal JwtUser jwtUser) {
+            @PathVariable(name = "id") UUID id, @AuthenticationPrincipal JwtUser jwtUser) {
         if (jwtUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -112,14 +109,14 @@ public class ConversationController {
 
     @DeleteMapping("/{conversationId}")
     public ResponseEntity<ApiResponse<UUID>> deleteConversation(
-            @PathVariable UUID conversationId, @AuthenticationPrincipal JwtUser currentUser) {
+            @PathVariable(name = "conversationId") UUID conversationId, @AuthenticationPrincipal JwtUser currentUser) {
         conversationService.deleteConversationForUser(conversationId, currentUser.getUserId());
         return ResponseEntity.ok(ApiResponse.success(conversationId));
     }
 
     @PostMapping("/{conversationId}/read")
     public ResponseEntity<ApiResponse<UUID>> markAsRead(
-            @PathVariable UUID conversationId, @AuthenticationPrincipal JwtUser currentUser) {
+            @PathVariable(name = "conversationId") UUID conversationId, @AuthenticationPrincipal JwtUser currentUser) {
         conversationService.markConversationAsRead(conversationId, currentUser.getUserId());
         return ResponseEntity.ok(ApiResponse.success(conversationId));
     }
