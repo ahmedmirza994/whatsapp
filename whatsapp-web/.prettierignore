@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Logs
+*.log
+
+# Coverage reports
+coverage/
+
+# Angular specific
+.angular/
+.nx/
+
+# Build outputs
+dist/
+tmp/
+out-tsc/
+
+# Angular CLI cache
+.angular/cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

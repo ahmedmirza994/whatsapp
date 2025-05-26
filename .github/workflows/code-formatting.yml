@@ -1,0 +1,89 @@
+name: 🎨 Code Formatting Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  format-check:
+    name: Check Code Formatting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    # Java formatting check
+    - name: ☕ Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        
+    - name: 🔧 Setup Gradle
+      uses: gradle/gradle-build-action@v3
+      
+    - name: 🎨 Check Java Formatting (Spotless)
+      run: |
+        cd whatsapp-backend
+        echo "🔍 Checking Java code formatting with Spotless..."
+        ./gradlew spotlessCheck
+        echo "✅ Java formatting check completed"
+        
+    # Angular formatting check
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: whatsapp-web/package-lock.json
+        
+    - name: 📦 Install Angular Dependencies
+      run: |
+        cd whatsapp-web
+        npm ci
+        
+    - name: 🎨 Check Angular Formatting (Prettier)
+      run: |
+        cd whatsapp-web
+        echo "🔍 Checking Angular code formatting with Prettier..."
+        npm run format:check
+        echo "✅ Prettier formatting check completed"
+        
+    - name: 🔍 Run Angular ESLint
+      run: |
+        cd whatsapp-web
+        echo "🔍 Running ESLint with 200-character line length..."
+        npm run lint
+        echo "✅ ESLint check completed"
+
+    - name: 📊 Generate Formatting Report
+      if: always()
+      run: |
+        echo "## 🎨 Code Formatting Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Configuration Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Line Length**: 200 characters for both Java and Angular" >> $GITHUB_STEP_SUMMARY
+        echo "- **Java**: Spotless + Google Java Format + Checkstyle" >> $GITHUB_STEP_SUMMARY
+        echo "- **Angular**: Prettier + ESLint" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### ✅ Checks Performed" >> $GITHUB_STEP_SUMMARY
+        echo "1. **Java Spotless Check**: Validates Google Java Format compliance" >> $GITHUB_STEP_SUMMARY
+        echo "2. **Angular Prettier**: Validates code formatting consistency" >> $GITHUB_STEP_SUMMARY
+        echo "3. **Angular ESLint**: Checks code quality and style rules" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### 🛠️ How to Fix Formatting Issues" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+        echo "# Format entire project" >> $GITHUB_STEP_SUMMARY
+        echo "./format-all.sh" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "# Format Java only" >> $GITHUB_STEP_SUMMARY
+        echo "./format-java.sh" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "# Format Angular only" >> $GITHUB_STEP_SUMMARY
+        echo "./format-angular.sh" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
