@@ -3,7 +3,6 @@
 [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=bugs)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ahmedmirza994_whatsapp&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=ahmedmirza994_whatsapp)
 
