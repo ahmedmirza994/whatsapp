@@ -1,5 +1,12 @@
 # WhatsApp Clone – Full Stack Project
 
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=whatsapp-backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=whatsapp-backend)
+
 This repository contains a full-stack WhatsApp-like web application, built with a **Spring Boot (Java)** backend and an **Angular 19** frontend.  
 **Note:** This project is developed by me to polish and deepen my skills in modern web technologies, real-time communication, and scalable application architecture.
 
@@ -64,6 +71,73 @@ whatsapp/
 -   Proper error handling (no sensitive info exposed)
 -   DTO pattern for all API responses
 -   Feature branches, unit/integration tests, and code reviews
+
+---
+
+## 🚀 CI/CD & Code Quality
+
+This project uses **GitHub Actions** for automated testing, code quality analysis, and continuous integration.
+
+### 📊 Automated Workflows
+
+-   **🔍 SonarCloud Analysis**: Comprehensive code quality, security, and coverage analysis
+-   **🧪 Build & Test**: Automated testing with coverage reporting
+-   **📈 Quality Gates**: Enforced quality standards for all pull requests
+-   **💬 PR Comments**: Automatic code coverage and quality reports on pull requests
+
+### ⚡ Workflow Triggers
+
+-   **Push to `main`**: Full analysis and quality reporting
+-   **Pull Requests to `main`**: Code quality checks with PR comments
+-   **Backend Changes**: Workflows only run when backend code is modified
+
+### 📋 What You Get on Pull Requests
+
+-   ✅ **Automated Code Review**: Quality gate pass/fail status
+-   📊 **Coverage Report**: Detailed coverage for overall project and changed files
+-   🐛 **Bug Detection**: Automatic identification of potential bugs
+-   🔒 **Security Scan**: Security vulnerability and hotspot analysis
+-   👃 **Code Smell Detection**: Maintainability and clean code suggestions
+-   💬 **Inline Comments**: Direct feedback on code quality issues
+
+### 🎯 Quality Standards
+
+-   **Minimum Coverage**: 70% overall, 80% for changed files
+-   **Quality Gate**: Must pass all SonarCloud quality checks
+-   **Security**: Zero tolerance for security vulnerabilities
+-   **Code Smells**: Maintained at minimal levels
+
+### 🔗 Quality Dashboard
+
+-   [📊 SonarCloud Project](https://sonarcloud.io/project/overview?id=whatsapp-backend)
+-   [📋 Coverage Report](https://sonarcloud.io/component_measures?id=whatsapp-backend&metric=coverage)
+-   [🔒 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=whatsapp-backend)
+
+### 📁 CI/CD Documentation
+
+For detailed information about the CI/CD setup, see [GitHub Actions Documentation](.github/README.md).
+
+### 🛠️ Local Quality Checks
+
+Run the same quality checks locally before pushing:
+
+```bash
+# Run all quality checks locally
+./check-quality.sh
+
+# Or run individual steps
+cd whatsapp-backend
+./gradlew clean test jacocoTestReport
+./run-sonar.sh  # Requires SONAR_TOKEN
+```
+
+### 🔄 Development Workflow
+
+1. **Create Feature Branch**: `git checkout -b feature/your-feature`
+2. **Run Local Checks**: `./check-quality.sh`
+3. **Push & Create PR**: Automated quality checks will run
+4. **Review Results**: Check PR comments for coverage and quality feedback
+5. **Merge**: Only when all quality gates pass ✅
 
 ---
 

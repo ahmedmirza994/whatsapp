@@ -1,0 +1,205 @@
+name: SonarCloud Code Quality Analysis
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - "whatsapp-backend/**"
+    pull_request:
+        branches:
+            - main
+        paths:
+            - "whatsapp-backend/**"
+
+jobs:
+    sonarcloud:
+        name: SonarCloud Analysis
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: whatsapp-backend
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
+
+            - name: Set up JDK 21
+              uses: actions/setup-java@v4
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+
+            - name: Cache Gradle packages
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('whatsapp-backend/**/*.gradle*', 'whatsapp-backend/**/gradle-wrapper.properties') }}
+                  restore-keys: |
+                      ${{ runner.os }}-gradle-
+
+            - name: Cache SonarCloud packages
+              uses: actions/cache@v4
+              with:
+                  path: ~/.sonar/cache
+                  key: ${{ runner.os }}-sonar
+                  restore-keys: ${{ runner.os }}-sonar
+
+            - name: Make gradlew executable
+              run: chmod +x ./gradlew
+
+            - name: Clean and compile
+              run: ./gradlew clean compileJava compileTestJava
+
+            - name: Run unit tests
+              run: ./gradlew test --continue
+
+            - name: Generate test coverage report
+              run: ./gradlew jacocoTestReport
+
+            - name: Verify test coverage report exists
+              run: |
+                  if [ -f "build/reports/jacoco/test/jacocoTestReport.xml" ]; then
+                    echo "✅ Coverage report found"
+                    echo "📊 Coverage report size: $(wc -l < build/reports/jacoco/test/jacocoTestReport.xml) lines"
+                  else
+                    echo "❌ Coverage report not found"
+                    echo "📁 Available reports:"
+                    find build/reports -name "*.xml" -type f || echo "No XML reports found"
+                  fi
+
+            - name: SonarCloud Scan
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              run: |
+                  if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    ./gradlew sonarqube \
+                      -Dsonar.organization=ahmedmirza994 \
+                      -Dsonar.projectKey=whatsapp-backend \
+                      -Dsonar.host.url=https://sonarcloud.io \
+                      -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+                      -Dsonar.pullrequest.key=${{ github.event.number }} \
+                      -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+                      -Dsonar.pullrequest.base=${{ github.base_ref }}
+                  else
+                    ./gradlew sonarqube \
+                      -Dsonar.organization=ahmedmirza994 \
+                      -Dsonar.projectKey=whatsapp-backend \
+                      -Dsonar.host.url=https://sonarcloud.io \
+                      -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+                  fi
+
+            - name: Upload test results
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: test-results
+                  path: |
+                      whatsapp-backend/build/reports/tests/test/
+                      whatsapp-backend/build/test-results/test/
+                  retention-days: 7
+
+            - name: Upload coverage reports
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: coverage-reports
+                  path: |
+                      whatsapp-backend/build/reports/jacoco/
+                  retention-days: 7
+
+            - name: Publish Test Results
+              uses: EnricoMi/publish-unit-test-result-action@v2
+              if: always()
+              with:
+                  files: whatsapp-backend/build/test-results/test/**/*.xml
+                  check_name: "Unit Test Results"
+                  comment_title: "Unit Test Results"
+                  fail_on: "test failures"
+
+            - name: Add coverage to PR
+              if: github.event_name == 'pull_request'
+              uses: madrapps/jacoco-report@v1.6.1
+              with:
+                  paths: whatsapp-backend/build/reports/jacoco/test/jacocoTestReport.xml
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  min-coverage-overall: 70
+                  min-coverage-changed-files: 80
+                  title: "Code Coverage Report"
+                  update-comment: true
+
+            - name: Comment PR with SonarCloud results
+              if: github.event_name == 'pull_request'
+              uses: sonarqube-quality-gate-action@master
+              timeout-minutes: 5
+              env:
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              with:
+                  scanMetadataReportFile: whatsapp-backend/build/sonar/report-task.txt
+
+            - name: Generate Quality Report
+              if: always()
+              run: |
+                  echo "## 📊 Code Quality Report" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "### 🔍 Analysis Details" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Project**: WhatsApp Backend" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+
+                  # Coverage information
+                  if [ -f "build/reports/jacoco/test/jacocoTestReport.xml" ]; then
+                    echo "### 📈 Test Coverage" >> $GITHUB_STEP_SUMMARY
+                    echo "✅ Coverage report generated successfully" >> $GITHUB_STEP_SUMMARY
+                    echo "" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "### ❌ Test Coverage" >> $GITHUB_STEP_SUMMARY
+                    echo "Coverage report not found" >> $GITHUB_STEP_SUMMARY
+                    echo "" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  # Test results
+                  if [ -d "build/test-results/test" ]; then
+                    echo "### 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+                    echo "✅ Tests executed successfully" >> $GITHUB_STEP_SUMMARY
+                    echo "" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  # SonarCloud link
+                  echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+                  echo "- [📊 SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=whatsapp-backend)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [📋 Detailed Coverage Report](https://sonarcloud.io/component_measures?id=whatsapp-backend&metric=coverage)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [🔍 Security Analysis](https://sonarcloud.io/project/security_hotspots?id=whatsapp-backend)" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+
+            - name: Quality Gate Status Check
+              if: always()
+              run: |
+                  # Wait for SonarCloud to process the results
+                  sleep 30
+
+                  # Check if the quality gate passed
+                  QUALITY_GATE_STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+                    "https://sonarcloud.io/api/qualitygates/project_status?projectKey=whatsapp-backend" \
+                    | jq -r '.projectStatus.status')
+
+                  echo "Quality Gate Status: $QUALITY_GATE_STATUS"
+
+                  if [ "$QUALITY_GATE_STATUS" = "OK" ]; then
+                    echo "✅ Quality Gate: PASSED" >> $GITHUB_STEP_SUMMARY
+                    echo "🎉 Your code meets all quality standards!" >> $GITHUB_STEP_SUMMARY
+                  elif [ "$QUALITY_GATE_STATUS" = "ERROR" ]; then
+                    echo "❌ Quality Gate: FAILED" >> $GITHUB_STEP_SUMMARY
+                    echo "🔧 Please check the SonarCloud dashboard for issues to fix." >> $GITHUB_STEP_SUMMARY
+                    exit 1
+                  else
+                    echo "⏳ Quality Gate: $QUALITY_GATE_STATUS" >> $GITHUB_STEP_SUMMARY
+                  fi

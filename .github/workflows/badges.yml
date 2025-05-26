@@ -1,0 +1,68 @@
+name: Update README Badges
+
+on:
+    push:
+        branches: [main]
+    workflow_run:
+        workflows: ["SonarCloud Code Quality Analysis"]
+        types:
+            - completed
+
+jobs:
+    update-badges:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  fetch-depth: 0
+
+            - name: Get SonarCloud metrics
+              id: sonar-metrics
+              run: |
+                  # Wait a bit for SonarCloud to process the latest analysis
+                  sleep 60
+
+                  # Get quality gate status
+                  QUALITY_GATE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+                    "https://sonarcloud.io/api/qualitygates/project_status?projectKey=whatsapp-backend" \
+                    | jq -r '.projectStatus.status')
+
+                  # Get coverage percentage
+                  COVERAGE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+                    "https://sonarcloud.io/api/measures/component?component=whatsapp-backend&metricKeys=coverage" \
+                    | jq -r '.component.measures[0].value // "0"')
+
+                  # Get bugs count
+                  BUGS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+                    "https://sonarcloud.io/api/measures/component?component=whatsapp-backend&metricKeys=bugs" \
+                    | jq -r '.component.measures[0].value // "0"')
+
+                  # Get code smells count
+                  CODE_SMELLS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+                    "https://sonarcloud.io/api/measures/component?component=whatsapp-backend&metricKeys=code_smells" \
+                    | jq -r '.component.measures[0].value // "0"')
+
+                  echo "quality_gate=$QUALITY_GATE" >> $GITHUB_OUTPUT
+                  echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+                  echo "bugs=$BUGS" >> $GITHUB_OUTPUT
+                  echo "code_smells=$CODE_SMELLS" >> $GITHUB_OUTPUT
+
+            - name: Generate badge summary
+              run: |
+                  echo "## 📊 Current Code Quality Status" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Metric | Value | Status |" >> $GITHUB_STEP_SUMMARY
+                  echo "|--------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+                  echo "| Quality Gate | ${{ steps.sonar-metrics.outputs.quality_gate }} | ${{ steps.sonar-metrics.outputs.quality_gate == 'OK' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Coverage | ${{ steps.sonar-metrics.outputs.coverage }}% | ${{ steps.sonar-metrics.outputs.coverage >= '70' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Bugs | ${{ steps.sonar-metrics.outputs.bugs }} | ${{ steps.sonar-metrics.outputs.bugs == '0' && '✅' || '🐛' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Code Smells | ${{ steps.sonar-metrics.outputs.code_smells }} | ${{ steps.sonar-metrics.outputs.code_smells <= '5' && '✅' || '👃' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "### 🔗 Quick Links" >> $GITHUB_STEP_SUMMARY
+                  echo "- [SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=whatsapp-backend)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [Coverage Report](https://sonarcloud.io/component_measures?id=whatsapp-backend&metric=coverage)" >> $GITHUB_STEP_SUMMARY
+                  echo "- [Security Analysis](https://sonarcloud.io/project/security_hotspots?id=whatsapp-backend)" >> $GITHUB_STEP_SUMMARY

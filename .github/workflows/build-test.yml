@@ -1,0 +1,109 @@
+name: Backend Build & Test
+
+on:
+    push:
+        branches: [main, develop]
+        paths:
+            - "whatsapp-backend/**"
+    pull_request:
+        branches: [main]
+        paths:
+            - "whatsapp-backend/**"
+
+jobs:
+    test:
+        name: Build & Test
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: whatsapp-backend
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up JDK 21
+              uses: actions/setup-java@v4
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+
+            - name: Cache Gradle packages
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('whatsapp-backend/**/*.gradle*') }}
+                  restore-keys: |
+                      ${{ runner.os }}-gradle-
+
+            - name: Make gradlew executable
+              run: chmod +x ./gradlew
+
+            - name: Build project
+              run: ./gradlew build --no-daemon
+
+            - name: Run tests with coverage
+              run: ./gradlew test jacocoTestReport --no-daemon
+
+            - name: Generate test summary
+              if: always()
+              run: |
+                  echo "## 🧪 Test Summary" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+
+                  # Count test results
+                  if [ -d "build/test-results/test" ]; then
+                    TOTAL_TESTS=$(find build/test-results/test -name "*.xml" -exec grep -o "tests=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                    FAILED_TESTS=$(find build/test-results/test -name "*.xml" -exec grep -o "failures=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                    SKIPPED_TESTS=$(find build/test-results/test -name "*.xml" -exec grep -o "skipped=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                    
+                    echo "- **Total Tests**: ${TOTAL_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+                    echo "- **Passed Tests**: $((${TOTAL_TESTS:-0} - ${FAILED_TESTS:-0} - ${SKIPPED_TESTS:-0}))" >> $GITHUB_STEP_SUMMARY
+                    echo "- **Failed Tests**: ${FAILED_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+                    echo "- **Skipped Tests**: ${SKIPPED_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "❌ No test results found" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "## 📊 Coverage Information" >> $GITHUB_STEP_SUMMARY
+
+                  if [ -f "build/reports/jacoco/test/jacocoTestReport.xml" ]; then
+                    echo "✅ Coverage report generated" >> $GITHUB_STEP_SUMMARY
+                    echo "📁 Coverage artifacts uploaded" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "❌ Coverage report not found" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+            - name: Upload test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-results-${{ github.run_number }}
+                  path: |
+                      whatsapp-backend/build/reports/tests/test/
+                      whatsapp-backend/build/test-results/test/
+                  retention-days: 7
+
+            - name: Upload coverage reports
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-report-${{ github.run_number }}
+                  path: whatsapp-backend/build/reports/jacoco/
+                  retention-days: 7
+
+            - name: Comment on PR with coverage
+              if: github.event_name == 'pull_request'
+              uses: madrapps/jacoco-report@v1.6.1
+              with:
+                  paths: whatsapp-backend/build/reports/jacoco/test/jacocoTestReport.xml
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  min-coverage-overall: 70
+                  min-coverage-changed-files: 80
+                  title: "📊 Code Coverage Report"
+                  update-comment: true
+                  skip-if-no-changes: false
