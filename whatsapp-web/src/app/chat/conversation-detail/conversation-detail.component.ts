@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { StompSubscription } from '@stomp/stompjs';
+import { Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service'; // Import AuthService
 import { CHAT_SEND_MESSAGE_DESTINATION, getConversationTopicDestination } from '../../shared/constants/websocket.constants';
@@ -39,7 +38,7 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 	private destroy$ = new Subject<void>();
 
 	isTyping = signal<boolean>(false);
-	private typingSubscription: StompSubscription | undefined;
+	private typingSubscription: Subscription | undefined;
 
 	ngOnInit(): void {
 		this.route.paramMap
@@ -92,8 +91,10 @@ export class ConversationDetailComponent implements OnInit, OnDestroy {
 				},
 			});
 
-		if (this.conversationId) {
-			this.typingSubscription = this.webSocketService.subscribeToTyping(this.conversationId()!, (event: WebSocketEvent<TypingEventPayload>) => {
+		// Subscribe to typing events for the current conversation
+		const currentConvId = this.conversationId();
+		if (currentConvId) {
+			this.typingSubscription = this.webSocketService.subscribeToTyping(currentConvId, (event: WebSocketEvent<TypingEventPayload>) => {
 				const data = event.payload;
 				if (data.userId !== this.currentUserId) {
 					if (event.type === EventType.TYPING_START) {

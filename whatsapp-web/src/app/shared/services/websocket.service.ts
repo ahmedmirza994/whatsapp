@@ -324,6 +324,18 @@ export class WebSocketService implements OnDestroy {
 	subscribeToTyping(conversationId: string, callback: (event: WebSocketEvent<TypingEventPayload>) => void) {
 		const destination = `/topic/conversations/${conversationId}/typing`;
 		console.log(`WebSocket: Subscribing to typing events for ${conversationId}`);
-		return this.stompClient?.subscribe(destination, message => callback(JSON.parse(message.body)));
+
+		// Use the existing subscription management instead of direct STOMP subscription
+		this.subscribeToTopic(destination);
+
+		// Listen to the event stream for typing events on this conversation
+		return this.events$
+			.pipe(
+				filter(
+					(event: WebSocketEvent) =>
+						(event.type === EventType.TYPING_START || event.type === EventType.TYPING_STOP) && (event.payload as TypingEventPayload)?.conversationId === conversationId
+				)
+			)
+			.subscribe(event => callback(event as WebSocketEvent<TypingEventPayload>));
 	}
 }
