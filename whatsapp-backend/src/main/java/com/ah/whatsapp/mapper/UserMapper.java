@@ -32,8 +32,9 @@ public class UserMapper {
     public User toModel(UserSignupDto dto) {
         User model = new User();
         BeanUtils.copyProperties(dto, model);
-        model.setCreatedAt(LocalDateTime.now());
-        model.setUpdatedAt(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        model.setCreatedAt(now);
+        model.setUpdatedAt(now);
         return model;
     }
 
