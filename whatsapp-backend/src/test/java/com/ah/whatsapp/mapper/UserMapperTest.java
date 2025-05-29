@@ -1,12 +1,17 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.mapper;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import static com.ah.whatsapp.mapper.UserTestDataBuilder.aUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,15 +31,13 @@ public class UserMapperTest {
 
     @Test
     public void testToModelFromEntity() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(UUID.randomUUID());
-        userEntity.setName("John Doe");
-        userEntity.setEmail("john.doe@example.com");
-        userEntity.setPassword("password123");
-        userEntity.setPhone("+1234567890");
-        userEntity.setProfilePicture("http://example.com/profile.jpg");
-        userEntity.setCreatedAt(LocalDateTime.now());
-        userEntity.setUpdatedAt(LocalDateTime.now());
+        UserEntity userEntity =
+                aUser().withName("John Doe")
+                        .withEmail("john.doe@example.com")
+                        .withPassword("password123")
+                        .withPhone("+1234567890")
+                        .withProfilePicture("http://example.com/profile.jpg")
+                        .buildEntity();
 
         User user = userMapper.toModel(userEntity);
 
@@ -66,15 +69,13 @@ public class UserMapperTest {
 
     @Test
     public void testToEntity() {
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
-        user.setPassword("password123");
-        user.setPhone("+1234567890");
-        user.setProfilePicture("http://example.com/profile.jpg");
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        User user =
+                aUser().withName("John Doe")
+                        .withEmail("john.doe@example.com")
+                        .withPassword("password123")
+                        .withPhone("+1234567890")
+                        .withProfilePicture("http://example.com/profile.jpg")
+                        .build();
 
         UserEntity userEntity = userMapper.toEntity(user);
 
@@ -90,7 +91,7 @@ public class UserMapperTest {
 
     @Test
     public void testToDtoWithToken() {
-        User user = createTestUser();
+        User user = aUser().build();
         String jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.token";
 
         UserDto result = userMapper.toDto(user, jwtToken);
@@ -105,7 +106,7 @@ public class UserMapperTest {
 
     @Test
     public void testToDtoWithoutToken() {
-        User user = createTestUser();
+        User user = aUser().build();
 
         UserDto result = userMapper.toDto(user);
 
@@ -119,7 +120,7 @@ public class UserMapperTest {
 
     @Test
     public void testToDtoWithNullToken() {
-        User user = createTestUser();
+        User user = aUser().build();
 
         UserDto result = userMapper.toDto(user, null);
 
@@ -133,13 +134,8 @@ public class UserMapperTest {
 
     @Test
     public void testToModelFromEntity_WithNullValues() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(UUID.randomUUID());
-        userEntity.setName(null);
-        userEntity.setEmail("test@example.com");
-        userEntity.setPassword(null);
-        userEntity.setPhone(null);
-        userEntity.setProfilePicture(null);
+        UserEntity userEntity =
+                aUser().withNullValues().withEmail("test@example.com").buildEntity();
 
         User user = userMapper.toModel(userEntity);
 
@@ -153,13 +149,7 @@ public class UserMapperTest {
 
     @Test
     public void testToEntity_WithNullValues() {
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setName(null);
-        user.setEmail("test@example.com");
-        user.setPassword(null);
-        user.setPhone(null);
-        user.setProfilePicture(null);
+        User user = aUser().withNullValues().withEmail("test@example.com").build();
 
         UserEntity userEntity = userMapper.toEntity(user);
 
@@ -173,7 +163,13 @@ public class UserMapperTest {
 
     @Test
     public void testRoundTripConversion() {
-        User originalUser = createTestUser();
+        User originalUser =
+                aUser().withName("John Doe")
+                        .withEmail("john.doe@example.com")
+                        .withPassword("hashedPassword123")
+                        .withPhone("+1234567890")
+                        .withProfilePicture("http://example.com/profile.jpg")
+                        .build();
 
         UserEntity entity = userMapper.toEntity(originalUser);
         User resultUser = userMapper.toModel(entity);
@@ -203,19 +199,7 @@ public class UserMapperTest {
         assertTrue(user.getCreatedAt().isBefore(afterConversion));
         assertTrue(user.getUpdatedAt().isAfter(beforeConversion));
         assertTrue(user.getUpdatedAt().isBefore(afterConversion));
-        assertTrue(Math.abs(user.getCreatedAt().getNano() - user.getUpdatedAt().getNano()) < 1000000);
-    }
-
-    private User createTestUser() {
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
-        user.setPassword("hashedPassword123");
-        user.setPhone("+1234567890");
-        user.setProfilePicture("http://example.com/profile.jpg");
-        user.setCreatedAt(LocalDateTime.now().minusDays(1));
-        user.setUpdatedAt(LocalDateTime.now());
-        return user;
+        assertTrue(
+                Math.abs(user.getCreatedAt().getNano() - user.getUpdatedAt().getNano()) < 1000000);
     }
 }

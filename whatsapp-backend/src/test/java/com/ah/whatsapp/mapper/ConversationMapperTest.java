@@ -1,15 +1,24 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.mapper;
 
+import static com.ah.whatsapp.mapper.ConversationParticipantTestDataBuilder.aConversationParticipant;
+import static com.ah.whatsapp.mapper.ConversationTestDataBuilder.aConversation;
+import static com.ah.whatsapp.mapper.MessageTestDataBuilder.aMessage;
+import static com.ah.whatsapp.mapper.UserTestDataBuilder.aUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import com.ah.whatsapp.dto.ConversationDto;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.ParticipantDto;
@@ -17,7 +26,6 @@ import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.ConversationParticipant;
 import com.ah.whatsapp.model.Message;
-import com.ah.whatsapp.model.User;
 
 public class ConversationMapperTest {
 
@@ -34,7 +42,7 @@ public class ConversationMapperTest {
 
     @Test
     public void testToEntity() {
-        Conversation conversation = createTestConversation();
+        Conversation conversation = aConversation().build();
 
         ConversationEntity result = conversationMapper.toEntity(conversation);
 
@@ -45,10 +53,7 @@ public class ConversationMapperTest {
 
     @Test
     public void testToModel() {
-        ConversationEntity entity = new ConversationEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
+        ConversationEntity entity = aConversation().buildEntity();
 
         Conversation result = conversationMapper.toModel(entity);
 
@@ -74,7 +79,32 @@ public class ConversationMapperTest {
 
     @Test
     public void testToDto_WithAllFields() {
-        Conversation conversation = createTestConversationWithParticipantsAndMessages();
+        List<ConversationParticipant> participants =
+                List.of(
+                        aConversationParticipant()
+                                .withParticipantName("John Doe")
+                                .withParticipantEmail("john@example.com")
+                                .build(),
+                        aConversationParticipant()
+                                .withParticipantName("Jane Smith")
+                                .withParticipantEmail("jane@example.com")
+                                .build());
+
+        Message testMessage =
+                aMessage()
+                        .withContent("Test message content")
+                        .withSender(
+                                aUser().withName("Test Sender")
+                                        .withEmail("sender@example.com")
+                                        .build())
+                        .build();
+
+        Conversation conversation =
+                aConversation()
+                        .withParticipants(participants)
+                        .withMessages(List.of(testMessage))
+                        .withLastMessage(testMessage)
+                        .build();
 
         ConversationDto result = conversationMapper.toDto(conversation);
 
@@ -106,8 +136,7 @@ public class ConversationMapperTest {
 
     @Test
     public void testToDto_WithNullParticipants() {
-        Conversation conversation = createTestConversation();
-        conversation.setParticipants(null);
+        Conversation conversation = aConversation().withParticipants(null).build();
 
         ConversationDto result = conversationMapper.toDto(conversation);
 
@@ -118,8 +147,7 @@ public class ConversationMapperTest {
 
     @Test
     public void testToDto_WithNullMessages() {
-        Conversation conversation = createTestConversation();
-        conversation.setMessages(null);
+        Conversation conversation = aConversation().withMessages(null).build();
 
         ConversationDto result = conversationMapper.toDto(conversation);
 
@@ -130,8 +158,7 @@ public class ConversationMapperTest {
 
     @Test
     public void testToDto_WithNullLastMessage() {
-        Conversation conversation = createTestConversation();
-        conversation.setLastMessage(null);
+        Conversation conversation = aConversation().withLastMessage(null).build();
 
         ConversationDto result = conversationMapper.toDto(conversation);
 
@@ -141,9 +168,11 @@ public class ConversationMapperTest {
 
     @Test
     public void testToDto_WithEmptyParticipantsAndMessages() {
-        Conversation conversation = createTestConversation();
-        conversation.setParticipants(new ArrayList<>());
-        conversation.setMessages(new ArrayList<>());
+        Conversation conversation =
+                aConversation()
+                        .withParticipants(new ArrayList<>())
+                        .withMessages(new ArrayList<>())
+                        .build();
 
         ConversationDto result = conversationMapper.toDto(conversation);
 
@@ -152,63 +181,5 @@ public class ConversationMapperTest {
         assertTrue(result.getParticipants().isEmpty());
         assertNotNull(result.getMessages());
         assertTrue(result.getMessages().isEmpty());
-    }
-
-    private Conversation createTestConversation() {
-        Conversation conversation = new Conversation();
-        conversation.setId(UUID.randomUUID());
-        conversation.setCreatedAt(LocalDateTime.now());
-        conversation.setUpdatedAt(LocalDateTime.now());
-        conversation.setParticipants(new ArrayList<>());
-        conversation.setMessages(new ArrayList<>());
-        return conversation;
-    }
-
-    private Conversation createTestConversationWithParticipantsAndMessages() {
-        Conversation conversation = createTestConversation();
-
-        List<ConversationParticipant> participants = new ArrayList<>();
-        participants.add(createTestParticipant("John Doe", "john@example.com"));
-        participants.add(createTestParticipant("Jane Smith", "jane@example.com"));
-        conversation.setParticipants(participants);
-
-        List<Message> messages = new ArrayList<>();
-        Message message = createTestMessage();
-        messages.add(message);
-        conversation.setMessages(messages);
-
-        conversation.setLastMessage(message);
-
-        return conversation;
-    }
-
-    private ConversationParticipant createTestParticipant(String name, String email) {
-        ConversationParticipant participant = new ConversationParticipant();
-        participant.setId(UUID.randomUUID());
-        participant.setConversationId(UUID.randomUUID());
-        participant.setParticipantId(UUID.randomUUID());
-        participant.setParticipantName(name);
-        participant.setParticipantEmail(email);
-        participant.setParticipantProfilePicture("http://example.com/profile.jpg");
-        participant.setJoinedAt(LocalDateTime.now());
-        participant.setActive(true);
-        participant.setLeftAt(null);
-        participant.setLastReadAt(LocalDateTime.now());
-        return participant;
-    }
-
-    private Message createTestMessage() {
-        User sender = new User();
-        sender.setId(UUID.randomUUID());
-        sender.setName("Test Sender");
-        sender.setEmail("sender@example.com");
-
-        Message message = new Message();
-        message.setId(UUID.randomUUID());
-        message.setConversationId(UUID.randomUUID());
-        message.setContent("Test message content");
-        message.setSentAt(LocalDateTime.now());
-        message.setSender(sender);
-        return message;
     }
 }

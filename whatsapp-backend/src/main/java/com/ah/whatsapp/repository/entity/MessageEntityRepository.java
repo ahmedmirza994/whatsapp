@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import com.ah.whatsapp.entity.MessageEntity;
 
 @Repository
@@ -28,7 +30,8 @@ public interface MessageEntityRepository extends JpaRepository<MessageEntity, UU
     @Query(
             "select m from MessageEntity m join fetch m.sender where m.conversation.id ="
                     + " :conversationId order by m.sentAt desc limit 1")
-    Optional<MessageEntity> findByConversationIdOrderBySentAtDesc(@Param("conversationId") UUID conversationId);
+    Optional<MessageEntity> findByConversationIdOrderBySentAtDesc(
+            @Param("conversationId") UUID conversationId);
 
     /**
      * Finds the IDs of the latest message entity for each conversation ID in the provided list

@@ -1,12 +1,18 @@
+/*
+ * WhatsApp Clone - Backend Service
+ * Copyright (c) 2025
+ */
 package com.ah.whatsapp.mapper;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import static com.ah.whatsapp.mapper.MessageTestDataBuilder.aMessage;
+import static com.ah.whatsapp.mapper.UserTestDataBuilder.aUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,14 +36,9 @@ public class MessageMapperTest {
 
     @Test
     public void testToEntity() {
-        User sender = createTestUser();
+        User sender = aUser().build();
 
-        Message message = new Message();
-        message.setId(UUID.randomUUID());
-        message.setContent("Test message content");
-        message.setSentAt(LocalDateTime.now());
-        message.setConversationId(UUID.randomUUID());
-        message.setSender(sender);
+        Message message = aMessage().withSender(sender).build();
 
         ConversationEntity conversationEntity = new ConversationEntity();
         conversationEntity.setId(message.getConversationId());
@@ -55,17 +56,16 @@ public class MessageMapperTest {
 
     @Test
     public void testToModel() {
-        UserEntity senderEntity = createTestUserEntity();
+        UserEntity senderEntity = aUser().buildEntity();
 
         ConversationEntity conversationEntity = new ConversationEntity();
         conversationEntity.setId(UUID.randomUUID());
 
-        MessageEntity entity = new MessageEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setContent("Test message content");
-        entity.setSentAt(LocalDateTime.now());
-        entity.setConversation(conversationEntity);
-        entity.setSender(senderEntity);
+        MessageEntity entity =
+                aMessage()
+                        .withConversationEntity(conversationEntity)
+                        .withSenderEntity(senderEntity)
+                        .buildEntity();
 
         Message result = messageMapper.toModel(entity);
 
@@ -81,14 +81,9 @@ public class MessageMapperTest {
 
     @Test
     public void testToDto() {
-        User sender = createTestUser();
+        User sender = aUser().build();
 
-        Message message = new Message();
-        message.setId(UUID.randomUUID());
-        message.setContent("Test message for DTO");
-        message.setSentAt(LocalDateTime.now());
-        message.setConversationId(UUID.randomUUID());
-        message.setSender(sender);
+        Message message = aMessage().withContent("Test message for DTO").withSender(sender).build();
 
         MessageDto result = messageMapper.toDto(message);
 
@@ -102,29 +97,29 @@ public class MessageMapperTest {
 
     @Test
     public void testToDto_WithNullSender() {
-        Message message = new Message();
-        message.setId(UUID.randomUUID());
-        message.setContent("Test message");
-        message.setSentAt(LocalDateTime.now());
-        message.setConversationId(UUID.randomUUID());
-        message.setSender(null);
+        Message message = aMessage().withContent("Test message").withSender(null).build();
 
-        assertThrows(NullPointerException.class, () -> {
-            messageMapper.toDto(message);
-        });
+        NullPointerException exception =
+                assertThrows(
+                        NullPointerException.class,
+                        () -> {
+                            messageMapper.toDto(message);
+                        });
+        assertNotNull(exception);
     }
 
     @Test
     public void testToEntity_WithNullValues() {
-        Message message = new Message();
-        message.setId(null);
-        message.setContent(null);
-        message.setSentAt(null);
-        message.setConversationId(UUID.randomUUID());
-        message.setSender(createTestUser());
+        Message message =
+                aMessage()
+                        .withId(null)
+                        .withContent(null)
+                        .withSentAt(null)
+                        .withSender(aUser().build())
+                        .build();
 
         ConversationEntity conversationEntity = new ConversationEntity();
-        UserEntity senderEntity = createTestUserEntity();
+        UserEntity senderEntity = aUser().buildEntity();
 
         MessageEntity result = messageMapper.toEntity(message, conversationEntity, senderEntity);
 
@@ -133,25 +128,5 @@ public class MessageMapperTest {
         assertNull(result.getSentAt());
         assertEquals(conversationEntity, result.getConversation());
         assertEquals(senderEntity, result.getSender());
-    }
-
-    private User createTestUser() {
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
-        user.setPhone("+1234567890");
-        user.setProfilePicture("http://example.com/profile.jpg");
-        return user;
-    }
-
-    private UserEntity createTestUserEntity() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(UUID.randomUUID());
-        userEntity.setName("Jane Smith");
-        userEntity.setEmail("jane.smith@example.com");
-        userEntity.setPhone("+0987654321");
-        userEntity.setProfilePicture("http://example.com/jane.jpg");
-        return userEntity;
     }
 }

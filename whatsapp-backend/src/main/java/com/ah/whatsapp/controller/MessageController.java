@@ -7,6 +7,7 @@ package com.ah.whatsapp.controller;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,12 +20,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.ah.whatsapp.constant.WebSocketConstants;
 import com.ah.whatsapp.dto.ApiResponse;
 import com.ah.whatsapp.dto.MessageDto;
 import com.ah.whatsapp.dto.SendMessageRequest;
 import com.ah.whatsapp.model.JwtUser;
 import com.ah.whatsapp.service.MessageService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +49,8 @@ public class MessageController {
      */
     @GetMapping("/conversation/{conversationId}")
     public ResponseEntity<ApiResponse<List<MessageDto>>> getConversationMessages(
-            @PathVariable(name= "conversationId") UUID conversationId, @AuthenticationPrincipal JwtUser jwtUser) {
+            @PathVariable(name = "conversationId") UUID conversationId,
+            @AuthenticationPrincipal JwtUser jwtUser) {
         if (jwtUser == null) {
             // Handled by security config, but good practice for clarity
             return new ResponseEntity<>(
@@ -102,7 +106,8 @@ public class MessageController {
 
     @DeleteMapping("/{messageId}")
     public ResponseEntity<ApiResponse<UUID>> deleteMessage(
-            @PathVariable(name= "messageId") UUID messageId, @AuthenticationPrincipal JwtUser jwtUser) {
+            @PathVariable(name = "messageId") UUID messageId,
+            @AuthenticationPrincipal JwtUser jwtUser) {
         if (jwtUser == null) {
             return new ResponseEntity<>(
                     ApiResponse.failure("Unauthorized", HttpStatus.UNAUTHORIZED),
