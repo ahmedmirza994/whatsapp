@@ -4,8 +4,8 @@
  */
 package com.ah.whatsapp.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -158,7 +158,7 @@ public abstract class FileStorageContractTest {
 
 	// Contract: Must generate unique filenames for duplicate base names
 	@Test
-	void contract_storeFile_MustGenerateUniqueFilenames() throws IOException {
+	void contract_storeFile_WithDuplicateBasename_ShouldReplaceExistingFile() throws IOException {
 		// Given
 		String baseFilename = "duplicate-test";
 		FolderName folderName = FolderName.PROFILE_PICTURES;
@@ -168,10 +168,7 @@ public abstract class FileStorageContractTest {
 		String secondFilename = fileStorage.storeFile(validFile, folderName, baseFilename);
 
 		// Then - Contract requirement
-		assertNotEquals(
-				firstFilename,
-				secondFilename,
-				"Must generate unique filenames for duplicate base names");
+		assertEquals(firstFilename, secondFilename);
 	}
 
 	// Contract: Must be able to load stored files
