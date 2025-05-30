@@ -4,6 +4,16 @@
  */
 package com.ah.whatsapp.repository;
 
+import static com.ah.whatsapp.mapper.ConversationParticipantTestDataBuilder.aConversationParticipant;
+import static com.ah.whatsapp.mapper.ConversationTestDataBuilder.aConversation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,15 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ah.whatsapp.entity.ConversationEntity;
 import com.ah.whatsapp.mapper.ConversationMapper;
-import static com.ah.whatsapp.mapper.ConversationParticipantTestDataBuilder.aConversationParticipant;
-import static com.ah.whatsapp.mapper.ConversationTestDataBuilder.aConversation;
 import com.ah.whatsapp.model.Conversation;
 import com.ah.whatsapp.model.ConversationParticipant;
 import com.ah.whatsapp.model.Message;
