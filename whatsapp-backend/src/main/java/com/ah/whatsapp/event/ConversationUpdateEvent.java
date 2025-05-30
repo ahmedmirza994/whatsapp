@@ -9,14 +9,14 @@ import org.springframework.context.ApplicationEvent;
 import com.ah.whatsapp.dto.ConversationDto;
 
 public class ConversationUpdateEvent extends ApplicationEvent {
-    private final ConversationDto conversationDto;
+	private final ConversationDto conversationDto;
 
-    public ConversationUpdateEvent(Object source, ConversationDto conversationDto) {
-        super(source);
-        this.conversationDto = conversationDto;
-    }
+	public ConversationUpdateEvent(Object source, ConversationDto conversationDto) {
+		super(source);
+		this.conversationDto = conversationDto;
+	}
 
-    public ConversationDto getConversationDto() {
-        return conversationDto;
-    }
+	public ConversationDto getConversationDto() {
+		return conversationDto;
+	}
 }

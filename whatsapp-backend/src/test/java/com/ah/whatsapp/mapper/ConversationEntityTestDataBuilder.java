@@ -15,34 +15,34 @@ import com.ah.whatsapp.entity.ConversationEntity;
  */
 public class ConversationEntityTestDataBuilder {
 
-    private UUID id = UUID.randomUUID();
-    private LocalDateTime createdAt = LocalDateTime.now().minusDays(2);
-    private LocalDateTime updatedAt = LocalDateTime.now();
+	private UUID id = UUID.randomUUID();
+	private LocalDateTime createdAt = LocalDateTime.now().minusDays(2);
+	private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public static ConversationEntityTestDataBuilder aConversationEntity() {
-        return new ConversationEntityTestDataBuilder();
-    }
+	public static ConversationEntityTestDataBuilder aConversationEntity() {
+		return new ConversationEntityTestDataBuilder();
+	}
 
-    public ConversationEntityTestDataBuilder withId(UUID id) {
-        this.id = id;
-        return this;
-    }
+	public ConversationEntityTestDataBuilder withId(UUID id) {
+		this.id = id;
+		return this;
+	}
 
-    public ConversationEntityTestDataBuilder withCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
+	public ConversationEntityTestDataBuilder withCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+		return this;
+	}
 
-    public ConversationEntityTestDataBuilder withUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
+	public ConversationEntityTestDataBuilder withUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+		return this;
+	}
 
-    public ConversationEntity build() {
-        ConversationEntity entity = new ConversationEntity();
-        entity.setId(id);
-        entity.setCreatedAt(createdAt);
-        entity.setUpdatedAt(updatedAt);
-        return entity;
-    }
+	public ConversationEntity build() {
+		ConversationEntity entity = new ConversationEntity();
+		entity.setId(id);
+		entity.setCreatedAt(createdAt);
+		entity.setUpdatedAt(updatedAt);
+		return entity;
+	}
 }

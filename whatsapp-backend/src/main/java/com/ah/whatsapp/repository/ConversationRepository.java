@@ -11,15 +11,15 @@ import java.util.UUID;
 import com.ah.whatsapp.model.Conversation;
 
 public interface ConversationRepository {
-    Conversation save(Conversation conversation);
+	Conversation save(Conversation conversation);
 
-    Optional<Conversation> findById(UUID id);
+	Optional<Conversation> findById(UUID id);
 
-    List<Conversation> findByUserId(UUID userId);
+	List<Conversation> findByUserId(UUID userId);
 
-    void delete(UUID id);
+	void delete(UUID id);
 
-    boolean existsById(UUID id);
+	boolean existsById(UUID id);
 
-    Optional<Conversation> findDirectConversationBetweenUsers(UUID userId1, UUID userId2);
+	Optional<Conversation> findDirectConversationBetweenUsers(UUID userId1, UUID userId2);
 }

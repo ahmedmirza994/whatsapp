@@ -13,13 +13,13 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
-    @EqualsAndHashCode.Include private UUID id;
+	@EqualsAndHashCode.Include private UUID id;
 
-    private String name;
-    private String email;
-    private String password;
-    private String phone;
-    private String profilePicture;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+	private String name;
+	private String email;
+	private String password;
+	private String phone;
+	private String profilePicture;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }

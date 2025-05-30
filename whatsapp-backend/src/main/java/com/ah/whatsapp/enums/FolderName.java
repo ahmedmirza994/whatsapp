@@ -5,15 +5,15 @@
 package com.ah.whatsapp.enums;
 
 public enum FolderName {
-    PROFILE_PICTURES("profile_pictures");
+	PROFILE_PICTURES("profile_pictures");
 
-    final String folderName;
+	final String folderName;
 
-    FolderName(String folderName) {
-        this.folderName = folderName;
-    }
+	FolderName(String folderName) {
+		this.folderName = folderName;
+	}
 
-    public String getFolderName() {
-        return folderName;
-    }
+	public String getFolderName() {
+		return folderName;
+	}
 }

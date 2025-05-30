@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Message {
-    private UUID id;
-    private UUID conversationId;
-    private User sender;
-    private String content;
-    private LocalDateTime sentAt;
+	private UUID id;
+	private UUID conversationId;
+	private User sender;
+	private String content;
+	private LocalDateTime sentAt;
 }

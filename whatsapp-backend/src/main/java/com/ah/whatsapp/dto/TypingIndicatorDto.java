@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TypingIndicatorDto {
-    private UUID conversationId;
-    private UUID userId;
-    private EventType eventType;
+	private UUID conversationId;
+	private UUID userId;
+	private EventType eventType;
 }

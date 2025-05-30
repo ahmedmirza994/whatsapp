@@ -27,69 +27,69 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthChannelInterceptor implements ChannelInterceptor {
 
-    private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService; // Your UserDetailsServiceImpl
+	private final JwtUtil jwtUtil;
+	private final UserDetailsService userDetailsService; // Your UserDetailsServiceImpl
 
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor =
-                MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+	@Override
+	public Message<?> preSend(Message<?> message, MessageChannel channel) {
+		StompHeaderAccessor accessor =
+				MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-            // Extract token from STOMP connect headers
-            // Note: StompHeaderAccessor might automatically convert header names to lowercase
-            // Check both 'Authorization' and 'authorization'
-            List<String> authorization = accessor.getNativeHeader("Authorization");
-            if (authorization == null) {
-                authorization = accessor.getNativeHeader("authorization");
-            }
+		if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+			// Extract token from STOMP connect headers
+			// Note: StompHeaderAccessor might automatically convert header names to lowercase
+			// Check both 'Authorization' and 'authorization'
+			List<String> authorization = accessor.getNativeHeader("Authorization");
+			if (authorization == null) {
+				authorization = accessor.getNativeHeader("authorization");
+			}
 
-            String jwt = null;
-            if (authorization != null && !authorization.isEmpty()) {
-                String authHeader = authorization.get(0);
-                if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                    jwt = authHeader.substring(7);
-                }
-            }
+			String jwt = null;
+			if (authorization != null && !authorization.isEmpty()) {
+				String authHeader = authorization.get(0);
+				if (authHeader != null && authHeader.startsWith("Bearer ")) {
+					jwt = authHeader.substring(7);
+				}
+			}
 
-            if (jwt != null) {
-                try {
-                    if (jwtUtil.validateToken(jwt)) {
-                        String username = jwtUtil.extractEmail(jwt);
-                        if (username != null) {
-                            JwtUser userDetails =
-                                    (JwtUser) userDetailsService.loadUserByUsername(username);
-                            // Create authentication token
-                            UsernamePasswordAuthenticationToken authentication =
-                                    new UsernamePasswordAuthenticationToken(
-                                            userDetails,
-                                            null,
-                                            userDetails.getAuthorities()); // Use authorities from
-                            // UserDetails
+			if (jwt != null) {
+				try {
+					if (jwtUtil.validateToken(jwt)) {
+						String username = jwtUtil.extractEmail(jwt);
+						if (username != null) {
+							JwtUser userDetails =
+									(JwtUser) userDetailsService.loadUserByUsername(username);
+							// Create authentication token
+							UsernamePasswordAuthenticationToken authentication =
+									new UsernamePasswordAuthenticationToken(
+											userDetails,
+											null,
+											userDetails.getAuthorities()); // Use authorities from
+							// UserDetails
 
-                            // Set the user for the STOMP session/message
-                            // This is crucial for @AuthenticationPrincipal to work later
+							// Set the user for the STOMP session/message
+							// This is crucial for @AuthenticationPrincipal to work later
 
-                            log.info(
-                                    "Setting WebSocket Principal for user: '{}', Principal Name:"
-                                            + " '{}'",
-                                    username,
-                                    authentication.getName());
-                            accessor.setUser(authentication);
-                            log.info("Authenticated WebSocket user: {}", username);
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("WebSocket authentication error: {}", e.getMessage());
-                    // Optionally prevent connection by throwing an exception or returning null
-                    // For now, just log the error
-                }
-            } else {
-                log.warn("WebSocket CONNECT message without valid Authorization header.");
-                // Decide if unauthenticated connections are allowed or should be rejected
-            }
-        }
+							log.info(
+									"Setting WebSocket Principal for user: '{}', Principal Name:"
+											+ " '{}'",
+									username,
+									authentication.getName());
+							accessor.setUser(authentication);
+							log.info("Authenticated WebSocket user: {}", username);
+						}
+					}
+				} catch (Exception e) {
+					log.error("WebSocket authentication error: {}", e.getMessage());
+					// Optionally prevent connection by throwing an exception or returning null
+					// For now, just log the error
+				}
+			} else {
+				log.warn("WebSocket CONNECT message without valid Authorization header.");
+				// Decide if unauthenticated connections are allowed or should be rejected
+			}
+		}
 
-        return message;
-    }
+		return message;
+	}
 }

@@ -1,9 +1,9 @@
 databaseChangeLog:
     - changeSet:
-          id: V002__create_messages_table
-          author: Ahmed Haris
-          changes:
-              - sqlFile:
+        id: V002__create_messages_table
+        author: Ahmed Haris
+        changes:
+            - sqlFile:
                     relativeToChangelogFile: true
                     path: ../sql/V002__create_messages_table.sql
                     splitStatements: false

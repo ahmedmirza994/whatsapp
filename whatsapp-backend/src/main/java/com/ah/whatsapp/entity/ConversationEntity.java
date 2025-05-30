@@ -20,11 +20,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "conversations")
 public class ConversationEntity {
-    @Id @GeneratedValue private UUID id;
+	@Id @GeneratedValue private UUID id;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+	@Column(name = "created_at", nullable = false)
+	private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
 }

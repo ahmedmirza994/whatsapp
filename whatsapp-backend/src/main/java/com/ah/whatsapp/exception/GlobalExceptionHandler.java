@@ -21,54 +21,54 @@ import com.ah.whatsapp.dto.ApiResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserAlreadyExistsException(
-            UserAlreadyExistsException ex) {
-        ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.CONFLICT);
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
+	@ExceptionHandler(UserAlreadyExistsException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUserAlreadyExistsException(
+			UserAlreadyExistsException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.CONFLICT);
+		return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<List<String>>> handleValidationException(
-            MethodArgumentNotValidException ex) {
-        String errors =
-                ex.getBindingResult().getAllErrors().stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .collect(Collectors.joining(","));
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ApiResponse<List<String>>> handleValidationException(
+			MethodArgumentNotValidException ex) {
+		String errors =
+				ex.getBindingResult().getAllErrors().stream()
+						.map(DefaultMessageSourceResolvable::getDefaultMessage)
+						.collect(Collectors.joining(","));
 
-        ApiResponse<List<String>> response = ApiResponse.badRequest(errors);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+		ApiResponse<List<String>> response = ApiResponse.badRequest(errors);
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
 
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentialsException(
-            InvalidCredentialsException ex) {
-        ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler(InvalidCredentialsException.class)
+	public ResponseEntity<ApiResponse<Void>> handleInvalidCredentialsException(
+			InvalidCredentialsException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUsernameNotFoundException(
-            UsernameNotFoundException ex) {
-        ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUsernameNotFoundException(
+			UsernameNotFoundException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException ex) {
-        ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedException(UnauthorizedException ex) {
-        ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUnauthorizedException(UnauthorizedException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
-        ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
+		ApiResponse<Void> response = ApiResponse.failure(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
 }

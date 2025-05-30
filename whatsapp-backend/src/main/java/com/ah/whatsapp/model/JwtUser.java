@@ -17,22 +17,22 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class JwtUser implements UserDetails {
-    private String username;
-    private UUID userId;
-    private String password;
+	private String username;
+	private UUID userId;
+	private String password;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of();
+	}
 
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
+	@Override
+	public String getPassword() {
+		return this.password;
+	}
 
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
+	@Override
+	public String getUsername() {
+		return this.username;
+	}
 }

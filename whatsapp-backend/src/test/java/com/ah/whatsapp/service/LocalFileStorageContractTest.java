@@ -19,10 +19,10 @@ import com.ah.whatsapp.service.impl.LocalFileStorage;
  */
 class LocalFileStorageContractTest extends FileStorageContractTest {
 
-    @TempDir Path tempDir;
+	@TempDir Path tempDir;
 
-    @Override
-    protected FileStorage createFileStorage() {
-        return new LocalFileStorage(tempDir.toString());
-    }
+	@Override
+	protected FileStorage createFileStorage() {
+		return new LocalFileStorage(tempDir.toString());
+	}
 }

@@ -3,7 +3,7 @@ plugins {
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.sonarqube") version "6.2.0.5505"
-	id("com.diffplug.spotless") version "6.25.0"
+	id("com.diffplug.spotless") version "7.0.4"
 	jacoco
 }
 
@@ -102,31 +102,14 @@ spotless {
 	java {
 		target("src/**/*.java")
 
-		// Use Google Java Format with AOSP style (4-space indentation)
-		googleJavaFormat("1.22.0").aosp().reflowLongStrings().formatJavadoc(false)
-
-		// Apply custom formatting rules for multi-line method parameters
-		custom("Multi-line parameter formatting") { content ->
-			// This will enforce multi-line formatting for methods with 3+ parameters
-			content.replace(
-				Regex("(\\w+)\\s*\\(([^)]{60,})\\)\\s*\\{"),
-				{ matchResult ->
-					val methodName = matchResult.groupValues[1]
-					val params = matchResult.groupValues[2].split(",").map { it.trim() }
-					if (params.size >= 3) {
-						val formattedParams = params.joinToString(",\n\t\t\t")
-						"$methodName(\n\t\t\t$formattedParams\n\t) {"
-					} else {
-						matchResult.value
-					}
-				},
-			)
-		}
+		googleJavaFormat("1.27.0").aosp().reflowLongStrings().formatJavadoc(false)
 
 		// Additional formatting rules
 		removeUnusedImports()
 		trimTrailingWhitespace()
+		leadingSpacesToTabs(4)
 		endWithNewline()
+		formatAnnotations()
 
 		// Optional: Custom import order
 		importOrder("java", "javax", "org", "com", "")

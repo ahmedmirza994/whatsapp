@@ -28,61 +28,61 @@ import com.ah.whatsapp.filter.JwtAuthenticationFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${front-end.url}")
-    private String frontEndUrl;
+	@Value("${front-end.url}")
+	private String frontEndUrl;
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(
+			AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers(
-                                                "/users/signup",
-                                                "/users/login",
-                                                "/files/profile-pictures/**",
-                                                "/ws/**",
-                                                "/v3/api-docs/**",
-                                                "/swagger-ui/**",
-                                                "/swagger-ui.html")
-                                        .permitAll()
-                                        .anyRequest()
-                                        .authenticated())
-                .authenticationManager(authenticationManager)
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+	@Bean
+	public SecurityFilterChain securityFilterChain(
+			HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(
+						auth ->
+								auth.requestMatchers(
+												"/users/signup",
+												"/users/login",
+												"/files/profile-pictures/**",
+												"/ws/**",
+												"/v3/api-docs/**",
+												"/swagger-ui/**",
+												"/swagger-ui.html")
+										.permitAll()
+										.anyRequest()
+										.authenticated())
+				.authenticationManager(authenticationManager)
+				.sessionManagement(
+						session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.addFilterBefore(
+						jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        return request -> {
-            var cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of(frontEndUrl));
-            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-            cors.setAllowedHeaders(List.of("*"));
-            cors.setAllowCredentials(true);
-            return cors;
-        };
-    }
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		return request -> {
+			var cors = new CorsConfiguration();
+			cors.setAllowedOrigins(List.of(frontEndUrl));
+			cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+			cors.setAllowedHeaders(List.of("*"));
+			cors.setAllowCredentials(true);
+			return cors;
+		};
+	}
 }

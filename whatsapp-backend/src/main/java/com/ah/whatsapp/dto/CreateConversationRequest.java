@@ -9,4 +9,4 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateConversationRequest(
-        @NotNull(message = "Participant ID is required") UUID participantId) {}
+		@NotNull(message = "Participant ID is required") UUID participantId) {}

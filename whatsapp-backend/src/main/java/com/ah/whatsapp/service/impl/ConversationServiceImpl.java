@@ -35,216 +35,216 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class ConversationServiceImpl implements ConversationService {
-    private final ConversationRepository conversationRepository;
-    private final UserRepository userRepository;
-    private final ConversationMapper conversationMapper;
-    private final ConversationParticipantRepository conversationParticipantRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
+	private final ConversationRepository conversationRepository;
+	private final UserRepository userRepository;
+	private final ConversationMapper conversationMapper;
+	private final ConversationParticipantRepository conversationParticipantRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Override
-    @Transactional
-    public ConversationDto createConversation(CreateConversationRequest request, UUID creatorId) {
-        User creator =
-                userRepository
-                        .findById(creatorId)
-                        .orElseThrow(() -> new UserNotFoundException("User not found"));
+	@Override
+	@Transactional
+	public ConversationDto createConversation(CreateConversationRequest request, UUID creatorId) {
+		User creator =
+				userRepository
+						.findById(creatorId)
+						.orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        User participant =
-                userRepository
-                        .findById(request.participantId())
-                        .orElseThrow(() -> new UserNotFoundException("Participant user not found"));
+		User participant =
+				userRepository
+						.findById(request.participantId())
+						.orElseThrow(() -> new UserNotFoundException("Participant user not found"));
 
-        Conversation conversation = conversationMapper.createNewConversation();
-        Conversation savedConversation = conversationRepository.save(conversation);
+		Conversation conversation = conversationMapper.createNewConversation();
+		Conversation savedConversation = conversationRepository.save(conversation);
 
-        // Add participants
-        addParticipant(savedConversation.getId(), creator.getId());
-        addParticipant(savedConversation.getId(), participant.getId());
+		// Add participants
+		addParticipant(savedConversation.getId(), creator.getId());
+		addParticipant(savedConversation.getId(), participant.getId());
 
-        Conversation fullConversation =
-                conversationRepository
-                        .findById(savedConversation.getId())
-                        .orElseThrow(
-                                () -> new ConversationNotFoundException("Conversation not found"));
-        return conversationMapper.toDto(fullConversation);
-    }
+		Conversation fullConversation =
+				conversationRepository
+						.findById(savedConversation.getId())
+						.orElseThrow(
+								() -> new ConversationNotFoundException("Conversation not found"));
+		return conversationMapper.toDto(fullConversation);
+	}
 
-    @Override
-    @Transactional
-    public void addParticipant(UUID conversationId, UUID userId) {
-        User user =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new UserNotFoundException("User not found"));
+	@Override
+	@Transactional
+	public void addParticipant(UUID conversationId, UUID userId) {
+		User user =
+				userRepository
+						.findById(userId)
+						.orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        boolean alreadyExists =
-                conversationParticipantRepository.existsByConversationIdAndUserIdAndIsActiveTrue(
-                        conversationId, userId);
+		boolean alreadyExists =
+				conversationParticipantRepository.existsByConversationIdAndUserIdAndIsActiveTrue(
+						conversationId, userId);
 
-        if (!alreadyExists) {
-            addParticipantInternal(conversationId, user);
-        } else {
-            log.warn("User {} is already a participant in conversation {}", userId, conversationId);
-        }
-    }
+		if (!alreadyExists) {
+			addParticipantInternal(conversationId, user);
+		} else {
+			log.warn("User {} is already a participant in conversation {}", userId, conversationId);
+		}
+	}
 
-    private void addParticipantInternal(UUID conversationId, User user) {
-        ConversationParticipant participant = new ConversationParticipant();
-        participant.setConversationId(conversationId);
-        participant.setParticipantId(user.getId());
-        participant.setParticipantName(user.getName());
-        participant.setJoinedAt(LocalDateTime.now());
-        participant.setActive(true);
+	private void addParticipantInternal(UUID conversationId, User user) {
+		ConversationParticipant participant = new ConversationParticipant();
+		participant.setConversationId(conversationId);
+		participant.setParticipantId(user.getId());
+		participant.setParticipantName(user.getName());
+		participant.setJoinedAt(LocalDateTime.now());
+		participant.setActive(true);
 
-        conversationParticipantRepository.save(participant);
-        log.info(
-                "Added participant {} ({}) to conversation {}",
-                user.getId(),
-                user.getName(),
-                conversationId);
-    }
+		conversationParticipantRepository.save(participant);
+		log.info(
+				"Added participant {} ({}) to conversation {}",
+				user.getId(),
+				user.getName(),
+				conversationId);
+	}
 
-    @Override
-    public List<ConversationDto> findUserConversations(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException("User not found");
-        }
+	@Override
+	public List<ConversationDto> findUserConversations(UUID userId) {
+		if (!userRepository.existsById(userId)) {
+			throw new UserNotFoundException("User not found");
+		}
 
-        return conversationRepository.findByUserId(userId).stream()
-                .map(conversationMapper::toDto)
-                .toList();
-    }
+		return conversationRepository.findByUserId(userId).stream()
+				.map(conversationMapper::toDto)
+				.toList();
+	}
 
-    @Override
-    public ConversationDto findConversationByIdAndUser(UUID conversationId, UUID userId)
-            throws ConversationNotFoundException, AccessDeniedException {
+	@Override
+	public ConversationDto findConversationByIdAndUser(UUID conversationId, UUID userId)
+			throws ConversationNotFoundException, AccessDeniedException {
 
-        // Check if user exists (optional, but good practice)
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException("User requesting conversation not found");
-        }
+		// Check if user exists (optional, but good practice)
+		if (!userRepository.existsById(userId)) {
+			throw new UserNotFoundException("User requesting conversation not found");
+		}
 
-        // Check if the user is a participant
-        if (!conversationParticipantRepository.existsByConversationIdAndUserIdAndIsActiveTrue(
-                conversationId, userId)) {
-            // Throw AccessDeniedException if user is not part of the conversation
-            throw new AccessDeniedException("User is not a participant in this conversation");
-        }
+		// Check if the user is a participant
+		if (!conversationParticipantRepository.existsByConversationIdAndUserIdAndIsActiveTrue(
+				conversationId, userId)) {
+			// Throw AccessDeniedException if user is not part of the conversation
+			throw new AccessDeniedException("User is not a participant in this conversation");
+		}
 
-        // Fetch the conversation; findById already loads participants and last message
-        Conversation conversation =
-                conversationRepository
-                        .findById(conversationId)
-                        .orElseThrow(
-                                () ->
-                                        new ConversationNotFoundException(
-                                                "Conversation not found with id: "
-                                                        + conversationId));
+		// Fetch the conversation; findById already loads participants and last message
+		Conversation conversation =
+				conversationRepository
+						.findById(conversationId)
+						.orElseThrow(
+								() ->
+										new ConversationNotFoundException(
+												"Conversation not found with id: "
+														+ conversationId));
 
-        return conversationMapper.toDto(conversation);
-    }
+		return conversationMapper.toDto(conversation);
+	}
 
-    @Override
-    @Transactional
-    public ConversationDto findOrCreateConversation(
-            CreateConversationRequest createConversationRequest, UUID creatorId) {
-        UUID participantId = createConversationRequest.participantId();
-        log.info(
-                "Attempting to find or create conversation between {} and {}",
-                creatorId,
-                participantId);
-        // Check if users exist first
-        if (!userRepository.existsById(creatorId)) {
-            throw new UserNotFoundException("Creator user not found: " + creatorId);
-        }
-        if (!userRepository.existsById(participantId)) {
-            throw new UserNotFoundException("Participant user not found: " + participantId);
-        }
+	@Override
+	@Transactional
+	public ConversationDto findOrCreateConversation(
+			CreateConversationRequest createConversationRequest, UUID creatorId) {
+		UUID participantId = createConversationRequest.participantId();
+		log.info(
+				"Attempting to find or create conversation between {} and {}",
+				creatorId,
+				participantId);
+		// Check if users exist first
+		if (!userRepository.existsById(creatorId)) {
+			throw new UserNotFoundException("Creator user not found: " + creatorId);
+		}
+		if (!userRepository.existsById(participantId)) {
+			throw new UserNotFoundException("Participant user not found: " + participantId);
+		}
 
-        // Try to find an existing direct conversation
-        Optional<Conversation> existingConversation =
-                conversationRepository.findDirectConversationBetweenUsers(creatorId, participantId);
+		// Try to find an existing direct conversation
+		Optional<Conversation> existingConversation =
+				conversationRepository.findDirectConversationBetweenUsers(creatorId, participantId);
 
-        if (existingConversation.isPresent()) {
-            Conversation conversation = existingConversation.get();
+		if (existingConversation.isPresent()) {
+			Conversation conversation = existingConversation.get();
 
-            ConversationParticipant participant =
-                    conversation.getParticipants().stream()
-                            .filter(p -> p.getParticipantId().equals(creatorId))
-                            .findFirst()
-                            .orElse(null);
-            if (participant != null && !participant.isActive()) {
-                participant.setActive(true);
-                participant.setJoinedAt(LocalDateTime.now());
-                participant.setLeftAt(null);
-                conversationParticipantRepository.save(participant);
-                conversation =
-                        conversationRepository
-                                .findById(conversation.getId())
-                                .orElseThrow(
-                                        () ->
-                                                new ConversationNotFoundException(
-                                                        "Conversation not found"));
-            }
-            return conversationMapper.toDto(conversation);
+			ConversationParticipant participant =
+					conversation.getParticipants().stream()
+							.filter(p -> p.getParticipantId().equals(creatorId))
+							.findFirst()
+							.orElse(null);
+			if (participant != null && !participant.isActive()) {
+				participant.setActive(true);
+				participant.setJoinedAt(LocalDateTime.now());
+				participant.setLeftAt(null);
+				conversationParticipantRepository.save(participant);
+				conversation =
+						conversationRepository
+								.findById(conversation.getId())
+								.orElseThrow(
+										() ->
+												new ConversationNotFoundException(
+														"Conversation not found"));
+			}
+			return conversationMapper.toDto(conversation);
 
-        } else {
-            log.info(
-                    "No existing direct conversation found. Creating new one between {} and {}",
-                    creatorId,
-                    participantId);
-            // The createConversation method now handles adding both participants
-            return createConversation(createConversationRequest, creatorId);
-        }
-    }
+		} else {
+			log.info(
+					"No existing direct conversation found. Creating new one between {} and {}",
+					creatorId,
+					participantId);
+			// The createConversation method now handles adding both participants
+			return createConversation(createConversationRequest, creatorId);
+		}
+	}
 
-    @Override
-    @Transactional
-    public void deleteConversationForUser(UUID conversationId, UUID userId) {
-        ConversationParticipant participant =
-                conversationParticipantRepository
-                        .findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
-                        .orElseThrow(
-                                () ->
-                                        new AccessDeniedException(
-                                                "User is not a participant in this conversation"));
+	@Override
+	@Transactional
+	public void deleteConversationForUser(UUID conversationId, UUID userId) {
+		ConversationParticipant participant =
+				conversationParticipantRepository
+						.findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
+						.orElseThrow(
+								() ->
+										new AccessDeniedException(
+												"User is not a participant in this conversation"));
 
-        // Mark the participant as inactive instead of deleting
-        participant.setActive(false);
-        participant.setLeftAt(LocalDateTime.now());
-        conversationParticipantRepository.save(participant);
+		// Mark the participant as inactive instead of deleting
+		participant.setActive(false);
+		participant.setLeftAt(LocalDateTime.now());
+		conversationParticipantRepository.save(participant);
 
-        List<ConversationParticipant> participants =
-                conversationParticipantRepository.findByConversationId(conversationId);
-        if (participants.stream().noneMatch(ConversationParticipant::isActive)) {
-            conversationRepository.delete(conversationId);
-        }
-    }
+		List<ConversationParticipant> participants =
+				conversationParticipantRepository.findByConversationId(conversationId);
+		if (participants.stream().noneMatch(ConversationParticipant::isActive)) {
+			conversationRepository.delete(conversationId);
+		}
+	}
 
-    @Override
-    @Transactional
-    public void markConversationAsRead(UUID conversationId, UUID userId) {
-        ConversationParticipant participant =
-                conversationParticipantRepository
-                        .findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
-                        .orElseThrow(
-                                () ->
-                                        new AccessDeniedException(
-                                                "User is not a participant in this conversation"));
+	@Override
+	@Transactional
+	public void markConversationAsRead(UUID conversationId, UUID userId) {
+		ConversationParticipant participant =
+				conversationParticipantRepository
+						.findByConversationIdAndUserIdAndIsActiveTrue(conversationId, userId)
+						.orElseThrow(
+								() ->
+										new AccessDeniedException(
+												"User is not a participant in this conversation"));
 
-        participant.setLastReadAt(LocalDateTime.now());
-        conversationParticipantRepository.save(participant);
+		participant.setLastReadAt(LocalDateTime.now());
+		conversationParticipantRepository.save(participant);
 
-        ConversationDto conversation =
-                conversationMapper.toDto(
-                        conversationRepository
-                                .findById(conversationId)
-                                .orElseThrow(
-                                        () ->
-                                                new ConversationNotFoundException(
-                                                        "Conversation not found with id: "
-                                                                + conversationId)));
+		ConversationDto conversation =
+				conversationMapper.toDto(
+						conversationRepository
+								.findById(conversationId)
+								.orElseThrow(
+										() ->
+												new ConversationNotFoundException(
+														"Conversation not found with id: "
+																+ conversationId)));
 
-        applicationEventPublisher.publishEvent(new ConversationUpdateEvent(this, conversation));
-    }
+		applicationEventPublisher.publishEvent(new ConversationUpdateEvent(this, conversation));
+	}
 }

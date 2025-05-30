@@ -23,19 +23,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "messages")
 public class MessageEntity {
-    @Id @GeneratedValue private UUID id;
+	@Id @GeneratedValue private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "conversation_id", nullable = false)
-    private ConversationEntity conversation;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "conversation_id", nullable = false)
+	private ConversationEntity conversation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", nullable = false)
-    private UserEntity sender;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sender_id", nullable = false)
+	private UserEntity sender;
 
-    @Column(nullable = false)
-    private String content;
+	@Column(nullable = false)
+	private String content;
 
-    @Column(name = "sent_at", nullable = false)
-    private LocalDateTime sentAt;
+	@Column(name = "sent_at", nullable = false)
+	private LocalDateTime sentAt;
 }

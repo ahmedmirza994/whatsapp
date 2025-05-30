@@ -25,108 +25,108 @@ import com.ah.whatsapp.model.User;
 
 public class MessageMapperTest {
 
-    private MessageMapper messageMapper;
-    private UserMapper userMapper;
+	private MessageMapper messageMapper;
+	private UserMapper userMapper;
 
-    @BeforeEach
-    public void setUp() {
-        userMapper = new UserMapper();
-        messageMapper = new MessageMapper(userMapper);
-    }
+	@BeforeEach
+	public void setUp() {
+		userMapper = new UserMapper();
+		messageMapper = new MessageMapper(userMapper);
+	}
 
-    @Test
-    public void testToEntity() {
-        User sender = aUser().build();
+	@Test
+	public void testToEntity() {
+		User sender = aUser().build();
 
-        Message message = aMessage().withSender(sender).build();
+		Message message = aMessage().withSender(sender).build();
 
-        ConversationEntity conversationEntity = new ConversationEntity();
-        conversationEntity.setId(message.getConversationId());
+		ConversationEntity conversationEntity = new ConversationEntity();
+		conversationEntity.setId(message.getConversationId());
 
-        UserEntity senderEntity = userMapper.toEntity(sender);
+		UserEntity senderEntity = userMapper.toEntity(sender);
 
-        MessageEntity result = messageMapper.toEntity(message, conversationEntity, senderEntity);
+		MessageEntity result = messageMapper.toEntity(message, conversationEntity, senderEntity);
 
-        assertEquals(message.getId(), result.getId());
-        assertEquals(message.getContent(), result.getContent());
-        assertEquals(message.getSentAt(), result.getSentAt());
-        assertEquals(conversationEntity, result.getConversation());
-        assertEquals(senderEntity, result.getSender());
-    }
+		assertEquals(message.getId(), result.getId());
+		assertEquals(message.getContent(), result.getContent());
+		assertEquals(message.getSentAt(), result.getSentAt());
+		assertEquals(conversationEntity, result.getConversation());
+		assertEquals(senderEntity, result.getSender());
+	}
 
-    @Test
-    public void testToModel() {
-        UserEntity senderEntity = aUser().buildEntity();
+	@Test
+	public void testToModel() {
+		UserEntity senderEntity = aUser().buildEntity();
 
-        ConversationEntity conversationEntity = new ConversationEntity();
-        conversationEntity.setId(UUID.randomUUID());
+		ConversationEntity conversationEntity = new ConversationEntity();
+		conversationEntity.setId(UUID.randomUUID());
 
-        MessageEntity entity =
-                aMessage()
-                        .withConversationEntity(conversationEntity)
-                        .withSenderEntity(senderEntity)
-                        .buildEntity();
+		MessageEntity entity =
+				aMessage()
+						.withConversationEntity(conversationEntity)
+						.withSenderEntity(senderEntity)
+						.buildEntity();
 
-        Message result = messageMapper.toModel(entity);
+		Message result = messageMapper.toModel(entity);
 
-        assertEquals(entity.getId(), result.getId());
-        assertEquals(entity.getContent(), result.getContent());
-        assertEquals(entity.getSentAt(), result.getSentAt());
-        assertEquals(conversationEntity.getId(), result.getConversationId());
-        assertNotNull(result.getSender());
-        assertEquals(senderEntity.getId(), result.getSender().getId());
-        assertEquals(senderEntity.getName(), result.getSender().getName());
-        assertEquals(senderEntity.getEmail(), result.getSender().getEmail());
-    }
+		assertEquals(entity.getId(), result.getId());
+		assertEquals(entity.getContent(), result.getContent());
+		assertEquals(entity.getSentAt(), result.getSentAt());
+		assertEquals(conversationEntity.getId(), result.getConversationId());
+		assertNotNull(result.getSender());
+		assertEquals(senderEntity.getId(), result.getSender().getId());
+		assertEquals(senderEntity.getName(), result.getSender().getName());
+		assertEquals(senderEntity.getEmail(), result.getSender().getEmail());
+	}
 
-    @Test
-    public void testToDto() {
-        User sender = aUser().build();
+	@Test
+	public void testToDto() {
+		User sender = aUser().build();
 
-        Message message = aMessage().withContent("Test message for DTO").withSender(sender).build();
+		Message message = aMessage().withContent("Test message for DTO").withSender(sender).build();
 
-        MessageDto result = messageMapper.toDto(message);
+		MessageDto result = messageMapper.toDto(message);
 
-        assertEquals(message.getId(), result.id());
-        assertEquals(message.getConversationId(), result.conversationId());
-        assertEquals(message.getSender().getId(), result.senderId());
-        assertEquals(message.getSender().getName(), result.senderName());
-        assertEquals(message.getContent(), result.content());
-        assertEquals(message.getSentAt(), result.sentAt());
-    }
+		assertEquals(message.getId(), result.id());
+		assertEquals(message.getConversationId(), result.conversationId());
+		assertEquals(message.getSender().getId(), result.senderId());
+		assertEquals(message.getSender().getName(), result.senderName());
+		assertEquals(message.getContent(), result.content());
+		assertEquals(message.getSentAt(), result.sentAt());
+	}
 
-    @Test
-    public void testToDto_WithNullSender() {
-        Message message = aMessage().withContent("Test message").withSender(null).build();
+	@Test
+	public void testToDto_WithNullSender() {
+		Message message = aMessage().withContent("Test message").withSender(null).build();
 
-        NullPointerException exception =
-                assertThrows(
-                        NullPointerException.class,
-                        () -> {
-                            messageMapper.toDto(message);
-                        });
-        assertNotNull(exception);
-    }
+		NullPointerException exception =
+				assertThrows(
+						NullPointerException.class,
+						() -> {
+							messageMapper.toDto(message);
+						});
+		assertNotNull(exception);
+	}
 
-    @Test
-    public void testToEntity_WithNullValues() {
-        Message message =
-                aMessage()
-                        .withId(null)
-                        .withContent(null)
-                        .withSentAt(null)
-                        .withSender(aUser().build())
-                        .build();
+	@Test
+	public void testToEntity_WithNullValues() {
+		Message message =
+				aMessage()
+						.withId(null)
+						.withContent(null)
+						.withSentAt(null)
+						.withSender(aUser().build())
+						.build();
 
-        ConversationEntity conversationEntity = new ConversationEntity();
-        UserEntity senderEntity = aUser().buildEntity();
+		ConversationEntity conversationEntity = new ConversationEntity();
+		UserEntity senderEntity = aUser().buildEntity();
 
-        MessageEntity result = messageMapper.toEntity(message, conversationEntity, senderEntity);
+		MessageEntity result = messageMapper.toEntity(message, conversationEntity, senderEntity);
 
-        assertNull(result.getId());
-        assertNull(result.getContent());
-        assertNull(result.getSentAt());
-        assertEquals(conversationEntity, result.getConversation());
-        assertEquals(senderEntity, result.getSender());
-    }
+		assertNull(result.getId());
+		assertNull(result.getContent());
+		assertNull(result.getSentAt());
+		assertEquals(conversationEntity, result.getConversation());
+		assertEquals(senderEntity, result.getSender());
+	}
 }

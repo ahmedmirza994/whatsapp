@@ -16,14 +16,14 @@ import jakarta.validation.Valid;
 @Controller
 public class TypingIndicatorController {
 
-    private final ApplicationEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 
-    public TypingIndicatorController(ApplicationEventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
+	public TypingIndicatorController(ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
+	}
 
-    @MessageMapping("/typing")
-    public void handleTyping(@Payload @Valid TypingIndicatorDto typingDto) {
-        eventPublisher.publishEvent(typingDto);
-    }
+	@MessageMapping("/typing")
+	public void handleTyping(@Payload @Valid TypingIndicatorDto typingDto) {
+		eventPublisher.publishEvent(typingDto);
+	}
 }

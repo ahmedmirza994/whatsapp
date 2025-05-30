@@ -1,9 +1,9 @@
 databaseChangeLog:
     - changeSet:
-          id: V003__alter_users_table
-          author: Ahmed Haris
-          changes:
-              - sqlFile:
+        id: V003__alter_users_table
+        author: Ahmed Haris
+        changes:
+            - sqlFile:
                     relativeToChangelogFile: true
                     path: ../sql/V003__alter_users_table.sql
                     splitStatements: false

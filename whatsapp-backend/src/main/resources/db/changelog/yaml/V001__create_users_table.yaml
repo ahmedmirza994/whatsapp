@@ -1,9 +1,9 @@
 databaseChangeLog:
     -   changeSet:
-            id: V001__create_users_table
-            author: Ahmed Haris
-            changes:
-                -   sqlFile:
-                        relativeToChangelogFile: true
-                        path: ../sql/V001__create_users_table.sql
-                        splitStatements: true
+        id: V001__create_users_table
+        author: Ahmed Haris
+        changes:
+            -   sqlFile:
+                    relativeToChangelogFile: true
+                    path: ../sql/V001__create_users_table.sql
+                    splitStatements: true

@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WebSocketEvent<T> {
-    private EventType type;
-    private T payload;
+	private EventType type;
+	private T payload;
 }

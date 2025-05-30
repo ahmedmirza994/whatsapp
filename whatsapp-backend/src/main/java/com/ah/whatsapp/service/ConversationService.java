@@ -15,58 +15,58 @@ import com.ah.whatsapp.exception.ConversationNotFoundException;
 
 public interface ConversationService {
 
-    /**
-     * Creates a new conversation between users
-     *
-     * @param request conversation creation details
-     * @param creatorId ID of the user creating the conversation
-     * @return the created conversation
-     */
-    ConversationDto createConversation(CreateConversationRequest request, UUID creatorId);
+	/**
+	 * Creates a new conversation between users
+	 *
+	 * @param request conversation creation details
+	 * @param creatorId ID of the user creating the conversation
+	 * @return the created conversation
+	 */
+	ConversationDto createConversation(CreateConversationRequest request, UUID creatorId);
 
-    /**
-     * Adds a participant to an existing conversation
-     *
-     * @param conversationId ID of the conversation
-     * @param userId ID of the user to add
-     */
-    void addParticipant(UUID conversationId, UUID userId);
+	/**
+	 * Adds a participant to an existing conversation
+	 *
+	 * @param conversationId ID of the conversation
+	 * @param userId ID of the user to add
+	 */
+	void addParticipant(UUID conversationId, UUID userId);
 
-    /**
-     * Gets all conversations for a specific user
-     *
-     * @param userId ID of the user
-     * @return list of conversations the user is part of
-     */
-    List<ConversationDto> findUserConversations(UUID userId);
+	/**
+	 * Gets all conversations for a specific user
+	 *
+	 * @param userId ID of the user
+	 * @return list of conversations the user is part of
+	 */
+	List<ConversationDto> findUserConversations(UUID userId);
 
-    /**
-     * Finds a specific conversation by its ID, ensuring the requesting user is a participant.
-     *
-     * @param conversationId The ID of the conversation to find.
-     * @param userId The ID of the user requesting the conversation.
-     * @return The ConversationDto if found and user is a participant.
-     * @throws ConversationNotFoundException if the conversation does not exist.
-     * @throws AccessDeniedException if the user is not a participant in the conversation.
-     */
-    ConversationDto findConversationByIdAndUser(UUID conversationId, UUID userId)
-            throws ConversationNotFoundException, AccessDeniedException;
+	/**
+	 * Finds a specific conversation by its ID, ensuring the requesting user is a participant.
+	 *
+	 * @param conversationId The ID of the conversation to find.
+	 * @param userId The ID of the user requesting the conversation.
+	 * @return The ConversationDto if found and user is a participant.
+	 * @throws ConversationNotFoundException if the conversation does not exist.
+	 * @throws AccessDeniedException if the user is not a participant in the conversation.
+	 */
+	ConversationDto findConversationByIdAndUser(UUID conversationId, UUID userId)
+			throws ConversationNotFoundException, AccessDeniedException;
 
-    ConversationDto findOrCreateConversation(
-            CreateConversationRequest createConversationRequest, UUID creatorId);
+	ConversationDto findOrCreateConversation(
+			CreateConversationRequest createConversationRequest, UUID creatorId);
 
-    /**
-     * Deletes a conversation for a specific user.
-     *
-     * @param conversationId The ID of the conversation to delete.
-     * @param userId The ID of the user requesting the deletion.
-     */
-    void deleteConversationForUser(UUID conversationId, UUID userId);
+	/**
+	 * Deletes a conversation for a specific user.
+	 *
+	 * @param conversationId The ID of the conversation to delete.
+	 * @param userId The ID of the user requesting the deletion.
+	 */
+	void deleteConversationForUser(UUID conversationId, UUID userId);
 
-    /**
-     * Marks a conversation as read for a specific user.
-     * @param conversationId
-     * @param userId
-     */
-    void markConversationAsRead(UUID conversationId, UUID userId);
+	/**
+	 * Marks a conversation as read for a specific user.
+	 * @param conversationId
+	 * @param userId
+	 */
+	void markConversationAsRead(UUID conversationId, UUID userId);
 }

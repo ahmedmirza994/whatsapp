@@ -29,157 +29,157 @@ import com.ah.whatsapp.model.Message;
 
 public class ConversationMapperTest {
 
-    private ConversationMapper conversationMapper;
-    private MessageMapper messageMapper;
-    private UserMapper userMapper;
+	private ConversationMapper conversationMapper;
+	private MessageMapper messageMapper;
+	private UserMapper userMapper;
 
-    @BeforeEach
-    public void setUp() {
-        userMapper = new UserMapper();
-        messageMapper = new MessageMapper(userMapper);
-        conversationMapper = new ConversationMapper(messageMapper);
-    }
+	@BeforeEach
+	public void setUp() {
+		userMapper = new UserMapper();
+		messageMapper = new MessageMapper(userMapper);
+		conversationMapper = new ConversationMapper(messageMapper);
+	}
 
-    @Test
-    public void testToEntity() {
-        Conversation conversation = aConversation().build();
+	@Test
+	public void testToEntity() {
+		Conversation conversation = aConversation().build();
 
-        ConversationEntity result = conversationMapper.toEntity(conversation);
+		ConversationEntity result = conversationMapper.toEntity(conversation);
 
-        assertEquals(conversation.getId(), result.getId());
-        assertEquals(conversation.getCreatedAt(), result.getCreatedAt());
-        assertEquals(conversation.getUpdatedAt(), result.getUpdatedAt());
-    }
+		assertEquals(conversation.getId(), result.getId());
+		assertEquals(conversation.getCreatedAt(), result.getCreatedAt());
+		assertEquals(conversation.getUpdatedAt(), result.getUpdatedAt());
+	}
 
-    @Test
-    public void testToModel() {
-        ConversationEntity entity = aConversation().buildEntity();
+	@Test
+	public void testToModel() {
+		ConversationEntity entity = aConversation().buildEntity();
 
-        Conversation result = conversationMapper.toModel(entity);
+		Conversation result = conversationMapper.toModel(entity);
 
-        assertEquals(entity.getId(), result.getId());
-        assertEquals(entity.getCreatedAt(), result.getCreatedAt());
-        assertEquals(entity.getUpdatedAt(), result.getUpdatedAt());
-    }
+		assertEquals(entity.getId(), result.getId());
+		assertEquals(entity.getCreatedAt(), result.getCreatedAt());
+		assertEquals(entity.getUpdatedAt(), result.getUpdatedAt());
+	}
 
-    @Test
-    public void testCreateNewConversation() {
-        Conversation result = conversationMapper.createNewConversation();
+	@Test
+	public void testCreateNewConversation() {
+		Conversation result = conversationMapper.createNewConversation();
 
-        assertNotNull(result);
-        assertNotNull(result.getCreatedAt());
-        assertNotNull(result.getUpdatedAt());
-        assertEquals(result.getCreatedAt(), result.getUpdatedAt());
-        assertNotNull(result.getParticipants());
-        assertTrue(result.getParticipants().isEmpty());
-        assertNotNull(result.getMessages());
-        assertTrue(result.getMessages().isEmpty());
-        assertNull(result.getLastMessage());
-    }
+		assertNotNull(result);
+		assertNotNull(result.getCreatedAt());
+		assertNotNull(result.getUpdatedAt());
+		assertEquals(result.getCreatedAt(), result.getUpdatedAt());
+		assertNotNull(result.getParticipants());
+		assertTrue(result.getParticipants().isEmpty());
+		assertNotNull(result.getMessages());
+		assertTrue(result.getMessages().isEmpty());
+		assertNull(result.getLastMessage());
+	}
 
-    @Test
-    public void testToDto_WithAllFields() {
-        List<ConversationParticipant> participants =
-                List.of(
-                        aConversationParticipant()
-                                .withParticipantName("John Doe")
-                                .withParticipantEmail("john@example.com")
-                                .build(),
-                        aConversationParticipant()
-                                .withParticipantName("Jane Smith")
-                                .withParticipantEmail("jane@example.com")
-                                .build());
+	@Test
+	public void testToDto_WithAllFields() {
+		List<ConversationParticipant> participants =
+				List.of(
+						aConversationParticipant()
+								.withParticipantName("John Doe")
+								.withParticipantEmail("john@example.com")
+								.build(),
+						aConversationParticipant()
+								.withParticipantName("Jane Smith")
+								.withParticipantEmail("jane@example.com")
+								.build());
 
-        Message testMessage =
-                aMessage()
-                        .withContent("Test message content")
-                        .withSender(
-                                aUser().withName("Test Sender")
-                                        .withEmail("sender@example.com")
-                                        .build())
-                        .build();
+		Message testMessage =
+				aMessage()
+						.withContent("Test message content")
+						.withSender(
+								aUser().withName("Test Sender")
+										.withEmail("sender@example.com")
+										.build())
+						.build();
 
-        Conversation conversation =
-                aConversation()
-                        .withParticipants(participants)
-                        .withMessages(List.of(testMessage))
-                        .withLastMessage(testMessage)
-                        .build();
+		Conversation conversation =
+				aConversation()
+						.withParticipants(participants)
+						.withMessages(List.of(testMessage))
+						.withLastMessage(testMessage)
+						.build();
 
-        ConversationDto result = conversationMapper.toDto(conversation);
+		ConversationDto result = conversationMapper.toDto(conversation);
 
-        assertEquals(conversation.getId(), result.getId());
-        assertEquals(conversation.getCreatedAt(), result.getCreatedAt());
-        assertEquals(conversation.getUpdatedAt(), result.getUpdatedAt());
+		assertEquals(conversation.getId(), result.getId());
+		assertEquals(conversation.getCreatedAt(), result.getCreatedAt());
+		assertEquals(conversation.getUpdatedAt(), result.getUpdatedAt());
 
-        assertNotNull(result.getParticipants());
-        assertEquals(2, result.getParticipants().size());
+		assertNotNull(result.getParticipants());
+		assertEquals(2, result.getParticipants().size());
 
-        ParticipantDto participant1 = result.getParticipants().get(0);
-        ConversationParticipant originalParticipant1 = conversation.getParticipants().get(0);
-        assertEquals(originalParticipant1.getId(), participant1.id());
-        assertEquals(originalParticipant1.getParticipantId(), participant1.userId());
-        assertEquals(originalParticipant1.getParticipantEmail(), participant1.email());
-        assertEquals(originalParticipant1.getParticipantName(), participant1.name());
+		ParticipantDto participant1 = result.getParticipants().get(0);
+		ConversationParticipant originalParticipant1 = conversation.getParticipants().get(0);
+		assertEquals(originalParticipant1.getId(), participant1.id());
+		assertEquals(originalParticipant1.getParticipantId(), participant1.userId());
+		assertEquals(originalParticipant1.getParticipantEmail(), participant1.email());
+		assertEquals(originalParticipant1.getParticipantName(), participant1.name());
 
-        assertNotNull(result.getMessages());
-        assertEquals(1, result.getMessages().size());
+		assertNotNull(result.getMessages());
+		assertEquals(1, result.getMessages().size());
 
-        MessageDto messageDto = result.getMessages().get(0);
-        Message originalMessage = conversation.getMessages().get(0);
-        assertEquals(originalMessage.getId(), messageDto.id());
-        assertEquals(originalMessage.getContent(), messageDto.content());
+		MessageDto messageDto = result.getMessages().get(0);
+		Message originalMessage = conversation.getMessages().get(0);
+		assertEquals(originalMessage.getId(), messageDto.id());
+		assertEquals(originalMessage.getContent(), messageDto.content());
 
-        assertNotNull(result.getLastMessage());
-        assertEquals(conversation.getLastMessage().getId(), result.getLastMessage().id());
-    }
+		assertNotNull(result.getLastMessage());
+		assertEquals(conversation.getLastMessage().getId(), result.getLastMessage().id());
+	}
 
-    @Test
-    public void testToDto_WithNullParticipants() {
-        Conversation conversation = aConversation().withParticipants(null).build();
+	@Test
+	public void testToDto_WithNullParticipants() {
+		Conversation conversation = aConversation().withParticipants(null).build();
 
-        ConversationDto result = conversationMapper.toDto(conversation);
+		ConversationDto result = conversationMapper.toDto(conversation);
 
-        assertEquals(conversation.getId(), result.getId());
-        assertNotNull(result.getParticipants());
-        assertTrue(result.getParticipants().isEmpty());
-    }
+		assertEquals(conversation.getId(), result.getId());
+		assertNotNull(result.getParticipants());
+		assertTrue(result.getParticipants().isEmpty());
+	}
 
-    @Test
-    public void testToDto_WithNullMessages() {
-        Conversation conversation = aConversation().withMessages(null).build();
+	@Test
+	public void testToDto_WithNullMessages() {
+		Conversation conversation = aConversation().withMessages(null).build();
 
-        ConversationDto result = conversationMapper.toDto(conversation);
+		ConversationDto result = conversationMapper.toDto(conversation);
 
-        assertEquals(conversation.getId(), result.getId());
-        assertNotNull(result.getMessages());
-        assertTrue(result.getMessages().isEmpty());
-    }
+		assertEquals(conversation.getId(), result.getId());
+		assertNotNull(result.getMessages());
+		assertTrue(result.getMessages().isEmpty());
+	}
 
-    @Test
-    public void testToDto_WithNullLastMessage() {
-        Conversation conversation = aConversation().withLastMessage(null).build();
+	@Test
+	public void testToDto_WithNullLastMessage() {
+		Conversation conversation = aConversation().withLastMessage(null).build();
 
-        ConversationDto result = conversationMapper.toDto(conversation);
+		ConversationDto result = conversationMapper.toDto(conversation);
 
-        assertEquals(conversation.getId(), result.getId());
-        assertNull(result.getLastMessage());
-    }
+		assertEquals(conversation.getId(), result.getId());
+		assertNull(result.getLastMessage());
+	}
 
-    @Test
-    public void testToDto_WithEmptyParticipantsAndMessages() {
-        Conversation conversation =
-                aConversation()
-                        .withParticipants(new ArrayList<>())
-                        .withMessages(new ArrayList<>())
-                        .build();
+	@Test
+	public void testToDto_WithEmptyParticipantsAndMessages() {
+		Conversation conversation =
+				aConversation()
+						.withParticipants(new ArrayList<>())
+						.withMessages(new ArrayList<>())
+						.build();
 
-        ConversationDto result = conversationMapper.toDto(conversation);
+		ConversationDto result = conversationMapper.toDto(conversation);
 
-        assertEquals(conversation.getId(), result.getId());
-        assertNotNull(result.getParticipants());
-        assertTrue(result.getParticipants().isEmpty());
-        assertNotNull(result.getMessages());
-        assertTrue(result.getMessages().isEmpty());
-    }
+		assertEquals(conversation.getId(), result.getId());
+		assertNotNull(result.getParticipants());
+		assertTrue(result.getParticipants().isEmpty());
+		assertNotNull(result.getMessages());
+		assertTrue(result.getMessages().isEmpty());
+	}
 }

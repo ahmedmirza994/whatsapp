@@ -1,9 +1,9 @@
 databaseChangeLog:
     - changeSet:
-          id: V006__add_last_read_at_to_conversation_participants
-          author: Ahmed Haris
-          changes:
-              - sqlFile:
+        id: V006__add_last_read_at_to_conversation_participants
+        author: Ahmed Haris
+        changes:
+            - sqlFile:
                     relativeToChangelogFile: true
                     path: ../sql/V006__add_last_read_at_to_conversation_participants.sql
                     splitStatements: false

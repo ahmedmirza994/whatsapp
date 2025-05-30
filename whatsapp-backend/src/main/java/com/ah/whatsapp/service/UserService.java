@@ -15,19 +15,19 @@ import com.ah.whatsapp.dto.UserUpdateDto;
 import com.ah.whatsapp.model.User;
 
 public interface UserService {
-    User save(User user);
+	User save(User user);
 
-    UserDto registerUser(User user);
+	UserDto registerUser(User user);
 
-    UserDto loginUser(LoginDto loginDto);
+	UserDto loginUser(LoginDto loginDto);
 
-    UserDto getUserById(UUID id);
+	UserDto getUserById(UUID id);
 
-    List<UserDto> searchUsers(String query, UUID excludeUserId);
+	List<UserDto> searchUsers(String query, UUID excludeUserId);
 
-    Boolean existsById(UUID id);
+	Boolean existsById(UUID id);
 
-    UserDto updateUser(UUID userId, UserUpdateDto userUpdateDto);
+	UserDto updateUser(UUID userId, UserUpdateDto userUpdateDto);
 
-    UserDto updateProfilePicture(UUID userId, MultipartFile profilePicture);
+	UserDto updateProfilePicture(UUID userId, MultipartFile profilePicture);
 }

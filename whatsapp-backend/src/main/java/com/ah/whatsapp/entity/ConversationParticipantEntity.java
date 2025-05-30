@@ -24,27 +24,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "conversation_participants",
-        uniqueConstraints =
-                @UniqueConstraint(
-                        columnNames = {"conversation_id", "user_id"},
-                        name = "uk_conversation_participant"))
+		name = "conversation_participants",
+		uniqueConstraints =
+				@UniqueConstraint(
+						columnNames = {"conversation_id", "user_id"},
+						name = "uk_conversation_participant"))
 public class ConversationParticipantEntity {
-    @Id @GeneratedValue private UUID id;
+	@Id @GeneratedValue private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "conversation_id", nullable = false)
-    private ConversationEntity conversation;
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "conversation_id", nullable = false)
+	private ConversationEntity conversation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserEntity user;
 
-    @Column(name = "joined_at", nullable = false)
-    private LocalDateTime joinedAt;
+	@Column(name = "joined_at", nullable = false)
+	private LocalDateTime joinedAt;
 
-    private boolean isActive;
+	private boolean isActive;
 
-    private LocalDateTime leftAt;
-    private LocalDateTime lastReadAt;
+	private LocalDateTime leftAt;
+	private LocalDateTime lastReadAt;
 }

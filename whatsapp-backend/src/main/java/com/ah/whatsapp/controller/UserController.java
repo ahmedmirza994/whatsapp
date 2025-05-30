@@ -43,121 +43,117 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
-    private final UserMapper userMapper;
-    private final FileStorage fileStorage;
+	private final UserService userService;
+	private final UserMapper userMapper;
+	private final FileStorage fileStorage;
 
-    public UserController(
-			UserService userService,
-			UserMapper userMapper,
-			FileStorage fileStorage
-	) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-        this.fileStorage = fileStorage;
-    }
+	public UserController(UserService userService, UserMapper userMapper, FileStorage fileStorage) {
+		this.userService = userService;
+		this.userMapper = userMapper;
+		this.fileStorage = fileStorage;
+	}
 
-    @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<UserDto>> signup(
-            @Valid @RequestBody UserSignupDto userSignupDto) {
-        User user = userMapper.toModel(userSignupDto);
-        UserDto userDto = userService.registerUser(user);
-        ApiResponse<UserDto> response = ApiResponse.success(userDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+	@PostMapping("/signup")
+	public ResponseEntity<ApiResponse<UserDto>> signup(
+			@Valid @RequestBody UserSignupDto userSignupDto) {
+		User user = userMapper.toModel(userSignupDto);
+		UserDto userDto = userService.registerUser(user);
+		ApiResponse<UserDto> response = ApiResponse.success(userDto);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserDto>> login(@Valid @RequestBody LoginDto loginDto) {
-        UserDto userDto = userService.loginUser(loginDto);
-        ApiResponse<UserDto> response = ApiResponse.success(userDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@PostMapping("/login")
+	public ResponseEntity<ApiResponse<UserDto>> login(@Valid @RequestBody LoginDto loginDto) {
+		UserDto userDto = userService.loginUser(loginDto);
+		ApiResponse<UserDto> response = ApiResponse.success(userDto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<UserDto>>> searchUsers(
-            @RequestParam(required = true, name = "query") String query,
-            @AuthenticationPrincipal JwtUser currentUser) {
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<List<UserDto>>> searchUsers(
+			@RequestParam(required = true, name = "query") String query,
+			@AuthenticationPrincipal JwtUser currentUser) {
 
-        List<UserDto> results = userService.searchUsers(query, currentUser.getUserId());
-        ApiResponse<List<UserDto>> response = ApiResponse.success(results);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+		List<UserDto> results = userService.searchUsers(query, currentUser.getUserId());
+		ApiResponse<List<UserDto>> response = ApiResponse.success(results);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable UUID id) {
-        UserDto userDto = userService.getUserById(id);
-        ApiResponse<UserDto> response = ApiResponse.success(userDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable UUID id) {
+		UserDto userDto = userService.getUserById(id);
+		ApiResponse<UserDto> response = ApiResponse.success(userDto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @PutMapping("/me")
-    public ResponseEntity<ApiResponse<UserDto>> updateCurrentUser(
-            @AuthenticationPrincipal JwtUser currentUser,
-            @Valid @RequestBody UserUpdateDto userUpdateDto) {
-        UserDto updatedUser = userService.updateUser(currentUser.getUserId(), userUpdateDto);
-        ApiResponse<UserDto> response = ApiResponse.success(updatedUser);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@PutMapping("/me")
+	public ResponseEntity<ApiResponse<UserDto>> updateCurrentUser(
+			@AuthenticationPrincipal JwtUser currentUser,
+			@Valid @RequestBody UserUpdateDto userUpdateDto) {
+		UserDto updatedUser = userService.updateUser(currentUser.getUserId(), userUpdateDto);
+		ApiResponse<UserDto> response = ApiResponse.success(updatedUser);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @PostMapping("/me/picture")
-    public ResponseEntity<ApiResponse<UserDto>> uploadProfilePicture(
-            @AuthenticationPrincipal JwtUser currentUser,
-            @RequestParam("file") MultipartFile file) {
+	@PostMapping("/me/picture")
+	public ResponseEntity<ApiResponse<UserDto>> uploadProfilePicture(
+			@AuthenticationPrincipal JwtUser currentUser,
+			@RequestParam("file") MultipartFile file) {
 
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(ApiResponse.badRequest("File cannot be empty"));
-        }
+		if (file.isEmpty()) {
+			return ResponseEntity.badRequest().body(ApiResponse.badRequest("File cannot be empty"));
+		}
 
-        if (file.getSize() > 5 * 1024 * 1024) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.badRequest("File size exceeds limit"));
-        }
+		if (file.getSize() > 5 * 1024 * 1024) {
+			return ResponseEntity.badRequest()
+					.body(ApiResponse.badRequest("File size exceeds limit"));
+		}
 
-        UserDto updatedUser = userService.updateProfilePicture(currentUser.getUserId(), file);
-        ApiResponse<UserDto> response = ApiResponse.success(updatedUser);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+		UserDto updatedUser = userService.updateProfilePicture(currentUser.getUserId(), file);
+		ApiResponse<UserDto> response = ApiResponse.success(updatedUser);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @GetMapping("/me/picture")
-    public ResponseEntity<Resource> getCurrentUserProfilePicture(
-            @AuthenticationPrincipal JwtUser currentUser, HttpServletRequest request) {
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+	@GetMapping("/me/picture")
+	public ResponseEntity<Resource> getCurrentUserProfilePicture(
+			@AuthenticationPrincipal JwtUser currentUser, HttpServletRequest request) {
+		if (currentUser == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 
-        try {
-            UserDto userDto = userService.getUserById(currentUser.getUserId());
-            String filename = userDto.profilePicture();
+		try {
+			UserDto userDto = userService.getUserById(currentUser.getUserId());
+			String filename = userDto.profilePicture();
 
-            if (filename == null || filename.isBlank()) {
-                return ResponseEntity.notFound().build();
-            }
+			if (filename == null || filename.isBlank()) {
+				return ResponseEntity.notFound().build();
+			}
 
-            Resource resource =
-                    fileStorage.loadFileAsResource(FolderName.PROFILE_PICTURES, filename);
+			Resource resource =
+					fileStorage.loadFileAsResource(FolderName.PROFILE_PICTURES, filename);
 
-            // 3. Determine content type
-            String contentType = null;
-            try {
-                contentType =
-                        request.getServletContext()
-                                .getMimeType(resource.getFile().getAbsolutePath());
-            } catch (IOException ex) {
-            }
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
+			// 3. Determine content type
+			String contentType = null;
+			try {
+				contentType =
+						request.getServletContext()
+								.getMimeType(resource.getFile().getAbsolutePath());
+			} catch (IOException ex) {
+			}
+			if (contentType == null) {
+				contentType = "application/octet-stream";
+			}
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    // .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" +
-                    // resource.getFilename() + "\"") // Optional
-                    .body(resource);
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType(contentType))
+					// .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" +
+					// resource.getFilename() + "\"") // Optional
+					.body(resource);
 
-        } catch (MalformedURLException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+		} catch (MalformedURLException ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		} catch (RuntimeException ex) {
+			return ResponseEntity.notFound().build();
+		}
+	}
 }

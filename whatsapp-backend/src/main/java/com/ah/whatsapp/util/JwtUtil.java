@@ -22,53 +22,53 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+	@Value("${jwt.secret}")
+	private String secret;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+	@Value("${jwt.expiration}")
+	private Long expiration;
 
-    public String generateToken(String email) {
-        return createToken(Map.of(), email);
-    }
+	public String generateToken(String email) {
+		return createToken(Map.of(), email);
+	}
 
-    private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder()
-                .claims(claims)
-                .subject(subject)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration * 1000))
-                .signWith(getKey())
-                .id(UUID.randomUUID().toString())
-                .compact();
-    }
+	private String createToken(Map<String, Object> claims, String subject) {
+		return Jwts.builder()
+				.claims(claims)
+				.subject(subject)
+				.issuedAt(new Date(System.currentTimeMillis()))
+				.expiration(new Date(System.currentTimeMillis() + expiration * 1000))
+				.signWith(getKey())
+				.id(UUID.randomUUID().toString())
+				.compact();
+	}
 
-    public Boolean validateToken(String token) {
-        return !isTokenExpired(token);
-    }
+	public Boolean validateToken(String token) {
+		return !isTokenExpired(token);
+	}
 
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+	public String extractEmail(String token) {
+		return extractClaim(token, Claims::getSubject);
+	}
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+		final Claims claims = extractAllClaims(token);
+		return claimsResolver.apply(claims);
+	}
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
-    }
+	private Claims extractAllClaims(String token) {
+		return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
+	}
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
+	private Boolean isTokenExpired(String token) {
+		return extractExpiration(token).before(new Date());
+	}
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
+	public Date extractExpiration(String token) {
+		return extractClaim(token, Claims::getExpiration);
+	}
 
-    private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-    }
+	private SecretKey getKey() {
+		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+	}
 }

@@ -18,28 +18,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final AuthChannelInterceptor authChannelInterceptor;
+	private final AuthChannelInterceptor authChannelInterceptor;
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
-    }
+	@Override
+	public void registerStompEndpoints(StompEndpointRegistry registry) {
+		registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+	}
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        // Enable a simple in-memory message broker
-        // Destinations starting with "/topic" or "/queue" will be routed to the broker
-        config.enableSimpleBroker("/topic", "/queue");
+	@Override
+	public void configureMessageBroker(MessageBrokerRegistry config) {
+		// Enable a simple in-memory message broker
+		// Destinations starting with "/topic" or "/queue" will be routed to the broker
+		config.enableSimpleBroker("/topic", "/queue");
 
-        // Configure the prefix for messages bound for methods annotated with @MessageMapping
-        // e.g., client sends to /app/chat.sendMessage, it gets routed to a
-        // @MessageMapping("chat.sendMessage") method
-        config.setApplicationDestinationPrefixes("/app");
-        config.setUserDestinationPrefix("/user");
-    }
+		// Configure the prefix for messages bound for methods annotated with @MessageMapping
+		// e.g., client sends to /app/chat.sendMessage, it gets routed to a
+		// @MessageMapping("chat.sendMessage") method
+		config.setApplicationDestinationPrefixes("/app");
+		config.setUserDestinationPrefix("/user");
+	}
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(authChannelInterceptor);
-    }
+	@Override
+	public void configureClientInboundChannel(ChannelRegistration registration) {
+		registration.interceptors(authChannelInterceptor);
+	}
 }

@@ -25,59 +25,59 @@ import com.ah.whatsapp.event.NewMessageEvent;
 
 @Component
 public class WebSocketEventListener {
-    private final SimpMessagingTemplate messagingTemplate;
+	private final SimpMessagingTemplate messagingTemplate;
 
-    public WebSocketEventListener(SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
-    }
+	public WebSocketEventListener(SimpMessagingTemplate messagingTemplate) {
+		this.messagingTemplate = messagingTemplate;
+	}
 
-    @Async
-    @EventListener
-    public void handleNewMessage(NewMessageEvent event) {
-        MessageDto messageDto = event.getMessageDto();
-        WebSocketEvent<MessageDto> wsEvent =
-                new WebSocketEvent<>(EventType.NEW_MESSAGE, messageDto);
-        String destination =
-                String.format(CONVERSATION_TOPIC_TEMPLATE, messageDto.conversationId());
-        messagingTemplate.convertAndSend(destination, wsEvent);
-    }
+	@Async
+	@EventListener
+	public void handleNewMessage(NewMessageEvent event) {
+		MessageDto messageDto = event.getMessageDto();
+		WebSocketEvent<MessageDto> wsEvent =
+				new WebSocketEvent<>(EventType.NEW_MESSAGE, messageDto);
+		String destination =
+				String.format(CONVERSATION_TOPIC_TEMPLATE, messageDto.conversationId());
+		messagingTemplate.convertAndSend(destination, wsEvent);
+	}
 
-    @Async
-    @EventListener
-    public void handleConversationUpdate(ConversationUpdateEvent event) {
-        ConversationDto conversationDto = event.getConversationDto();
-        WebSocketEvent<ConversationDto> wsEvent =
-                new WebSocketEvent<>(EventType.CONVERSATION_UPDATE, conversationDto);
-        // Send to each participant's queue
-        conversationDto
-                .getParticipants()
-                .forEach(
-                        participant -> {
-                            String email = participant.email();
-                            if (email != null) {
-                                messagingTemplate.convertAndSendToUser(
-                                        email, CONVERSATION_QUEUE, wsEvent);
-                            }
-                        });
-    }
+	@Async
+	@EventListener
+	public void handleConversationUpdate(ConversationUpdateEvent event) {
+		ConversationDto conversationDto = event.getConversationDto();
+		WebSocketEvent<ConversationDto> wsEvent =
+				new WebSocketEvent<>(EventType.CONVERSATION_UPDATE, conversationDto);
+		// Send to each participant's queue
+		conversationDto
+				.getParticipants()
+				.forEach(
+						participant -> {
+							String email = participant.email();
+							if (email != null) {
+								messagingTemplate.convertAndSendToUser(
+										email, CONVERSATION_QUEUE, wsEvent);
+							}
+						});
+	}
 
-    @Async
-    @EventListener
-    public void handleMessageDeleted(MessageDeletedEvent event) {
-        WebSocketEvent<DeleteMessageEvent> webSocketEvent =
-                new WebSocketEvent<>(
-                        EventType.DELETE_MESSAGE,
-                        new DeleteMessageEvent(event.getMessageId(), event.getConversationId()));
-        String destination = String.format(CONVERSATION_TOPIC_TEMPLATE, event.getConversationId());
-        messagingTemplate.convertAndSend(destination, webSocketEvent);
-    }
+	@Async
+	@EventListener
+	public void handleMessageDeleted(MessageDeletedEvent event) {
+		WebSocketEvent<DeleteMessageEvent> webSocketEvent =
+				new WebSocketEvent<>(
+						EventType.DELETE_MESSAGE,
+						new DeleteMessageEvent(event.getMessageId(), event.getConversationId()));
+		String destination = String.format(CONVERSATION_TOPIC_TEMPLATE, event.getConversationId());
+		messagingTemplate.convertAndSend(destination, webSocketEvent);
+	}
 
-    @Async
-    @EventListener
-    public void handleTypingIndicator(TypingIndicatorDto typingDto) {
-        WebSocketEvent<TypingIndicatorDto> wsEvent =
-                new WebSocketEvent<>(typingDto.getEventType(), typingDto);
-        String destination = String.format(TYPING_INDICATOR_TOPIC, typingDto.getConversationId());
-        messagingTemplate.convertAndSend(destination, wsEvent);
-    }
+	@Async
+	@EventListener
+	public void handleTypingIndicator(TypingIndicatorDto typingDto) {
+		WebSocketEvent<TypingIndicatorDto> wsEvent =
+				new WebSocketEvent<>(typingDto.getEventType(), typingDto);
+		String destination = String.format(TYPING_INDICATOR_TOPIC, typingDto.getConversationId());
+		messagingTemplate.convertAndSend(destination, wsEvent);
+	}
 }
