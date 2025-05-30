@@ -43,14 +43,13 @@ public interface MessageEntityRepository extends JpaRepository<MessageEntity, UU
     @Query(
             value =
                     """
-    select m.id from ( select me.id, row_number() over(partition by me.conversation_id order by me.sent_at desc) as rn
-    from messages me
-    where me.conversation_id in (:conversationIds)
-    ) m
-    where m.rn = 1
+		select m.id from ( select me.id, row_number() over(partition by me.conversation_id order by me.sent_at desc) as rn
+		from messages me
+		where me.conversation_id in (:conversationIds)
+		) m
+		where m.rn = 1
 """,
             nativeQuery = true)
-    // Renamed method and changed return type
     List<UUID> findLatestMessageIdsForConversationIds(
             @Param("conversationIds") List<UUID> conversationIds);
 
