@@ -12,4 +12,8 @@ public enum FolderName {
     FolderName(String folderName) {
         this.folderName = folderName;
     }
+
+    public String getFolderName() {
+        return folderName;
+    }
 }

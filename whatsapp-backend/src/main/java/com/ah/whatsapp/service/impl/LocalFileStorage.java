@@ -28,48 +28,62 @@ public class LocalFileStorage implements FileStorage {
     private final Path baseStoragePath;
 
     public LocalFileStorage(@Value("${app.storage.base-path}") String storageBasePath) {
-        String homeFolder = System.getProperty("user.home");
-        if (storageBasePath != null) {
-            storageBasePath = homeFolder + File.separator + storageBasePath;
+        if (storageBasePath == null || storageBasePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Root path cannot be null or empty");
         }
+
+        // If path is absolute (for testing), use it directly
+        if (Paths.get(storageBasePath).isAbsolute()) {
+            this.baseStoragePath = initializeStorage(storageBasePath);
+        } else {
+            // Otherwise, append to home directory (production)
+            String homeFolder = System.getProperty("user.home");
+            String finalPath = homeFolder + File.separator + storageBasePath;
+            this.baseStoragePath = initializeStorage(finalPath);
+        }
+    }
+
+    private Path initializeStorage(String path) {
         try {
-            assert storageBasePath != null;
-            this.baseStoragePath = Paths.get(storageBasePath).toAbsolutePath().normalize();
-            Files.createDirectories(baseStoragePath);
+            Path storagePath = Paths.get(path).toAbsolutePath().normalize();
+            Files.createDirectories(storagePath);
+            return storagePath;
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Could not create base storage directory!" + storageBasePath, e);
+            throw new RuntimeException("Could not create base storage directory!" + path, e);
         }
     }
 
     @Override
     public String storeFile(MultipartFile file, FolderName folderName, String baseFilename)
             throws IOException {
+        if (file == null) {
+            throw new IllegalArgumentException("File cannot be null");
+        }
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("File cannot be empty.");
+            throw new IllegalArgumentException("Cannot store empty file");
         }
         if (folderName == null) {
-            throw new IllegalArgumentException("Folder Name cannot be empty.");
+            throw new IllegalArgumentException("Folder name cannot be null");
         }
-        if (baseFilename == null || baseFilename.isBlank()) {
-            throw new IllegalArgumentException("Base filename cannot be empty.");
+        if (baseFilename == null || baseFilename.trim().isEmpty()) {
+            throw new IllegalArgumentException("Base filename cannot be null or empty");
         }
 
-        String normalizedCategory = StringUtils.cleanPath(folderName.name());
-        String normalizedBaseFilename = StringUtils.cleanPath(baseFilename);
+        String normalizedCategory = StringUtils.cleanPath(folderName.getFolderName());
+        String normalizedBaseFilename = sanitizeFilename(StringUtils.cleanPath(baseFilename));
 
         Path folderPath = this.baseStoragePath.resolve(normalizedCategory);
         try {
             Files.createDirectories(folderPath);
         } catch (IOException ex) {
-            throw new RuntimeException(
-                    "Could not create category storage directory: " + normalizedCategory, ex);
+            throw ex; // Propagate IOException directly instead of wrapping in RuntimeException
         }
 
-        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+        String originalFilename = file.getOriginalFilename();
         String fileExtension = "";
-        if (originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        if (originalFilename != null && originalFilename.contains(".")) {
+            String cleanFilename = StringUtils.cleanPath(originalFilename);
+            fileExtension = cleanFilename.substring(cleanFilename.lastIndexOf("."));
         }
 
         if (normalizedBaseFilename.contains("/")
@@ -78,7 +92,17 @@ public class LocalFileStorage implements FileStorage {
             throw new IllegalArgumentException("Invalid base filename: " + baseFilename);
         }
 
-        String newFilenameWithExtension = normalizedBaseFilename + fileExtension;
+        // Handle long filenames
+        String baseWithExtension = normalizedBaseFilename + fileExtension;
+        if (baseWithExtension.length() > 200) { // Leave room for timestamp
+            int maxBaseLength = 200 - fileExtension.length() - 20; // 20 for timestamp
+            normalizedBaseFilename =
+                    normalizedBaseFilename.substring(0, Math.max(1, maxBaseLength));
+        }
+
+        // Generate unique filename
+        String newFilenameWithExtension =
+                generateUniqueFilename(folderPath, normalizedBaseFilename, fileExtension);
         Path targetLocation = folderPath.resolve(newFilenameWithExtension);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         return newFilenameWithExtension;
@@ -87,16 +111,22 @@ public class LocalFileStorage implements FileStorage {
     @Override
     public Resource loadFileAsResource(FolderName folderName, String filename)
             throws MalformedURLException {
-        if (folderName == null || filename == null || filename.isBlank()) {
-            throw new IllegalArgumentException("Category and filename cannot be empty.");
+        if (folderName == null) {
+            throw new IllegalArgumentException("Folder name cannot be null");
         }
-        String normalizedCategory = StringUtils.cleanPath(folderName.name());
+        if (filename == null || filename.trim().isEmpty()) {
+            throw new IllegalArgumentException("Filename cannot be null or empty");
+        }
+
+        String normalizedCategory = StringUtils.cleanPath(folderName.getFolderName());
         String normalizedFilename = StringUtils.cleanPath(filename);
 
         if (normalizedFilename.contains("/")
                 || normalizedFilename.contains("\\")
-                || normalizedFilename.equals("..")) {
-            throw new IllegalArgumentException("Invalid filename: " + filename);
+                || normalizedFilename.equals("..")
+                || normalizedFilename.startsWith("../")
+                || normalizedFilename.startsWith("..\\")) {
+            throw new RuntimeException("Could not read file: " + filename);
         }
 
         Path filePath =
@@ -104,12 +134,42 @@ public class LocalFileStorage implements FileStorage {
                         .resolve(normalizedCategory)
                         .resolve(normalizedFilename)
                         .normalize();
+
+        // Additional security check - ensure the resolved path is still within base directory
+        if (!filePath.startsWith(this.baseStoragePath)) {
+            throw new RuntimeException("Could not read file: " + filename);
+        }
+
         Resource resource = new UrlResource(filePath.toUri());
         if (resource.exists() && resource.isReadable()) {
             return resource;
         } else {
             throw new RuntimeException(
-                    "Could not read file: " + filename + " in folder: " + folderName.name());
+                    "Could not read file: "
+                            + filename
+                            + " in folder: "
+                            + folderName.getFolderName());
         }
+    }
+
+    private String sanitizeFilename(String filename) {
+        if (filename == null) {
+            return "";
+        }
+        // Remove special characters that are not allowed in filenames
+        return filename.replaceAll("[^a-zA-Z0-9._-]", "");
+    }
+
+    private String generateUniqueFilename(Path folderPath, String baseFilename, String extension) {
+        String filename = baseFilename + extension;
+        Path filePath = folderPath.resolve(filename);
+
+        if (!Files.exists(filePath)) {
+            return filename;
+        }
+
+        // If file exists, append timestamp to make it unique
+        long timestamp = System.currentTimeMillis();
+        return baseFilename + "_" + timestamp + extension;
     }
 }
