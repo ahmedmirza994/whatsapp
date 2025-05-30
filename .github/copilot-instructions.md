@@ -3,6 +3,9 @@
 ## Project Overview
 
 This project is a WhatsApp-like web application built with Spring Boot (Java) backend and Angular 19 frontend. The application focuses on delivering a streamlined messaging experience with real-time capabilities.
+Use industry best practices, standards and modern technologies to ensure a robust, secure, and scalable application.
+Always use the whole project as context for every request.
+Always come up with the best solutions with respect to industry standards and best practices if changes are in large amounts and let me choose the best one.
 
 ## MVP Feature Set
 
