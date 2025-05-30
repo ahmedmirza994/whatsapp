@@ -7,7 +7,6 @@ package com.ah.whatsapp.service;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -70,16 +69,19 @@ class LocalFileStorageTest {
     }
 
     @Test
-    void storeFile_WithNullFile_ShouldThrowException() {
+    void storeFile_WithNullFile_ShouldThrowIllegalArgumentException() {
         // Given
         MultipartFile nullFile = null;
         String baseFilename = "test";
         FolderName folderName = FolderName.PROFILE_PICTURES;
 
-        // When & Then - Null file will cause NullPointerException when calling isEmpty()
-        assertThrows(
-                RuntimeException.class,
-                () -> fileStorage.storeFile(nullFile, folderName, baseFilename));
+        // When & Then - Null file should throw IllegalArgumentException
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> fileStorage.storeFile(nullFile, folderName, baseFilename));
+
+        assertEquals("File cannot be null", exception.getMessage());
     }
 
     @Test
@@ -235,25 +237,33 @@ class LocalFileStorageTest {
     }
 
     @Test
-    void storeFile_WithDuplicateBasename_ShouldCreateUniqueFilenames() throws IOException {
+    void storeFile_WithDuplicateBasename_ShouldReplaceExistingFile() throws IOException {
         // Given
-        String baseFilename = "duplicate-test";
+        String baseFilename = "profile-pic";
         FolderName folderName = FolderName.PROFILE_PICTURES;
 
+        MockMultipartFile firstFile =
+                new MockMultipartFile(
+                        "file", "test-image.jpg", "image/jpeg", "first content".getBytes());
+        MockMultipartFile secondFile =
+                new MockMultipartFile(
+                        "file", "test-image.jpg", "image/jpeg", "second content".getBytes());
+
         // When - Store multiple files with same base name
-        String firstFilename = fileStorage.storeFile(mockFile, folderName, baseFilename);
-        String secondFilename = fileStorage.storeFile(mockFile, folderName, baseFilename);
-        String thirdFilename = fileStorage.storeFile(mockFile, folderName, baseFilename);
+        String firstFilename = fileStorage.storeFile(firstFile, folderName, baseFilename);
+        String secondFilename = fileStorage.storeFile(secondFile, folderName, baseFilename);
 
-        // Then - All filenames should be unique
-        assertNotEquals(firstFilename, secondFilename);
-        assertNotEquals(secondFilename, thirdFilename);
-        assertNotEquals(firstFilename, thirdFilename);
-
-        // All should contain the base filename
+        // Then - Filenames should be the same (replacement behavior)
+        assertEquals(firstFilename, secondFilename);
         assertTrue(firstFilename.contains(baseFilename));
-        assertTrue(secondFilename.contains(baseFilename));
-        assertTrue(thirdFilename.contains(baseFilename));
+        assertTrue(firstFilename.endsWith(".jpg"));
+
+        // Verify only one file exists and it contains the latest content
+        Path filePath = tempDir.resolve("profile_pictures").resolve(firstFilename);
+        assertTrue(Files.exists(filePath));
+
+        byte[] storedContent = Files.readAllBytes(filePath);
+        assertArrayEquals("second content".getBytes(), storedContent);
     }
 
     @Test

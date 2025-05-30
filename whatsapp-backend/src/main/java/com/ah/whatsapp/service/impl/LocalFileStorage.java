@@ -94,18 +94,17 @@ public class LocalFileStorage implements FileStorage {
 
         // Handle long filenames
         String baseWithExtension = normalizedBaseFilename + fileExtension;
-        if (baseWithExtension.length() > 200) { // Leave room for timestamp
-            int maxBaseLength = 200 - fileExtension.length() - 20; // 20 for timestamp
+        if (baseWithExtension.length() > 255) { // Most filesystems limit to 255 characters
+            int maxBaseLength = 255 - fileExtension.length();
             normalizedBaseFilename =
                     normalizedBaseFilename.substring(0, Math.max(1, maxBaseLength));
         }
 
-        // Generate unique filename
-        String newFilenameWithExtension =
-                generateUniqueFilename(folderPath, normalizedBaseFilename, fileExtension);
-        Path targetLocation = folderPath.resolve(newFilenameWithExtension);
+        // Use the base filename + extension (will replace existing file if it exists)
+        String finalFilename = normalizedBaseFilename + fileExtension;
+        Path targetLocation = folderPath.resolve(finalFilename);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        return newFilenameWithExtension;
+        return finalFilename;
     }
 
     @Override
@@ -158,18 +157,5 @@ public class LocalFileStorage implements FileStorage {
         }
         // Remove special characters that are not allowed in filenames
         return filename.replaceAll("[^a-zA-Z0-9._-]", "");
-    }
-
-    private String generateUniqueFilename(Path folderPath, String baseFilename, String extension) {
-        String filename = baseFilename + extension;
-        Path filePath = folderPath.resolve(filename);
-
-        if (!Files.exists(filePath)) {
-            return filename;
-        }
-
-        // If file exists, append timestamp to make it unique
-        long timestamp = System.currentTimeMillis();
-        return baseFilename + "_" + timestamp + extension;
     }
 }
