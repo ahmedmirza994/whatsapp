@@ -22,9 +22,13 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, UUID> {
 
 	@Query(
 			value =
-					"select * from users where (name ilike '%' || :query || '%' or email ilike '%'"
-							+ " || :query || '%' or phone like '%' || :query || '%') and id !="
-							+ " :excludeUserId",
+					"""
+					select * from users
+					where (name ilike '%' || :query || '%'
+						or email ilike '%' || :query || '%'
+						or phone like '%' || :query || '%')
+					and id != :excludeUserId
+					""",
 			nativeQuery = true)
 	List<UserEntity> searchUsers(
 			@Param("query") String query, @Param("excludeUserId") UUID excludeUserId);

@@ -20,16 +20,25 @@ import com.ah.whatsapp.entity.MessageEntity;
 public interface MessageEntityRepository extends JpaRepository<MessageEntity, UUID> {
 
 	@Query(
-			"select m from MessageEntity m join fetch m.sender where m.conversation.id ="
-					+ " :conversationId and m.sentAt > :sentAt")
+			"""
+			select m from MessageEntity m
+			join fetch m.sender
+			where m.conversation.id = :conversationId
+			and m.sentAt > :sentAt
+			""")
 	List<MessageEntity> findByConversationIdAndSendAtAfterOrderBySentAtAsc(
 			@Param("conversationId") UUID conversationId, @Param("sentAt") LocalDateTime sentAt);
 
 	List<MessageEntity> findBySenderId(UUID senderId);
 
 	@Query(
-			"select m from MessageEntity m join fetch m.sender where m.conversation.id ="
-					+ " :conversationId order by m.sentAt desc limit 1")
+			"""
+			select m from MessageEntity m
+			join fetch m.sender
+			where m.conversation.id = :conversationId
+			order by m.sentAt desc
+			limit 1
+			""")
 	Optional<MessageEntity> findByConversationIdOrderBySentAtDesc(
 			@Param("conversationId") UUID conversationId);
 
