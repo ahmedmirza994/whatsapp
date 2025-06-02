@@ -11,6 +11,7 @@ import static com.ah.whatsapp.mapper.UserTestDataBuilder.aUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -411,6 +413,140 @@ class ConversationServiceImplTest {
 
 			verify(conversationRepository, never())
 					.findDirectConversationBetweenUsers(any(), any());
+		}
+
+		@Test
+		@DisplayName("Should reactivate inactive participant when finding existing conversation")
+		void
+				findOrCreateConversation_ShouldReactivateInactiveParticipant_WhenUserWasPreviouslyInactive() {
+			// Given
+			when(userRepository.existsById(testUserId1)).thenReturn(true);
+			when(userRepository.existsById(testUserId2)).thenReturn(true);
+
+			// Create an inactive participant for the creator (testUserId1)
+			ConversationParticipant inactiveCreatorParticipant =
+					aConversationParticipant()
+							.withConversationId(testConversationId)
+							.withParticipantId(testUserId1)
+							.withActive(false)
+							.withLeftAt(LocalDateTime.now().minusDays(1))
+							.build();
+
+			ConversationParticipant activeOtherParticipant =
+					aConversationParticipant()
+							.withConversationId(testConversationId)
+							.withParticipantId(testUserId2)
+							.withActive(true)
+							.build();
+
+			// Set up the existing conversation with participants
+			Conversation existingConversation =
+					aConversation()
+							.withId(testConversationId)
+							.withParticipants(
+									Arrays.asList(
+											inactiveCreatorParticipant, activeOtherParticipant))
+							.build();
+
+			when(conversationRepository.findDirectConversationBetweenUsers(
+							testUserId1, testUserId2))
+					.thenReturn(Optional.of(existingConversation));
+
+			// Mock the refetch after participant reactivation
+			ConversationParticipant reactivatedParticipant =
+					aConversationParticipant()
+							.withConversationId(testConversationId)
+							.withParticipantId(testUserId1)
+							.withActive(true)
+							.withJoinedAt(LocalDateTime.now())
+							.withLeftAt(null)
+							.build();
+
+			Conversation updatedConversation =
+					aConversation()
+							.withId(testConversationId)
+							.withParticipants(
+									Arrays.asList(reactivatedParticipant, activeOtherParticipant))
+							.build();
+
+			when(conversationRepository.findById(testConversationId))
+					.thenReturn(Optional.of(updatedConversation));
+			when(conversationMapper.toDto(updatedConversation)).thenReturn(testConversationDto);
+
+			// When
+			ConversationDto result =
+					conversationService.findOrCreateConversation(testCreateRequest, testUserId1);
+
+			// Then
+			assertNotNull(result);
+			assertEquals(testConversationId, result.getId());
+
+			// Verify that the participant was reactivated
+			ArgumentCaptor<ConversationParticipant> participantCaptor =
+					ArgumentCaptor.forClass(ConversationParticipant.class);
+			verify(conversationParticipantRepository).save(participantCaptor.capture());
+
+			ConversationParticipant savedParticipant = participantCaptor.getValue();
+			assertTrue(savedParticipant.isActive());
+			assertNotNull(savedParticipant.getJoinedAt());
+			assertNull(savedParticipant.getLeftAt());
+			assertEquals(testUserId1, savedParticipant.getParticipantId());
+
+			// Verify conversation was refetched after participant update
+			verify(conversationRepository).findById(testConversationId);
+			verify(conversationMapper).toDto(updatedConversation);
+		}
+
+		@Test
+		@DisplayName(
+				"Should not reactivate participant when already active in existing conversation")
+		void findOrCreateConversation_ShouldNotReactivateParticipant_WhenUserIsAlreadyActive() {
+			// Given
+			when(userRepository.existsById(testUserId1)).thenReturn(true);
+			when(userRepository.existsById(testUserId2)).thenReturn(true);
+
+			// Create active participants
+			ConversationParticipant activeCreatorParticipant =
+					aConversationParticipant()
+							.withConversationId(testConversationId)
+							.withParticipantId(testUserId1)
+							.withActive(true)
+							.build();
+
+			ConversationParticipant activeOtherParticipant =
+					aConversationParticipant()
+							.withConversationId(testConversationId)
+							.withParticipantId(testUserId2)
+							.withActive(true)
+							.build();
+
+			// Set up the existing conversation with active participants
+			Conversation existingConversation =
+					aConversation()
+							.withId(testConversationId)
+							.withParticipants(
+									Arrays.asList(activeCreatorParticipant, activeOtherParticipant))
+							.build();
+
+			when(conversationRepository.findDirectConversationBetweenUsers(
+							testUserId1, testUserId2))
+					.thenReturn(Optional.of(existingConversation));
+			when(conversationMapper.toDto(existingConversation)).thenReturn(testConversationDto);
+
+			// When
+			ConversationDto result =
+					conversationService.findOrCreateConversation(testCreateRequest, testUserId1);
+
+			// Then
+			assertNotNull(result);
+			assertEquals(testConversationId, result.getId());
+
+			// Verify that no participant was saved (no reactivation needed)
+			verify(conversationParticipantRepository, never()).save(any());
+
+			// Verify conversation was not refetched
+			verify(conversationRepository, never()).findById(testConversationId);
+			verify(conversationMapper).toDto(existingConversation);
 		}
 	}
 
