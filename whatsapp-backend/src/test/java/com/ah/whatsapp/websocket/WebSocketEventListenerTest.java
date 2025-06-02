@@ -7,6 +7,7 @@ package com.ah.whatsapp.websocket;
 import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_QUEUE;
 import static com.ah.whatsapp.constant.WebSocketConstants.CONVERSATION_TOPIC_TEMPLATE;
 import static com.ah.whatsapp.constant.WebSocketConstants.TYPING_INDICATOR_TOPIC;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -86,8 +87,11 @@ class WebSocketEventListenerTest {
 		verify(messagingTemplate).convertAndSend(eq(expectedDestination), eventCaptor.capture());
 
 		WebSocketEvent<?> capturedEvent = eventCaptor.getValue();
-		assert capturedEvent.getType() == EventType.NEW_MESSAGE;
-		assert capturedEvent.getPayload().equals(messageDto);
+		assertEquals(capturedEvent.getType(), EventType.NEW_MESSAGE);
+		assertEquals(
+				messageDto,
+				capturedEvent.getPayload(),
+				"Payload does not match the expected messageDto");
 	}
 
 	@Test
@@ -293,7 +297,7 @@ class WebSocketEventListenerTest {
 		webSocketEventListener.handleNewMessage(event);
 
 		// Then
-		String expectedDestination = "/topic/conversations/" + conversationId;
+		String expectedDestination = String.format(CONVERSATION_TOPIC_TEMPLATE, conversationId);
 		verify(messagingTemplate)
 				.convertAndSend(eq(expectedDestination), any(WebSocketEvent.class));
 	}
