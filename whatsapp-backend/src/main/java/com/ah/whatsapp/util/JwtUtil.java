@@ -44,7 +44,13 @@ public class JwtUtil {
 	}
 
 	public Boolean validateToken(String token) {
-		return !isTokenExpired(token);
+		try {
+			// This will validate signature, expiration, and structure
+			extractAllClaims(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public String extractEmail(String token) {
@@ -58,10 +64,6 @@ public class JwtUtil {
 
 	private Claims extractAllClaims(String token) {
 		return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
-	}
-
-	private Boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
 	}
 
 	public Date extractExpiration(String token) {

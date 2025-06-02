@@ -7,6 +7,7 @@ package com.ah.whatsapp.filter;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
-	private UserDetailsService userDetailsService;
+	private final UserDetailsService userDetailsService;
 
 	public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
 		this.jwtUtil = jwtUtil;
@@ -36,7 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(
-			HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			@NonNull HttpServletRequest request,
+			@NonNull HttpServletResponse response,
+			@NonNull FilterChain filterChain)
 			throws ServletException, IOException {
 		final String authorizationHeader = request.getHeader("Authorization");
 
@@ -45,9 +48,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwt = authorizationHeader.substring(7);
 			try {
-				if (jwt != null && jwtUtil.validateToken(jwt)) {
-					username = jwtUtil.extractEmail(jwt);
+				if (jwt != null && !jwt.trim().isEmpty()) {
+					if (jwtUtil.validateToken(jwt)) {
+						username = jwtUtil.extractEmail(jwt);
+					} else {
+						SecurityContextHolder.clearContext();
+						throw new UnauthorizedException("Invalid token");
+					}
 				}
+			} catch (UnauthorizedException e) {
+				throw e; // Re-throw UnauthorizedException
 			} catch (Exception e) {
 				SecurityContextHolder.clearContext();
 				throw new UnauthorizedException("Invalid token");
