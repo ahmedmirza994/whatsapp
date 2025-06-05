@@ -45,8 +45,14 @@ jobs:
             - name: Build project
               run: ./gradlew build --no-daemon
 
-            - name: Run tests with coverage
-              run: ./gradlew test jacocoTestReport --no-daemon
+            - name: Run unit tests
+              run: ./gradlew test --no-daemon
+
+            - name: Run integration tests
+              run: ./gradlew integrationTest --no-daemon
+
+            - name: Generate combined coverage report
+              run: ./gradlew jacocoTestReport --no-daemon
 
             - name: Generate test summary
               if: always()
@@ -54,16 +60,43 @@ jobs:
                   echo "## 🧪 Test Summary" >> $GITHUB_STEP_SUMMARY
                   echo "" >> $GITHUB_STEP_SUMMARY
 
-                  # Count test results
-                  if [ -d "build/test-results/test" ]; then
-                    TOTAL_TESTS=$(find build/test-results/test -name "*.xml" -exec grep -o "tests=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
-                    FAILED_TESTS=$(find build/test-results/test -name "*.xml" -exec grep -o "failures=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
-                    SKIPPED_TESTS=$(find build/test-results/test -name "*.xml" -exec grep -o "skipped=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                  # Count test results from both unit and integration tests
+                  if [ -d "build/test-results/test" ] || [ -d "build/test-results/integrationTest" ]; then
+                    TOTAL_TESTS=0
+                    FAILED_TESTS=0
+                    SKIPPED_TESTS=0
                     
-                    echo "- **Total Tests**: ${TOTAL_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
-                    echo "- **Passed Tests**: $((${TOTAL_TESTS:-0} - ${FAILED_TESTS:-0} - ${SKIPPED_TESTS:-0}))" >> $GITHUB_STEP_SUMMARY
-                    echo "- **Failed Tests**: ${FAILED_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
-                    echo "- **Skipped Tests**: ${SKIPPED_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+                    # Count unit tests
+                    if [ -d "build/test-results/test" ]; then
+                      UNIT_TOTAL=$(find build/test-results/test -name "*.xml" -exec grep -o "tests=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                      UNIT_FAILED=$(find build/test-results/test -name "*.xml" -exec grep -o "failures=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                      UNIT_SKIPPED=$(find build/test-results/test -name "*.xml" -exec grep -o "skipped=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                      TOTAL_TESTS=$((TOTAL_TESTS + ${UNIT_TOTAL:-0}))
+                      FAILED_TESTS=$((FAILED_TESTS + ${UNIT_FAILED:-0}))
+                      SKIPPED_TESTS=$((SKIPPED_TESTS + ${UNIT_SKIPPED:-0}))
+                    fi
+                    
+                    # Count integration tests
+                    if [ -d "build/test-results/integrationTest" ]; then
+                      INTEGRATION_TOTAL=$(find build/test-results/integrationTest -name "*.xml" -exec grep -o "tests=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                      INTEGRATION_FAILED=$(find build/test-results/integrationTest -name "*.xml" -exec grep -o "failures=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                      INTEGRATION_SKIPPED=$(find build/test-results/integrationTest -name "*.xml" -exec grep -o "skipped=\"[0-9]*\"" {} \; | grep -o "[0-9]*" | awk '{sum += $1} END {print sum}')
+                      TOTAL_TESTS=$((TOTAL_TESTS + ${INTEGRATION_TOTAL:-0}))
+                      FAILED_TESTS=$((FAILED_TESTS + ${INTEGRATION_FAILED:-0}))
+                      SKIPPED_TESTS=$((SKIPPED_TESTS + ${INTEGRATION_SKIPPED:-0}))
+                    fi
+                    
+                    echo "- **Total Tests**: ${TOTAL_TESTS}" >> $GITHUB_STEP_SUMMARY
+                    echo "- **Passed Tests**: $((${TOTAL_TESTS} - ${FAILED_TESTS} - ${SKIPPED_TESTS}))" >> $GITHUB_STEP_SUMMARY
+                    echo "- **Failed Tests**: ${FAILED_TESTS}" >> $GITHUB_STEP_SUMMARY
+                    echo "- **Skipped Tests**: ${SKIPPED_TESTS}" >> $GITHUB_STEP_SUMMARY
+                    
+                    if [ -d "build/test-results/test" ]; then
+                      echo "- **Unit Tests**: ${UNIT_TOTAL:-0}" >> $GITHUB_STEP_SUMMARY
+                    fi
+                    if [ -d "build/test-results/integrationTest" ]; then
+                      echo "- **Integration Tests**: ${INTEGRATION_TOTAL:-0}" >> $GITHUB_STEP_SUMMARY
+                    fi
                   else
                     echo "❌ No test results found" >> $GITHUB_STEP_SUMMARY
                   fi
@@ -85,7 +118,9 @@ jobs:
                   name: test-results-${{ github.run_number }}
                   path: |
                       whatsapp-backend/build/reports/tests/test/
+                      whatsapp-backend/build/reports/tests/integrationTest/
                       whatsapp-backend/build/test-results/test/
+                      whatsapp-backend/build/test-results/integrationTest/
                   retention-days: 7
 
             - name: Upload coverage reports

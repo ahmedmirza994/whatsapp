@@ -59,7 +59,10 @@ jobs:
             - name: Run unit tests
               run: ./gradlew test --continue
 
-            - name: Generate test coverage report
+            - name: Run integration tests
+              run: ./gradlew integrationTest --continue
+
+            - name: Generate combined test coverage report
               run: ./gradlew jacocoTestReport
 
             - name: Verify test coverage report exists
@@ -102,7 +105,9 @@ jobs:
                   name: test-results
                   path: |
                       whatsapp-backend/build/reports/tests/test/
+                      whatsapp-backend/build/reports/tests/integrationTest/
                       whatsapp-backend/build/test-results/test/
+                      whatsapp-backend/build/test-results/integrationTest/
                   retention-days: 7
 
             - name: Upload coverage reports
@@ -118,9 +123,11 @@ jobs:
               uses: EnricoMi/publish-unit-test-result-action@v2
               if: always()
               with:
-                  files: whatsapp-backend/build/test-results/test/**/*.xml
-                  check_name: "Unit Test Results"
-                  comment_title: "Unit Test Results"
+                  files: |
+                      whatsapp-backend/build/test-results/test/**/*.xml
+                      whatsapp-backend/build/test-results/integrationTest/**/*.xml
+                  check_name: "Unit & Integration Test Results"
+                  comment_title: "Unit & Integration Test Results"
                   fail_on: "test failures"
 
             - name: Add coverage to PR
@@ -191,9 +198,16 @@ jobs:
                   fi
 
                   # Test results
-                  if [ -d "build/test-results/test" ]; then
+                  if [ -d "build/test-results/test" ] || [ -d "build/test-results/integrationTest" ]; then
                     echo "### 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
                     echo "✅ Tests executed successfully" >> $GITHUB_STEP_SUMMARY
+                    
+                    if [ -d "build/test-results/test" ]; then
+                      echo "- ✅ Unit tests completed" >> $GITHUB_STEP_SUMMARY
+                    fi
+                    if [ -d "build/test-results/integrationTest" ]; then
+                      echo "- ✅ Integration tests completed" >> $GITHUB_STEP_SUMMARY
+                    fi
                     echo "" >> $GITHUB_STEP_SUMMARY
                   fi
 

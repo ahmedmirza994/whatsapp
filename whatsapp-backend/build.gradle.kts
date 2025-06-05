@@ -128,8 +128,12 @@ tasks.jacocoTestReport {
 
 	// Include both unit and integration test execution data
 	executionData.setFrom(
-		fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"),
+		fileTree(project.buildDir.absolutePath).include("jacoco/*.exec")
 	)
+
+	// Configure source sets to include both main and test sources
+	sourceDirectories.setFrom(files("src/main/java"))
+	classDirectories.setFrom(files("build/classes/java/main"))
 }
 
 sonarqube {
@@ -140,9 +144,11 @@ sonarqube {
 		property("sonar.projectName", "WhatsApp Backend")
 		property("sonar.projectVersion", "1.0")
 		property("sonar.sources", "src/main/java")
-		property("sonar.tests", "src/test/java")
+		// Include both unit and integration tests
+		property("sonar.tests", "src/test/java,src/integrationTest/java")
 		property("sonar.binaries", "build/classes/java/main")
 		property("sonar.java.coveragePlugin", "jacoco")
+		// Use the combined coverage report that includes both unit and integration tests
 		property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
 		property("sonar.java.source", "21")
 		property("sonar.java.target", "21")
@@ -153,7 +159,7 @@ sonarqube {
 
 		// Exclude generated files and configuration files
 		property("sonar.exclusions", "**/generated/**/*,**/*.properties,**/*.yml,**/*.xml")
-		property("sonar.test.exclusions", "**/test/**/*")
+		property("sonar.test.exclusions", "**/test/**/*,**/integrationTest/**/*")
 	}
 }
 
