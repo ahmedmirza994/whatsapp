@@ -128,7 +128,7 @@ tasks.jacocoTestReport {
 
 	// Include both unit and integration test execution data
 	executionData.setFrom(
-		fileTree(project.buildDir.absolutePath).include("jacoco/*.exec")
+		fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"),
 	)
 
 	// Configure source sets to include both main and test sources
