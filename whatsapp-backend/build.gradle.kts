@@ -22,6 +22,22 @@ configurations {
 	}
 }
 
+// Create integration test source set
+sourceSets {
+	create("integrationTest") {
+		compileClasspath += sourceSets.main.get().output
+		runtimeClasspath += sourceSets.main.get().output
+	}
+}
+
+val integrationTestImplementation by configurations.getting {
+	extendsFrom(configurations.implementation.get())
+}
+
+val integrationTestRuntimeOnly by configurations.getting {
+	extendsFrom(configurations.runtimeOnly.get())
+}
+
 repositories {
 	mavenCentral()
 }
@@ -45,31 +61,75 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
 	implementation("net.datafaker:datafaker:2.4.3")
-
-	// Test dependencies
+	// Test dependencies (Unit tests only)
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.hamcrest:hamcrest")
+
+	// Integration test dependencies
+	integrationTestImplementation("org.springframework.boot:spring-boot-starter-test")
+	integrationTestImplementation("org.springframework.security:spring-security-test")
+	integrationTestImplementation("org.assertj:assertj-core")
+	integrationTestImplementation("org.hamcrest:hamcrest")
+
+	// Testcontainers for integration testing
+	integrationTestImplementation("org.testcontainers:junit-jupiter")
+	integrationTestImplementation("org.testcontainers:postgresql")
+	integrationTestImplementation("org.springframework.boot:spring-boot-testcontainers")
 }
 
 tasks.withType<JavaCompile> {
 	options.compilerArgs.addAll(listOf("-parameters"))
 }
 
+// Unit tests configuration
 tasks.withType<Test> {
 	useJUnitPlatform()
 	finalizedBy(tasks.jacocoTestReport)
 }
 
+// Integration tests task
+val integrationTest = task<Test>("integrationTest") {
+	description = "Runs integration tests."
+	group = "verification"
+
+	testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+	classpath = sourceSets["integrationTest"].runtimeClasspath
+	shouldRunAfter("test")
+
+	useJUnitPlatform()
+
+	// Set system properties for TestContainers
+	systemProperty("testcontainers.reuse.enable", "true")
+
+	// Configure test execution
+	maxParallelForks = 1 // Integration tests should run sequentially
+	failFast = false
+
+	// Reports configuration
+	reports {
+		html.required.set(true)
+		junitXml.required.set(true)
+	}
+}
+
+// Make check task depend on integration tests
+tasks.check { dependsOn(integrationTest) }
+
 tasks.jacocoTestReport {
-	dependsOn(tasks.test)
+	dependsOn(tasks.test, integrationTest)
 	reports {
 		xml.required.set(true)
 		html.required.set(true)
 		csv.required.set(false)
 	}
+
+	// Include both unit and integration test execution data
+	executionData.setFrom(
+		fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"),
+	)
 }
 
 sonarqube {
